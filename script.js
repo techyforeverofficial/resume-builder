@@ -633,6 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const user = auth.currentUser;
             let isPremium = false;
+            let hasSingleDownload = false;
 
             if (!user) {
                 pendingPaymentPrompt = true;
@@ -646,25 +647,41 @@ document.addEventListener('DOMContentLoaded', () => {
             if (user) {
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists() && userDoc.data().premium === true) {
-                        isPremium = true;
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        if (data.premium === true && data.expiresAt && data.expiresAt > Date.now()) {
+                            isPremium = true;
+                        } else if (data.singleDownload === true) {
+                            hasSingleDownload = true;
+                        }
                     }
                 } catch (error) {
                     console.error("Error checking premium status:", error);
                 }
             }
             
-            btnDownload.innerHTML = originalHtml;
-            btnDownload.disabled = false;
-
-            if (isPremium) {
-                if (typeof window.triggerPDFDownload === 'function') {
-                    window.triggerPDFDownload();
+            try {
+                if (isPremium) {
+                    if (typeof window.triggerPDFDownload === 'function') {
+                        window.triggerPDFDownload();
+                    }
+                } else if (hasSingleDownload) {
+                    if (typeof window.triggerPDFDownload === 'function') {
+                        await window.triggerPDFDownload();
+                    }
+                    try {
+                        await setDoc(doc(db, "users", user.uid), { singleDownload: false }, { merge: true });
+                    } catch (err) {
+                        console.error("Error consuming single download:", err);
+                    }
+                } else {
+                    if (typeof window.openPaymentModal === 'function') {
+                        window.openPaymentModal();
+                    }
                 }
-            } else {
-                if (typeof window.openPaymentModal === 'function') {
-                    window.openPaymentModal();
-                }
+            } finally {
+                btnDownload.innerHTML = originalHtml;
+                btnDownload.disabled = false;
             }
         });
     }
@@ -683,7 +700,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Generate and download
-        html2pdf().set(opt).from(element).save();
+        return html2pdf().set(opt).from(element).save();
     };
 
     // Utility: XSS preventer
@@ -743,26 +760,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     handler: async function (response) {
                         // Step 1: mark user as premium
                         const user = auth.currentUser;
+                        const isMonthly = amountValue === 1900;
+                        
                         if (user) {
                             try {
                                 const userRef = doc(db, "users", user.uid);
-                                await setDoc(userRef, {
+                                const planData = isMonthly ? {
                                     premium: true,
-                                    plan: "monthly",
                                     expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000)
-                                }, { merge: true });
+                                } : {
+                                    singleDownload: true
+                                };
+                                await setDoc(userRef, planData, { merge: true });
                             } catch (error) {
                                 console.error("Error setting premium status:", error);
                             }
                         }
 
                         // Step 2: show success message
-                        alert("Payment successful! You can now download your resume.");
+                        if (isMonthly) {
+                            alert("Payment successful! You have unlimited downloads for 30 days.");
+                        } else {
+                            alert("Payment successful! You can download your resume once.");
+                        }
 
                         // Step 3: trigger download
                         window.closePaymentModal();
-                        if (typeof window.triggerPDFDownload === 'function') {
-                            window.triggerPDFDownload();
+                        const btnDownload = document.getElementById('btn-download');
+                        if (btnDownload) {
+                            btnDownload.click();
                         }
                     },
                     prefill: {

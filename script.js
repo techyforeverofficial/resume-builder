@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (views[viewName]) {
             views[viewName].classList.add('active');
         }
-        
+
         // Update nav links active state
         Object.values(navLinks).forEach(l => {
             if (l) l.classList.remove('active');
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 1; i <= totalSteps; i++) {
             const stepContent = document.getElementById(`step-${i}`);
             const navItem = document.getElementById(`nav-step-${i}`);
-            
+
             if (stepContent) {
                 if (i === stepNumber) {
                     stepContent.classList.remove('step-hidden');
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     stepContent.classList.add('step-hidden');
                 }
             }
-            
+
             if (navItem) {
                 if (i === stepNumber) {
                     navItem.classList.add('step-active');
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedTemplate = null;
     const photoContainer = document.getElementById('photo-upload-container');
     const templateContainer = document.getElementById('template-selector-container');
-    
+
     const templatesList = [
         {
             id: "template1",
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (templateContainer) {
         templateContainer.innerHTML = templatesList.map(t => {
-            const imageHtml = t.preview 
+            const imageHtml = t.preview
                 ? `<img src="${t.preview}" alt="${t.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                    <div class="template-placeholder" style="display:none;">Preview not available</div>`
                 : `<div class="template-placeholder">Preview not available</div>`;
@@ -154,11 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let profilePhotoDataUrl = 'https://via.placeholder.com/150';
     const photoInput = document.getElementById('profilePhoto');
     if (photoInput) {
-        photoInput.addEventListener('change', function() {
+        photoInput.addEventListener('change', function () {
             const file = this.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     profilePhotoDataUrl = e.target.result;
                 }
                 reader.readAsDataURL(file);
@@ -206,10 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const addItem = () => {
             const clone = template.content.cloneNode(true);
             const item = clone.querySelector('.dynamic-item');
-            
+
             // Setup remove button on the injected item
             const removeBtn = item.querySelector('.btn-remove');
-            if(removeBtn) {
+            if (removeBtn) {
                 removeBtn.addEventListener('click', () => {
                     list.removeChild(item);
                 });
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const endFields = item.querySelectorAll('.end-date-field');
                     endFields.forEach(f => {
                         f.disabled = e.target.checked;
-                        if(e.target.checked) f.value = ''; // clear value
+                        if (e.target.checked) f.value = ''; // clear value
                     });
                 });
             }
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Setup rich text editor
             const toolbarBtns = item.querySelectorAll('.btn-format');
             const editor = item.querySelector('.rich-text-editor');
-            
+
             if (editor) {
                 toolbarBtns.forEach(btn => {
                     btn.addEventListener('click', (e) => {
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editor.addEventListener('mouseup', updateToolbarState);
                 editor.addEventListener('click', updateToolbarState);
             }
-            
+
             list.appendChild(clone);
         };
 
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btn-generate').addEventListener('click', (e) => {
         e.preventDefault();
-        
+
         // Basic Form Validation (Native validation is blocked by hidden step elements)
         const requiredInputs = form.querySelectorAll('[required]');
         for (let input of requiredInputs) {
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 description: item.querySelector('.rich-text-editor') ? item.querySelector('.rich-text-editor').innerHTML : ''
             };
         });
-        
+
         const education = Array.from(document.querySelectorAll('#edu-list .dynamic-item')).map(item => {
             return {
                 school: item.querySelector('[name="eduCollege[]"]').value,
@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 coursework: item.querySelector('[name="eduCoursework[]"]').value
             };
         });
-        
+
         const projNames = formData.getAll('projName[]');
         const projTechs = formData.getAll('projTech[]');
         const projDescs = formData.getAll('projDesc[]');
@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             for (let i = 0; i < experiences.length; i++) {
                 const exp = experiences[i];
-                if(!exp.company.trim()) continue;
+                if (!exp.company.trim()) continue;
                 let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
                 let locationStr = exp.remote ? 'Remote' : exp.location;
                 let metaStr = `${escapeHTML(exp.company)} | ${escapeHTML(locationStr)} | ${escapeHTML(durationStr)}`;
@@ -481,9 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="prof-section">
                             <div class="prof-section-title">Education</div>
             `;
-            for(let i=0; i < education.length; i++){
+            for (let i = 0; i < education.length; i++) {
                 const edu = education[i];
-                if(!edu.school.trim()) continue;
+                if (!edu.school.trim()) continue;
                 htmlStr += `
                     <div class="prof-item">
                         <div class="prof-item-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
@@ -498,8 +498,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="prof-section">
                             <div class="prof-section-title">Projects</div>
             `;
-            for(let i=0; i < projNames.length; i++){
-                if(!projNames[i].trim()) continue;
+            for (let i = 0; i < projNames.length; i++) {
+                if (!projNames[i].trim()) continue;
                 htmlStr += `
                     <div class="prof-item">
                         <div class="prof-item-title">${escapeHTML(projNames[i])}</div>
@@ -557,7 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (let i = 0; i < experiences.length; i++) {
                 const exp = experiences[i];
-                if(!exp.company.trim()) continue; // Skip empty
+                if (!exp.company.trim()) continue; // Skip empty
                 let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
                 let locationStr = exp.remote ? 'Remote' : exp.location;
                 htmlStr += `
@@ -577,9 +577,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="cv-section">
                     <div class="cv-section-title">Education</div>
             `;
-            for(let i=0; i < education.length; i++){
+            for (let i = 0; i < education.length; i++) {
                 const edu = education[i];
-                if(!edu.school.trim()) continue;
+                if (!edu.school.trim()) continue;
                 htmlStr += `
                     <div class="cv-item">
                         <div class="cv-item-header">
@@ -597,8 +597,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="cv-section">
                     <div class="cv-section-title">Projects</div>
             `;
-            for(let i=0; i < projNames.length; i++){
-                if(!projNames[i].trim()) continue;
+            for (let i = 0; i < projNames.length; i++) {
+                if (!projNames[i].trim()) continue;
                 htmlStr += `
                     <div class="cv-item">
                         <div class="cv-item-header">
@@ -659,7 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error("Error checking premium status:", error);
                 }
             }
-            
+
             try {
                 if (isPremium) {
                     if (typeof window.triggerPDFDownload === 'function') {
@@ -687,16 +687,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // This function will be called after successful payment (future integration)
-    window.triggerPDFDownload = function() {
+    window.triggerPDFDownload = function () {
         const element = document.getElementById('resume-document');
-        
+
         // Setup PDF options
         const opt = {
-            margin:       0,
-            filename:     'my_resume.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            margin: 0,
+            filename: 'my_resume.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
         // Generate and download
@@ -716,13 +716,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const closePaymentBtn = document.getElementById('close-payment-modal');
 
     // Global API to trigger the modal
-    window.openPaymentModal = function() {
+    window.openPaymentModal = function () {
         if (paymentModal) {
             paymentModal.classList.add('active');
         }
     };
 
-    window.closePaymentModal = function() {
+    window.closePaymentModal = function () {
         if (paymentModal) {
             paymentModal.classList.remove('active');
         }
@@ -741,6 +741,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Razorpay Payment Logic
+        async function handlePaymentSuccess(amountValue) {
+            // Step 1: mark user as premium
+            const user = auth.currentUser;
+            const isMonthly = amountValue === 1900;
+
+            if (user) {
+                try {
+                    const userRef = doc(db, "users", user.uid);
+                    const planData = isMonthly ? {
+                        premium: true,
+                        expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000)
+                    } : {
+                        singleDownload: true
+                    };
+                    await setDoc(userRef, planData, { merge: true });
+                } catch (error) {
+                    console.error("Error setting premium status:", error);
+                }
+            }
+
+            // Step 2: show success message
+            if (isMonthly) {
+                alert("Payment successful! You have unlimited downloads for 30 days.");
+            } else {
+                alert("Payment successful! You can download your resume once.");
+            }
+
+            // Step 3: trigger download
+            window.closePaymentModal();
+            const btnDownload = document.getElementById('btn-download');
+            if (btnDownload) {
+                btnDownload.click();
+            }
+        }
+
         const simulateBtns = paymentModal.querySelectorAll('.btn-simulate-pay');
         simulateBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -750,62 +785,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     targetBtn = targetBtn.closest('.btn-simulate-pay');
                 }
                 const amountValue = parseInt(targetBtn.getAttribute('data-amount') || 200, 10);
-                
+
                 const options = {
-                    key: "rzp_test_dummykey123456", // Test Key
-                    amount: amountValue, // Amount in paise
+                    key: "rzp_live_SYKrxIL6dlt09U",
+                    amount: amountValue,
                     currency: "INR",
-                    name: "ResumeForge",
-                    description: "Unlock Resume Download",
-                    handler: async function (response) {
-                        // Step 1: mark user as premium
-                        const user = auth.currentUser;
-                        const isMonthly = amountValue === 1900;
-                        
-                        if (user) {
-                            try {
-                                const userRef = doc(db, "users", user.uid);
-                                const planData = isMonthly ? {
-                                    premium: true,
-                                    expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000)
-                                } : {
-                                    singleDownload: true
-                                };
-                                await setDoc(userRef, planData, { merge: true });
-                            } catch (error) {
-                                console.error("Error setting premium status:", error);
-                            }
-                        }
-
-                        // Step 2: show success message
-                        if (isMonthly) {
-                            alert("Payment successful! You have unlimited downloads for 30 days.");
-                        } else {
-                            alert("Payment successful! You can download your resume once.");
-                        }
-
-                        // Step 3: trigger download
-                        window.closePaymentModal();
-                        const btnDownload = document.getElementById('btn-download');
-                        if (btnDownload) {
-                            btnDownload.click();
-                        }
+                    name: "Resume Builder",
+                    description: "Resume Download",
+                    handler: function (response) {
+                        handlePaymentSuccess(amountValue);
                     },
                     prefill: {
-                        name: "Applicant Name",
-                        email: "applicant@example.com",
+                        name: "User",
+                        email: "test@example.com",
                         contact: "9999999999"
                     },
                     theme: {
                         color: "#6366f1"
                     }
                 };
-                
-                const rzp1 = new Razorpay(options);
-                rzp1.on('payment.failed', function (response){
-                    alert("Payment failed: " + response.error.description);
+
+                const rzp = new Razorpay(options);
+                rzp.on('payment.failed', function (response) {
+                    alert("Payment Failed: " + response.error.description);
                 });
-                rzp1.open();
+                rzp.open();
             });
         });
     }
@@ -825,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authSubtitle = document.getElementById('auth-subtitle');
     const authErrorMsg = document.getElementById('auth-error-msg');
     const btnSave = document.getElementById('btn-save');
-    
+
     let isSignUpMode = false;
     let currentUser = null;
 
@@ -888,19 +892,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = authEmail.value;
             const password = authPassword.value;
             authErrorMsg.style.display = 'none';
-            
+
             try {
                 authSubmitBtn.disabled = true;
                 authSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                
+
                 if (isSignUpMode) {
                     await createUserWithEmailAndPassword(auth, email, password);
                 } else {
                     await signInWithEmailAndPassword(auth, email, password);
                 }
-                
+
                 authForm.reset();
-                
+
                 if (pendingPaymentPrompt) {
                     pendingPaymentPrompt = false;
                     setTimeout(() => {

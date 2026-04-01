@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Resume Builder</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- App Background -->
+    <div class="app-bg"></div>
+
+    <!-- Navigation Header -->
+    <nav class="app-navbar">
+        <div class="nav-brand" id="brand-logo">
+            <i class="fas fa-file-invoice"></i> ResumeForge
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" id="link-home" class="active">Home</a></li>
+            <li><a href="#" id="link-about">About Us</a></li>
+            <li><a href="#" id="link-contact">Contact Us</a></li>
+            <li><a href="#" id="link-login" class="auth-link"><i class="fas fa-user-circle"></i> Login / Sign Up</a></li>
+            <li><a href="#" id="link-logout" class="auth-link" style="display: none;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <main class="app-container">
+
+        <!-- Home Page View -->
+        <section id="home-view" class="view active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Create Your <span class="highlight">Professional</span> Resume</h1>
+                    <p>Build an ATS-friendly resume in minutes and download it as a PDF.</p>
+                    <button id="btn-start" class="btn btn-primary btn-large">
+                        <i class="fas fa-file-signature"></i> Create Resume
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Page View -->
+        <section id="form-view" class="view">
+            <header class="view-header">
+                <h2>Resume Details</h2>
+                <button id="btn-back-home" class="btn btn-icon"><i class="fas fa-arrow-left"></i></button>
+            </header>
+
+            <div class="form-layout">
+                <!-- Left Sidebar Progress Tracker -->
+                <aside class="form-sidebar">
+                    <ul class="step-indicator">
+                        <li class="step-item step-active" id="nav-step-1"><span class="step-number">1</span> Template
+                        </li>
+                        <li class="step-item" id="nav-step-2"><span class="step-number">2</span> Contact</li>
+                        <li class="step-item" id="nav-step-3"><span class="step-number">3</span> Work Experience</li>
+                        <li class="step-item" id="nav-step-4"><span class="step-number">4</span> Education</li>
+                        <li class="step-item" id="nav-step-5"><span class="step-number">5</span> Projects</li>
+                        <li class="step-item" id="nav-step-6"><span class="step-number">6</span> Skills</li>
+                        <li class="step-item" id="nav-step-7"><span class="step-number">7</span> Summary</li>
+                    </ul>
+                </aside>
+
+                <form id="resume-form" class="resume-form">
+
+                    <!-- STEP 1: TEMPLATE -->
+                    <div class="step-content step-active" id="step-1">
+                        <div class="form-section" id="template-section">
+                            <h3><i class="fas fa-palette"></i> Choose Template</h3>
+                            <div class="template-selector" id="template-selector-container">
+                                <!-- Populated dynamically by script.js -->
+                            </div>
+                        </div>
+                        <div class="step-actions" style="justify-content: flex-end;">
+                            <button type="button" class="btn btn-primary btn-next">Next Step <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: CONTACT -->
+                    <div class="step-content step-hidden" id="step-2">
+                        <!-- Contact Info -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+                            <div class="input-group-row" id="photo-upload-container" style="display: none;">
+                                <div class="input-group">
+                                    <label for="profilePhoto">Profile Photo (Required for this template)</label>
+                                    <input type="file" id="profilePhoto" name="profilePhoto"
+                                        accept="image/png, image/jpeg, image/jpg">
+                                </div>
+                            </div>
+                            <div class="input-group-row">
+                                <div class="input-group"><label for="firstName">First Name</label><input type="text"
+                                        id="firstName" name="firstName" placeholder="e.g. John" required></div>
+                                <div class="input-group"><label for="surname">Surname</label><input type="text"
+                                        id="surname" name="surname" placeholder="e.g. Doe" required></div>
+                            </div>
+                            <div class="input-group-row">
+                                <div class="input-group"><label for="city">City</label><input type="text" id="city"
+                                        name="city" placeholder="e.g. Hyderabad" required></div>
+                                <div class="input-group"><label for="country">Country</label><input type="text"
+                                        id="country" name="country" placeholder="e.g. India"></div>
+                            </div>
+                            <div class="input-group-row">
+                                <div class="input-group"><label for="pinCode">Pin Code</label><input type="text"
+                                        id="pinCode" name="pinCode" placeholder="e.g. 500034"></div>
+                                <div class="input-group"><label for="phone">Phone</label><input type="tel" id="phone"
+                                        name="phone" placeholder="e.g. +91 9876543210" required></div>
+                            </div>
+                            <div class="input-group-row">
+                                <div class="input-group"><label for="email">Email</label><input type="email" id="email"
+                                        name="email" placeholder="e.g. john@example.com" required></div>
+                                <div class="input-group"><label for="title">Professional Title</label><input type="text"
+                                        id="title" name="title" placeholder="e.g. Graphic Designer" required></div>
+                            </div>
+                            <div class="optional-section" style="margin-top: 1rem;">
+                                <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">Add
+                                    additional information to your resume (optional)</p>
+                                <button type="button" class="btn btn-secondary btn-small"
+                                    onclick="document.getElementById('additional-contact-info').style.display='block'; this.style.display='none';"><i
+                                        class="fas fa-plus"></i> Add Additional Information</button>
+                            </div>
+                            <div id="additional-contact-info"
+                                style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border);">
+                                <div class="input-group-row">
+                                    <div class="input-group"><label for="linkedin">LinkedIn</label><input type="url"
+                                            id="linkedin" name="linkedin" placeholder="linkedin.com/in/username"></div>
+                                    <div class="input-group"><label for="website">Website</label><input type="url"
+                                            id="website" name="website" placeholder="www.yoursite.com"></div>
+                                </div>
+                                <div class="input-group-row">
+                                    <div class="input-group"><label for="drivingLicence">Driving Licence</label><input
+                                            type="text" id="drivingLicence" name="drivingLicence"
+                                            placeholder="DL number"></div>
+                                    <div class="input-group"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step-actions">
+                            <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>
+                                Back</button>
+                            <button type="button" class="btn btn-primary btn-next">Next Step <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: WORK EXPERIENCE -->
+                    <div class="step-content step-hidden" id="step-3">
+                        <div class="form-section" id="experience-section">
+                            <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
+                            <div class="dynamic-list" id="exp-list"></div>
+                            <button type="button" class="btn btn-secondary btn-small" id="btn-add-exp"><i
+                                    class="fas fa-plus"></i> Add Experience</button>
+                        </div>
+                        <div class="step-actions">
+                            <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>
+                                Back</button>
+                            <button type="button" class="btn btn-primary btn-next">Next Step <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: EDUCATION -->
+                    <div class="step-content step-hidden" id="step-4">
+                        <div class="form-section" id="education-section">
+                            <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                            <div class="dynamic-list" id="edu-list"></div>
+                            <button type="button" class="btn btn-secondary btn-small" id="btn-add-edu"><i
+                                    class="fas fa-plus"></i> Add Education</button>
+                        </div>
+                        <div class="step-actions">
+                            <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>
+                                Back</button>
+                            <button type="button" class="btn btn-primary btn-next">Next Step <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5: PROJECTS -->
+                    <div class="step-content step-hidden" id="step-5">
+                        <div class="form-section" id="projects-section">
+                            <h3><i class="fas fa-project-diagram"></i> Projects</h3>
+                            <div class="dynamic-list" id="proj-list"></div>
+                            <button type="button" class="btn btn-secondary btn-small" id="btn-add-proj"><i
+                                    class="fas fa-plus"></i> Add Project</button>
+                        </div>
+                        <div class="step-actions">
+                            <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>
+                                Back</button>
+                            <button type="button" class="btn btn-primary btn-next">Next Step <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 6: SKILLS -->
+                    <div class="step-content step-hidden" id="step-6">
+                        <div class="form-section">
+                            <h3><i class="fas fa-tools"></i> Skills</h3>
+                            <div class="input-group">
+                                <label for="skills">List your core skills (comma-separated).</label>
+                                <input type="text" id="skills" name="skills"
+                                    placeholder="e.g. HTML, CSS, JavaScript, React, Python" required>
+                            </div>
+                        </div>
+                        <div class="step-actions">
+                            <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>
+                                Back</button>
+                            <button type="button" class="btn btn-primary btn-next">Next Step <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 7: SUMMARY -->
+                    <div class="step-content step-hidden" id="step-7">
+                        <div class="form-section">
+                            <h3><i class="fas fa-align-left"></i> Professional Summary</h3>
+                            <div class="input-group">
+                                <label for="summary">Briefly describe your professional background and goals.</label>
+                                <textarea id="summary" name="summary" rows="4"
+                                    placeholder="Innovative software engineer with 5 years of experience..."
+                                    required></textarea>
+                            </div>
+                        </div>
+                        <div class="step-actions">
+                            <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>
+                                Back</button>
+                            <button type="button" class="btn btn-primary btn-large" id="btn-generate"><i
+                                    class="fas fa-magic"></i> Generate Resume</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <!-- Preview Page View -->
+        <section id="preview-view" class="view">
+            <header class="view-header">
+                <h2>Resume Preview</h2>
+                <div class="action-buttons">
+                    <button id="btn-save" class="btn btn-secondary">
+                        <i class="fas fa-cloud-upload-alt"></i> Save to Account
+                    </button>
+                    <button id="btn-edit" class="btn btn-secondary">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button id="btn-download" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                </div>
+            </header>
+
+            <div class="resume-wrapper">
+                <!-- The actual ATS friendly resume container -->
+                <div id="resume-document" class="resume-document">
+                    <!-- Content will be injected here by script.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us View -->
+        <section id="about-view" class="view">
+            <header class="view-header">
+                <h2>About Us</h2>
+            </header>
+            <div class="form-section static-page">
+                <h3><i class="fas fa-info-circle"></i> Our Mission</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+                    We believe that creating a professional resume should be fast, simple, and beautifully designed.
+                    ResumeForge was built with modern aesthetics to help job seekers generate ATS-friendly resumes in
+                    minutes without any hidden fees.
+                </p>
+                <p style="color: var(--text-secondary); line-height: 1.6;">
+                    Our platform automatically formats your details into an elegant, proven layout that recruiters love.
+                </p>
+            </div>
+        </section>
+
+        <!-- Contact Us View -->
+        <section id="contact-view" class="view">
+            <header class="view-header">
+                <h2>Contact Us</h2>
+            </header>
+            <div class="form-section static-page">
+                <h3><i class="fas fa-envelope"></i> Get In Touch</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Have questions, feature requests, or
+                    feedback? We'd love to hear from you!</p>
+                <form class="contact-form">
+                    <div class="input-group-row">
+                        <div class="input-group">
+                            <label>Name</label>
+                            <input type="text" placeholder="Your Name">
+                        </div>
+                        <div class="input-group">
+                            <label>Email</label>
+                            <input type="email" placeholder="Your Email">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Message</label>
+                        <textarea rows="4" placeholder="How can we help you?"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary"
+                        onclick="alert('Message sent successfully!'); this.form.reset();">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Templates for dynamic inputs (hidden) -->
+    <template id="exp-template">
+        <div class="dynamic-item">
+            <button type="button" class="btn-remove"><i class="fas fa-times"></i></button>
+            <div class="input-group-row">
+                <div class="input-group">
+                    <label>Company Name</label>
+                    <input type="text" name="expCompany[]" required>
+                </div>
+                <div class="input-group">
+                    <label>Role / Title</label>
+                    <input type="text" name="expRole[]" required>
+                </div>
+            </div>
+
+            <div class="input-group-row" style="align-items: flex-end;">
+                <div class="input-group" style="flex: 2;">
+                    <label>Location</label>
+                    <input type="text" name="expLocation[]" placeholder="City, Country">
+                </div>
+                <div class="input-group"
+                    style="flex: 1; flex-direction: row; align-items: center; gap: 0.5rem; justify-content: flex-start; padding-bottom: 0.75rem;">
+                    <input type="checkbox" name="expRemote[]"
+                        style="width: auto; padding: 0; margin: 0; transform: scale(1.2); cursor: pointer;">
+                    <label style="margin: 0; cursor: pointer;">Remote</label>
+                </div>
+            </div>
+
+            <div class="input-group-row">
+                <div class="input-group">
+                    <label>Start Date</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select name="expStartMonth[]" required style="flex: 1;">
+                            <option value="">Month</option>
+                            <option value="Jan">Jan</option>
+                            <option value="Feb">Feb</option>
+                            <option value="Mar">Mar</option>
+                            <option value="Apr">Apr</option>
+                            <option value="May">May</option>
+                            <option value="Jun">Jun</option>
+                            <option value="Jul">Jul</option>
+                            <option value="Aug">Aug</option>
+                            <option value="Sep">Sep</option>
+                            <option value="Oct">Oct</option>
+                            <option value="Nov">Nov</option>
+                            <option value="Dec">Dec</option>
+                        </select>
+                        <select name="expStartYear[]" required style="flex: 1;">
+                            <option value="">Year</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>End Date</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select name="expEndMonth[]" class="end-date-field" required style="flex: 1;">
+                            <option value="">Month</option>
+                            <option value="Jan">Jan</option>
+                            <option value="Feb">Feb</option>
+                            <option value="Mar">Mar</option>
+                            <option value="Apr">Apr</option>
+                            <option value="May">May</option>
+                            <option value="Jun">Jun</option>
+                            <option value="Jul">Jul</option>
+                            <option value="Aug">Aug</option>
+                            <option value="Sep">Sep</option>
+                            <option value="Oct">Oct</option>
+                            <option value="Nov">Nov</option>
+                            <option value="Dec">Dec</option>
+                        </select>
+                        <select name="expEndYear[]" class="end-date-field" required style="flex: 1;">
+                            <option value="">Year</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group"
+                style="flex-direction: row; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <input type="checkbox" name="expCurrent[]" class="current-work-cb"
+                    style="width: auto; margin: 0; padding: 0; transform: scale(1.2); cursor: pointer;">
+                <label style="margin: 0; cursor: pointer;">I currently work here</label>
+            </div>
+
+            <div class="input-group">
+                <label>Description</label>
+                <div class="rich-text-container">
+                    <div class="rich-text-toolbar">
+                        <button type="button" class="btn-format" data-command="bold" title="Bold"><i class="fas fa-bold"></i></button>
+                        <button type="button" class="btn-format" data-command="italic" title="Italic"><i class="fas fa-italic"></i></button>
+                        <button type="button" class="btn-format" data-command="underline" title="Underline"><i class="fas fa-underline"></i></button>
+                        <button type="button" class="btn-format" data-command="insertUnorderedList" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                        <button type="button" class="btn-format" data-command="insertOrderedList" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+                    </div>
+                    <div class="rich-text-editor" contenteditable="true" aria-placeholder="Describe your role..."></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="edu-template">
+        <div class="dynamic-item">
+            <button type="button" class="btn-remove"><i class="fas fa-times"></i></button>
+
+            <div class="input-group-row">
+                <div class="input-group">
+                    <label>College/Institution Name</label>
+                    <input type="text" name="eduCollege[]" required>
+                </div>
+                <div class="input-group">
+                    <label>Location</label>
+                    <input type="text" name="eduLocation[]" placeholder="City, Country" required>
+                </div>
+            </div>
+
+            <div class="input-group-row">
+                <div class="input-group">
+                    <label>Degree</label>
+                    <input type="text" name="eduDegree[]" required>
+                </div>
+                <div class="input-group">
+                    <label>Field of Study</label>
+                    <input type="text" name="eduFieldOfStudy[]" required>
+                </div>
+            </div>
+
+            <div class="input-group-row">
+                <div class="input-group" style="flex: 1;">
+                    <label>Graduation Date (or Expected Graduation Date)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select name="eduGradMonth[]" required style="flex: 1;">
+                            <option value="">Month</option>
+                            <option value="Jan">Jan</option>
+                            <option value="Feb">Feb</option>
+                            <option value="Mar">Mar</option>
+                            <option value="Apr">Apr</option>
+                            <option value="May">May</option>
+                            <option value="Jun">Jun</option>
+                            <option value="Jul">Jul</option>
+                            <option value="Aug">Aug</option>
+                            <option value="Sep">Sep</option>
+                            <option value="Oct">Oct</option>
+                            <option value="Nov">Nov</option>
+                            <option value="Dec">Dec</option>
+                        </select>
+                        <select name="eduGradYear[]" required style="flex: 1;">
+                            <option value="">Year</option>
+                            <option value="2035">2035</option>
+                            <option value="2034">2034</option>
+                            <option value="2033">2033</option>
+                            <option value="2032">2032</option>
+                            <option value="2031">2031</option>
+                            <option value="2030">2030</option>
+                            <option value="2029">2029</option>
+                            <option value="2028">2028</option>
+                            <option value="2027">2027</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="2014">2014</option>
+                            <option value="2013">2013</option>
+                            <option value="2012">2012</option>
+                            <option value="2011">2011</option>
+                            <option value="2010">2010</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="optional-coursework-section" style="margin-top: 1rem;">
+                <p style="color: var(--text-secondary); margin-bottom: 0.5rem; font-size: 0.9rem;">Add any additional
+                    coursework you're proud to showcase</p>
+                <button type="button" class="btn btn-secondary btn-small toggle-coursework-btn"
+                    onclick="const ta = this.nextElementSibling; if(ta.style.display==='none'){ta.style.display='block'; this.style.display='none';}">
+                    <i class="fas fa-plus"></i> Add Coursework
+                </button>
+                <textarea name="eduCoursework[]" rows="2" placeholder="e.g. Data Structures, Algorithms..."
+                    style="display: none; width: 100%; margin-top: 0.5rem;"></textarea>
+            </div>
+        </div>
+    </template>
+
+    <template id="proj-template">
+        <div class="dynamic-item">
+            <button type="button" class="btn-remove"><i class="fas fa-times"></i></button>
+            <div class="input-group-row">
+                <div class="input-group">
+                    <label>Project Name</label>
+                    <input type="text" name="projName[]" required>
+                </div>
+                <div class="input-group">
+                    <label>Technologies Used</label>
+                    <input type="text" name="projTech[]" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Description</label>
+                <textarea name="projDesc[]" rows="3" required></textarea>
+            </div>
+        </div>
+    </template>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="payment-modal-overlay">
+        <div class="payment-modal-content">
+            <button class="payment-close-btn" id="close-payment-modal">&times;</button>
+            <h2 class="payment-title">Unlock Your Resume</h2>
+            <p class="payment-subtitle">Your resume is ready. Download it instantly.</p>
+
+            <div class="payment-options">
+                <div class="payment-card basic-plan">
+                    <div class="payment-card-content">
+                        <span class="price">&#8377;2</span>
+                        <span class="plan-desc">Single Download</span>
+                    </div>
+                    <button class="btn btn-primary btn-simulate-pay" data-amount="200"
+                        style="width: 100%; margin-top: 10px;">Continue</button>
+                </div>
+
+                <div class="payment-card pro-plan">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="payment-card-content">
+                        <span class="price">&#8377;19</span>
+                        <span class="plan-desc">30 Days Unlimited Access</span>
+                    </div>
+                    <button class="btn btn-primary btn-simulate-pay" data-amount="1900"
+                        style="width: 100%; margin-top: 10px;">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Razorpay Checkout -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="payment-modal-overlay">
+        <div class="payment-modal-content auth-modal-content">
+            <button class="payment-close-btn" id="close-auth-modal">&times;</button>
+            <h2 class="payment-title" id="auth-title">Welcome Back</h2>
+            <p class="payment-subtitle" id="auth-subtitle">Login to save your resume</p>
+
+            <form id="auth-form" class="contact-form" style="text-align: left;">
+                <div class="input-group" style="flex: auto;">
+                    <label>Email</label>
+                    <input type="email" id="auth-email" placeholder="you@example.com" required>
+                </div>
+                <div class="input-group" style="flex: auto;">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" required>
+                </div>
+                <div id="auth-error-msg" style="color: var(--danger-color); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="auth-submit-btn">Login</button>
+            </form>
+            
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); text-align: center;">
+                <span id="auth-toggle-text">Don't have an account?</span> 
+                <a href="#" id="auth-toggle-btn" style="color: var(--accent-color); text-decoration: none; font-weight: 600;">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>

@@ -657,6 +657,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 5. Navigate to preview
         navigateTo('preview');
+
+        // 6. Adjust scale dynamically for mobile
+        setTimeout(adjustMobileScale, 50);
+    });
+
+    // --- Dynamic Mobile Scale Logic ---
+    function adjustMobileScale() {
+        const wrapper = document.querySelector('.resume-wrapper');
+        const docElement = document.getElementById('resume-document');
+
+        if (!wrapper || !docElement) return;
+
+        if (window.innerWidth <= 768) {
+            // Reset to measure original
+            docElement.style.transform = 'none';
+            wrapper.style.height = 'auto';
+
+            // Available width accounting for 1rem (16px) left padding
+            const screenWidth = window.innerWidth;
+            const availableWidth = screenWidth - 32;
+            const scale = availableWidth / 816;
+
+            docElement.style.transform = `scale(${scale})`;
+            docElement.style.transformOrigin = 'top left';
+
+            // Get original height of the content mathematically
+            const originalHeight = docElement.scrollHeight || 1056;
+
+            // Set wrapper bounds exactly to the scaled box model
+            wrapper.style.display = 'block';
+            wrapper.style.padding = '16px'; // Top and left padding
+            wrapper.style.boxSizing = 'border-box';
+            wrapper.style.overflow = 'hidden';
+            wrapper.style.width = '100%';
+            wrapper.style.height = `${(originalHeight * scale) + 32}px`;
+        } else {
+            // Desktop fallback
+            docElement.style.transform = 'none';
+            wrapper.style.height = 'auto';
+            wrapper.style.overflow = 'auto';
+            wrapper.style.padding = '0';
+            wrapper.style.display = 'flex';
+            wrapper.style.justifyContent = 'center';
+        }
+    }
+
+    // Bind resize dynamically
+    window.addEventListener('resize', () => {
+        if (views.preview && views.preview.classList.contains('active')) {
+            adjustMobileScale();
+        }
     });
 
     // --- PDF Download Logic ---

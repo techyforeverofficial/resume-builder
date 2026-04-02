@@ -1143,6 +1143,8 @@ textarea {
 
 /* Mobile Template Selector Grid & Modal */
 @media (max-width: 768px) {
+
+    /* Mobile Template Selector Grid & Modal */
     .template-selector {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 1rem !important;
@@ -1155,31 +1157,6 @@ textarea {
     .template-name {
         font-size: 0.85rem;
         margin-top: 0.25rem;
-    }
-
-    /* Mobile Resume Preview Scaling using Transform */
-    .resume-wrapper {
-        width: 100%;
-        overflow-x: hidden;
-        display: block;
-        /* Remove flex to fix browser bounding box offsets */
-        padding: 1rem;
-        box-sizing: border-box;
-    }
-
-    .resume-document {
-        zoom: normal;
-        /* Override any previous zoom states */
-        min-width: 816px !important;
-        width: 816px !important;
-        /* Calculate scale: (screenWidth - padding) / originalWidth */
-        transform: scale(calc((100vw - 2rem) / 816));
-        transform-origin: top left;
-        /* Anchor perfectly to the left */
-        /* Adjust layout height shift caused by transform */
-        margin-bottom: calc(-1056px * (1 - ((100vw - 2rem) / 816)));
-        margin-left: 0;
-        margin-right: 0;
     }
 }
 

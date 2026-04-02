@@ -518,9 +518,9 @@ textarea {
 }
 
 .template-name {
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text-primary);
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
     text-align: center;
 }
 
@@ -1155,7 +1155,7 @@ textarea {
     }
 
     .template-name {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         margin-top: 0.25rem;
     }
 }

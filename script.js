@@ -95,27 +95,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const templatesList = [
         {
             id: "template1",
-            name: "Template 1 (A4 Layout)",
+            name: "Template 1",
             preview: "templates/template1.jpg"
         },
         {
             id: "modern",
-            name: "Modern (Default)",
+            name: "Template 2",
             preview: "templates/modern.jpg"
         },
         {
             id: "classic",
-            name: "Classic Professional",
+            name: "Template 3",
             preview: ""
         },
         {
             id: "creative",
-            name: "Creative Minimal",
+            name: "Template 4",
             preview: ""
         },
         {
             id: "professional",
-            name: "Professional (2-Column)",
+            name: "Template 5",
             preview: ""
         }
     ];

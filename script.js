@@ -783,7 +783,19 @@ document.addEventListener('DOMContentLoaded', () => {
             margin: 0,
             filename: 'my_resume.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
+            html2canvas: { 
+                scale: 2, 
+                useCORS: true,
+                onclone: (clonedDoc) => {
+                    const clonedEl = clonedDoc.getElementById('resume-document');
+                    if (clonedEl) {
+                        // Crucial: remove inline scaling and margins on the cloned DOM 
+                        // so it renders accurately as a full A4 document in the PDF!
+                        clonedEl.style.transform = 'none';
+                        clonedEl.style.margin = '0';
+                    }
+                }
+            },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 

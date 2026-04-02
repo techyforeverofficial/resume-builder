@@ -598,6 +598,22 @@
     <!-- Razorpay Checkout -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+    <!-- Mobile Template Modal -->
+    <div id="mobile-template-modal" class="payment-modal-overlay">
+        <div class="payment-modal-content">
+            <button class="payment-close-btn" id="close-mobile-template">&times;</button>
+            <h2 class="payment-title" id="mobile-template-title">Template Preview</h2>
+            <div id="mobile-template-img"
+                style="margin-top: 15px; margin-bottom: 20px; text-align: center; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #f9fafb;">
+                <!-- Image injected here -->
+            </div>
+            <button class="btn btn-primary" id="btn-select-mobile-template"
+                style="width: 100%; font-size: 1.1rem; padding: 0.75rem;">
+                Select Template
+            </button>
+        </div>
+    </div>
+
     <!-- Auth Modal -->
     <div id="auth-modal" class="payment-modal-overlay">
         <div class="payment-modal-content auth-modal-content">

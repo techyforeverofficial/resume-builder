@@ -139,6 +139,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
+    const mobileTemplateModal = document.getElementById('mobile-template-modal');
+    const closeMobileTemplateBtn = document.getElementById('close-mobile-template');
+    const selectMobileTemplateBtn = document.getElementById('btn-select-mobile-template');
+
+    const closeMobileModal = () => {
+        if (mobileTemplateModal) mobileTemplateModal.classList.remove('active');
+    };
+
+    if (closeMobileTemplateBtn) {
+        closeMobileTemplateBtn.addEventListener('click', closeMobileModal);
+    }
+
+    if (mobileTemplateModal) {
+        mobileTemplateModal.addEventListener('click', (e) => {
+            if (e.target === mobileTemplateModal) closeMobileModal();
+        });
+    }
+
+    if (selectMobileTemplateBtn) {
+        selectMobileTemplateBtn.addEventListener('click', () => {
+            closeMobileModal();
+            if (currentStep < totalSteps) showStep(currentStep + 1);
+        });
+    }
+
     const templateRadios = document.querySelectorAll('input[name="template"]');
     templateRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
@@ -146,6 +171,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedTemplate = e.target.value;
                 if (photoContainer) {
                     photoContainer.style.display = (selectedTemplate === 'template1') ? 'flex' : 'none';
+                }
+
+                // Trigger modal for mobile users
+                if (window.innerWidth <= 768 && mobileTemplateModal) {
+                    const t = templatesList.find(t => t.id === selectedTemplate);
+                    if (t) {
+                        document.getElementById('mobile-template-title').innerText = t.name;
+                        document.getElementById('mobile-template-img').innerHTML = t.preview
+                            ? `<img src="${t.preview}" alt="${t.name}">`
+                            : `<div style="padding: 3rem; color: #6b7280;">Preview not available</div>`;
+                        mobileTemplateModal.classList.add('active');
+                    }
                 }
             }
         });

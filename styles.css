@@ -1076,33 +1076,33 @@ textarea {
         gap: 1rem;
         padding: 1rem;
     }
-    
+
     .nav-links {
         gap: 1rem;
         flex-wrap: wrap;
         justify-content: center;
     }
-    
+
     .app-container {
         padding: 1rem;
         max-width: 100%;
     }
-    
+
     .view-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
-    
+
     .action-buttons {
         flex-wrap: wrap;
     }
-    
+
     .form-sidebar {
         padding: 1rem;
         margin-bottom: 1rem;
     }
-    
+
     .step-indicator {
         flex-direction: row;
         overflow-x: auto;
@@ -1112,15 +1112,15 @@ textarea {
         /* Hide scrollbar for a cleaner look */
         scrollbar-width: none;
     }
-    
+
     .step-indicator::-webkit-scrollbar {
         display: none;
     }
-    
+
     .step-item {
         white-space: nowrap;
     }
-    
+
     .form-section {
         padding: 1.5rem 1rem;
     }
@@ -1129,7 +1129,7 @@ textarea {
         flex-direction: column;
         gap: 0;
     }
-    
+
     .step-actions {
         flex-wrap: wrap;
         gap: 1rem;
@@ -1152,6 +1152,31 @@ textarea {
         width: 816px !important;
         margin: 0 auto;
     }
+}
+
+/* Mobile Template Selector Grid & Modal */
+@media (max-width: 768px) {
+    .template-selector {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+
+    .template-card {
+        padding: 0.5rem;
+    }
+
+    .template-name {
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+}
+
+#mobile-template-img img {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+    object-fit: contain;
+    display: block;
 }
 
 /* ================= PAYMENT MODAL ================= */

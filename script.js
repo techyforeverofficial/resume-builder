@@ -405,6 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Basic Form Validation (Native validation is blocked by hidden step elements)
         const requiredInputs = form.querySelectorAll('[required]');
         for (let input of requiredInputs) {
+            if (input.closest('#step-7')) continue; // Skip validation for optional Additional Info sections
             if (!input.disabled && !input.value.trim()) {
                 alert(`Please fill out all required fields before generating. Blank field found: ${input.previousElementSibling ? input.previousElementSibling.innerText : input.name}`);
                 return; // Stop generation
@@ -470,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 link: item.querySelector('[name="projLink[]"]').value,
                 desc: item.querySelector('.rich-text-editor') ? item.querySelector('.rich-text-editor').innerHTML : ''
             };
-        }).filter(p => !!p.name.trim());
+        }).filter(p => !!p.name.trim() || (p.desc && p.desc.trim() !== '' && p.desc !== '<br>'));
 
         const additionalInfo = {
             dob: formData.get('personalDob') || '',

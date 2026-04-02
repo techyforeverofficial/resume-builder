@@ -1415,6 +1415,23 @@ textarea {
     padding: 1.25rem;
 }
 
+/* Personal Details Grid */
+.personal-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.personal-details-grid .input-group {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .personal-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .accordion-item.active .accordion-icon {
     transform: rotate(180deg);
 }

@@ -244,14 +244,12 @@
                                         <i class="fas fa-chevron-down accordion-icon"></i>
                                     </div>
                                     <div class="accordion-content">
-                                        <div class="input-group-row">
+                                        <div class="personal-details-grid">
                                             <div class="input-group"><label>Date of Birth</label><input type="date"
                                                     id="personalDob" name="personalDob"></div>
                                             <div class="input-group"><label>Nationality</label><input type="text"
                                                     id="personalNationality" name="personalNationality"
                                                     placeholder="e.g. Indian"></div>
-                                        </div>
-                                        <div class="input-group-row">
                                             <div class="input-group">
                                                 <label>Marital Status</label>
                                                 <select id="personalMarital" name="personalMarital">
@@ -263,8 +261,6 @@
                                             <div class="input-group"><label>Visa Status</label><input type="text"
                                                     id="personalVisa" name="personalVisa"
                                                     placeholder="e.g. Citizen, H1B"></div>
-                                        </div>
-                                        <div class="input-group-row">
                                             <div class="input-group">
                                                 <label>Gender</label>
                                                 <select id="personalGender" name="personalGender">
@@ -302,15 +298,20 @@
                                         <i class="fas fa-chevron-down accordion-icon"></i>
                                     </div>
                                     <div class="accordion-content">
-                                        <div class="rich-text-wrapper">
+                                        <div class="rich-text-container">
                                             <div class="rich-text-toolbar">
                                                 <button type="button" class="btn-format" data-command="bold"
                                                     title="Bold"><i class="fas fa-bold"></i></button>
                                                 <button type="button" class="btn-format" data-command="italic"
                                                     title="Italic"><i class="fas fa-italic"></i></button>
+                                                <button type="button" class="btn-format" data-command="underline"
+                                                    title="Underline"><i class="fas fa-underline"></i></button>
                                                 <button type="button" class="btn-format"
                                                     data-command="insertUnorderedList" title="Bullet List"><i
                                                         class="fas fa-list-ul"></i></button>
+                                                <button type="button" class="btn-format"
+                                                    data-command="insertOrderedList" title="Numbered List"><i
+                                                        class="fas fa-list-ol"></i></button>
                                             </div>
                                             <div class="rich-text-editor" id="certifications-editor"
                                                 contenteditable="true"
@@ -337,15 +338,20 @@
                                         <i class="fas fa-chevron-down accordion-icon"></i>
                                     </div>
                                     <div class="accordion-content">
-                                        <div class="rich-text-wrapper">
+                                        <div class="rich-text-container">
                                             <div class="rich-text-toolbar">
                                                 <button type="button" class="btn-format" data-command="bold"
                                                     title="Bold"><i class="fas fa-bold"></i></button>
                                                 <button type="button" class="btn-format" data-command="italic"
                                                     title="Italic"><i class="fas fa-italic"></i></button>
+                                                <button type="button" class="btn-format" data-command="underline"
+                                                    title="Underline"><i class="fas fa-underline"></i></button>
                                                 <button type="button" class="btn-format"
                                                     data-command="insertUnorderedList" title="Bullet List"><i
                                                         class="fas fa-list-ul"></i></button>
+                                                <button type="button" class="btn-format"
+                                                    data-command="insertOrderedList" title="Numbered List"><i
+                                                        class="fas fa-list-ol"></i></button>
                                             </div>
                                             <div class="rich-text-editor" id="hobbies-editor" contenteditable="true"
                                                 placeholder="Add your hobbies and interests..."></div>
@@ -679,14 +685,18 @@
             </div>
             <div class="input-group">
                 <label>Description</label>
-                <div class="rich-text-wrapper">
+                <div class="rich-text-container">
                     <div class="rich-text-toolbar">
                         <button type="button" class="btn-format" data-command="bold" title="Bold"><i
                                 class="fas fa-bold"></i></button>
                         <button type="button" class="btn-format" data-command="italic" title="Italic"><i
                                 class="fas fa-italic"></i></button>
+                        <button type="button" class="btn-format" data-command="underline" title="Underline"><i
+                                class="fas fa-underline"></i></button>
                         <button type="button" class="btn-format" data-command="insertUnorderedList"
                             title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                        <button type="button" class="btn-format" data-command="insertOrderedList"
+                            title="Numbered List"><i class="fas fa-list-ol"></i></button>
                     </div>
                     <div class="rich-text-editor" contenteditable="true"
                         placeholder="Discuss the scope, your contributions, and outcomes of the project..."></div>

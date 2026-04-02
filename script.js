@@ -307,6 +307,94 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDynamicList('btn-add-edu', 'edu-list', 'edu-template');
     setupDynamicList('btn-add-proj', 'proj-list', 'proj-template');
 
+    // --- Accordion Logic ---
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+    accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const item = header.parentElement;
+            const content = item.querySelector('.accordion-content');
+            item.classList.toggle('active');
+            content.classList.toggle('active');
+        });
+    });
+
+    const setupStandaloneRichText = (editorId) => {
+        const editor = document.getElementById(editorId);
+        if (!editor) return;
+        const wrapper = editor.parentElement;
+        const toolbarBtns = wrapper.querySelectorAll('.btn-format');
+
+        toolbarBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const command = btn.getAttribute('data-command');
+                document.execCommand(command, false, null);
+                editor.focus();
+                updateToolbarState();
+            });
+        });
+
+        const updateToolbarState = () => {
+            toolbarBtns.forEach(btn => {
+                const command = btn.getAttribute('data-command');
+                if (document.queryCommandState(command)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        };
+
+        editor.addEventListener('keyup', updateToolbarState);
+        editor.addEventListener('mouseup', updateToolbarState);
+        editor.addEventListener('click', updateToolbarState);
+    };
+
+    setupStandaloneRichText('certifications-editor');
+    setupStandaloneRichText('hobbies-editor');
+
+    // --- Dynamic Languages ---
+    const langContainer = document.getElementById('languages-container');
+    if (langContainer) {
+        const predefined = ['English', 'Hindi', 'Tamil', 'Telugu', 'Marathi'];
+        let langHtml = '<div class="language-options" id="lang-tags">';
+        predefined.forEach(l => {
+            langHtml += `
+            <div class="language-chip">
+                <input type="checkbox" id="lang_${l}" name="languages" value="${l}">
+                <label for="lang_${l}">${l}</label>
+            </div>`;
+        });
+        langHtml += `</div>
+        <div class="add-language-row">
+            <input type="text" id="custom-lang-input" placeholder="e.g. French, German...">
+            <button type="button" class="btn btn-secondary" id="btn-add-lang">Add</button>
+        </div>`;
+        langContainer.innerHTML = langHtml;
+
+        document.getElementById('btn-add-lang').addEventListener('click', () => {
+            const input = document.getElementById('custom-lang-input');
+            const val = input.value.trim();
+            if (val) {
+                const tagsDb = document.getElementById('lang-tags');
+                const chip = document.createElement('div');
+                chip.className = 'language-chip';
+                const id = 'lang_custom_' + Date.now();
+                chip.innerHTML = `
+                    <input type="checkbox" id="${id}" name="languages" value="${escapeHTML(val)}" checked>
+                    <label for="${id}">${escapeHTML(val)}</label>
+                    <i class="fas fa-times remove-lang-btn" style="cursor:pointer; margin-left: 5px; color: var(--text-secondary);"></i>
+                `;
+                tagsDb.appendChild(chip);
+                input.value = '';
+
+                chip.querySelector('.remove-lang-btn').addEventListener('click', () => {
+                    chip.remove();
+                });
+            }
+        });
+    }
+
     // --- Form Submission & Resume Generation ---
     const form = document.getElementById('resume-form');
     const resumeDoc = document.getElementById('resume-document');
@@ -376,15 +464,32 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
-        const projNames = formData.getAll('projName[]');
-        const projTechs = formData.getAll('projTech[]');
-        const projDescs = formData.getAll('projDesc[]');
+        const projects = Array.from(document.querySelectorAll('#proj-list .dynamic-item')).map(item => {
+            return {
+                name: item.querySelector('[name="projName[]"]').value,
+                link: item.querySelector('[name="projLink[]"]').value,
+                desc: item.querySelector('.rich-text-editor') ? item.querySelector('.rich-text-editor').innerHTML : ''
+            };
+        }).filter(p => !!p.name.trim());
+
+        const additionalInfo = {
+            dob: formData.get('personalDob') || '',
+            nationality: formData.get('personalNationality') || '',
+            maritalStatus: formData.get('personalMarital') || '',
+            visaStatus: formData.get('personalVisa') || '',
+            gender: formData.get('personalGender') || '',
+            religion: formData.get('personalReligion') || '',
+            certifications: document.getElementById('certifications-editor') ? document.getElementById('certifications-editor').innerHTML : '',
+            hobbies: document.getElementById('hobbies-editor') ? document.getElementById('hobbies-editor').innerHTML : '',
+            languages: Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value)
+        };
 
         currentResumeData = {
             contact: data,
             work: experiences,
             education: education,
-            projects: projNames.map((name, i) => ({ name, tech: projTechs[i], desc: projDescs[i] })).filter(p => !!p.name),
+            projects: projects,
+            additional: additionalInfo,
             skills: data.skills.split(',').map(s => s.trim()).filter(s => !!s),
             summary: data.summary
         };
@@ -413,10 +518,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         </ul>
                     </div>
 
+                    ${additionalInfo.languages.length > 0 ? `
                     <div class="language">
-                        <div class="section-title">LANGUAGE</div>
-                        <p><span>English</span><span>(GOOD)</span></p>
-                    </div>
+                        <div class="section-title">LANGUAGES</div>
+                        <ul style="padding-left:1.2rem; margin:0; line-height:1.6;">
+                            ${additionalInfo.languages.map(l => `<li>${escapeHTML(l)}</li>`).join('')}
+                        </ul>
+                    </div>` : ''}
+
+                    ${(additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) ? `
+                    <div class="personal" style="margin-top: 1.5rem;">
+                        <div class="section-title">PERSONAL DETAILS</div>
+                        ${additionalInfo.nationality ? `<p style="margin-bottom:0.25rem;">Nationality: ${escapeHTML(additionalInfo.nationality)}</p>` : ''}
+                        ${additionalInfo.maritalStatus ? `<p style="margin-bottom:0.25rem;">Marital Status: ${escapeHTML(additionalInfo.maritalStatus)}</p>` : ''}
+                        ${additionalInfo.visaStatus ? `<p style="margin-bottom:0.25rem;">Visa Status: ${escapeHTML(additionalInfo.visaStatus)}</p>` : ''}
+                        ${additionalInfo.dob ? `<p style="margin-bottom:0.25rem;">DOB: ${escapeHTML(additionalInfo.dob)}</p>` : ''}
+                    </div>` : ''}
                 </div>
 
                 <div class="right">
@@ -473,8 +590,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }
 
-            // You could optionally loop projects below education if wanted, 
-            // but the provided template only has Experience and Education in the right column.
+            if (projects.length > 0) {
+                htmlStr += `
+                    </div>
+                    <div class="projects" style="margin-top: 25px;">
+                        <div class="section-title">PROJECTS</div>`;
+                projects.forEach(p => {
+                    htmlStr += `
+                        <div class="job">
+                            <div class="job-header">
+                                <span style="font-weight:bold;">${escapeHTML(p.name)}</span>
+                                ${p.link ? `<a href="${escapeHTML(p.link)}" target="_blank" style="font-size:0.85rem;">View Project</a>` : ''}
+                            </div>
+                            <div class="exp-desc">${p.desc}</div>
+                        </div>`;
+                });
+            }
+
+            if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
+                htmlStr += `
+                    </div>
+                    <div class="certifications" style="margin-top: 25px;">
+                        <div class="section-title">CERTIFICATIONS</div>
+                        <div style="font-size:14px; line-height:1.6;">${additionalInfo.certifications}</div>`;
+            }
+
+            if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
+                htmlStr += `
+                    </div>
+                    <div class="hobbies" style="margin-top: 25px;">
+                        <div class="section-title">HOBBIES & INTERESTS</div>
+                        <div style="font-size:14px; line-height:1.6;">${additionalInfo.hobbies}</div>`;
+            }
 
             htmlStr += `
                     </div>
@@ -532,22 +679,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
             htmlStr += `
                         </div>
-                        <div class="prof-section">
-                            <div class="prof-section-title">Projects</div>
             `;
-            for (let i = 0; i < projNames.length; i++) {
-                if (!projNames[i].trim()) continue;
+            if (projects.length > 0) {
                 htmlStr += `
+                        <div class="prof-section">
+                            <div class="prof-section-title">Projects</div>`;
+                projects.forEach(p => {
+                    htmlStr += `
                     <div class="prof-item">
-                        <div class="prof-item-title">${escapeHTML(projNames[i])}</div>
-                        <div class="prof-item-meta">Tech: ${escapeHTML(projTechs[i])}</div>
-                        <div class="prof-text">${escapeHTML(projDescs[i]).replace(/\\n/g, '<br>')}</div>
-                    </div>
-                `;
+                        <div class="prof-item-title">${escapeHTML(p.name)}</div>
+                        ${p.link ? `<div class="prof-item-meta"><a href="${escapeHTML(p.link)}">${escapeHTML(p.link)}</a></div>` : ''}
+                        <div class="prof-text" style="margin-top: 5px;">${p.desc}</div>
+                    </div>`;
+                });
+                htmlStr += `</div>`;
+            }
+
+            if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
+                htmlStr += `
+                        <div class="prof-section">
+                            <div class="prof-section-title">Certifications</div>
+                            <div class="prof-text">${additionalInfo.certifications}</div>
+                        </div>`;
+            }
+            if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
+                htmlStr += `
+                        <div class="prof-section">
+                            <div class="prof-section-title">Hobbies</div>
+                            <div class="prof-text">${additionalInfo.hobbies}</div>
+                        </div>`;
             }
 
             htmlStr += `
-                        </div>
                     </div>
                     <div class="prof-right">
                         <div class="prof-section">
@@ -562,6 +725,23 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${data.skills.split(',').map(s => `<li>${escapeHTML(s.trim())}</li>`).join('')}
                             </ul>
                         </div>
+                        
+                        ${additionalInfo.languages.length > 0 ? `
+                        <div class="prof-section">
+                            <div class="prof-section-title">Languages</div>
+                            <ul class="prof-list" style="list-style-type: none; padding-left: 0;">
+                                ${additionalInfo.languages.map(l => `<li>${escapeHTML(l)}</li>`).join('')}
+                            </ul>
+                        </div>` : ''}
+                        
+                        ${(additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) ? `
+                        <div class="prof-section">
+                            <div class="prof-section-title">Personal Details</div>
+                            ${additionalInfo.nationality ? `<div class="prof-contact-item" style="font-size:0.85rem">Nationality: ${escapeHTML(additionalInfo.nationality)}</div>` : ''}
+                            ${additionalInfo.maritalStatus ? `<div class="prof-contact-item" style="font-size:0.85rem">Marital Status: ${escapeHTML(additionalInfo.maritalStatus)}</div>` : ''}
+                            ${additionalInfo.visaStatus ? `<div class="prof-contact-item" style="font-size:0.85rem">Visa Status: ${escapeHTML(additionalInfo.visaStatus)}</div>` : ''}
+                            ${additionalInfo.dob ? `<div class="prof-contact-item" style="font-size:0.85rem">DOB: ${escapeHTML(additionalInfo.dob)}</div>` : ''}
+                        </div>` : ''}
                     </div>
                 </div>
             `;
@@ -631,22 +811,63 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlStr += `</div>`;
 
             htmlStr += `
-                <div class="cv-section">
-                    <div class="cv-section-title">Projects</div>
             `;
-            for (let i = 0; i < projNames.length; i++) {
-                if (!projNames[i].trim()) continue;
+            if (projects.length > 0) {
                 htmlStr += `
+                <div class="cv-section">
+                    <div class="cv-section-title">Projects</div>`;
+                projects.forEach(p => {
+                    htmlStr += `
                     <div class="cv-item">
                         <div class="cv-item-header">
-                            <div class="cv-item-title">${escapeHTML(projNames[i])}</div>
-                            <div class="cv-item-date">Technologies: ${escapeHTML(projTechs[i])}</div>
+                            <div class="cv-item-title">${escapeHTML(p.name)}</div>
+                            ${p.link ? `<div class="cv-item-date"><a href="${escapeHTML(p.link)}" style="color:inherit;">${escapeHTML(p.link)}</a></div>` : ''}
                         </div>
-                        <div class="cv-item-desc">${escapeHTML(projDescs[i]).replace(/\\n/g, '<br>')}</div>
-                    </div>
-                `;
+                        <div class="cv-item-desc">${p.desc}</div>
+                    </div>`;
+                });
+                htmlStr += `</div>`;
             }
-            htmlStr += `</div>`;
+
+            if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
+                htmlStr += `
+                <div class="cv-section">
+                    <div class="cv-section-title">Certifications</div>
+                    <div class="cv-summary">${additionalInfo.certifications}</div>
+                </div>`;
+            }
+
+            if (additionalInfo.languages.length > 0) {
+                htmlStr += `
+                <div class="cv-section">
+                    <div class="cv-section-title">Languages</div>
+                    <div class="cv-skills">
+                        ${additionalInfo.languages.map(l => `<span class="cv-skill-tag">${escapeHTML(l)}</span>`).join('')}
+                    </div>
+                </div>`;
+            }
+
+            if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
+                htmlStr += `
+                <div class="cv-section">
+                    <div class="cv-section-title">Hobbies</div>
+                    <div class="cv-summary">${additionalInfo.hobbies}</div>
+                </div>`;
+            }
+
+            if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
+                htmlStr += `
+                <div class="cv-section">
+                    <div class="cv-section-title">Personal Details</div>
+                    <div class="cv-summary" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        ${additionalInfo.nationality ? `<div><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</div>` : ''}
+                        ${additionalInfo.maritalStatus ? `<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>` : ''}
+                        ${additionalInfo.visaStatus ? `<div><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>` : ''}
+                        ${additionalInfo.dob ? `<div><strong>Date of Birth:</strong> ${escapeHTML(additionalInfo.dob)}</div>` : ''}
+                    </div>
+                </div>`;
+            }
+
         }
 
         // 4. Inject into DOM

@@ -1353,3 +1353,119 @@ textarea {
         gap: 4px;
     }
 }
+
+/* ======== ACCORDION (ADDITIONAL INFO) ======== */
+.accordion-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.accordion-item {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    transition: background 0.3s ease;
+}
+
+.accordion-header:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.accordion-header span i {
+    color: var(--accent-color);
+    margin-right: 0.5rem;
+    width: 20px;
+    text-align: center;
+}
+
+.accordion-icon {
+    transition: transform 0.3s ease;
+    color: var(--text-secondary);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* We target an active class that sets max-height dynamically in JS, but a generous fixed fallback for pure CSS toggles */
+.accordion-content.active {
+    max-height: 2000px;
+    /* Safe upper bound for rich text & dynamic lists */
+}
+
+.accordion-content>div {
+    padding: 1.25rem;
+}
+
+.accordion-item.active .accordion-icon {
+    transform: rotate(180deg);
+}
+
+.accordion-item.active .accordion-header {
+    border-bottom: 1px solid var(--card-border);
+}
+
+/* Language Chips Layout */
+.language-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.language-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--card-border);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.language-chip:hover {
+    border-color: var(--accent-color);
+}
+
+.language-chip input[type="checkbox"] {
+    margin: 0;
+    width: auto;
+    cursor: pointer;
+}
+
+.language-chip label {
+    margin: 0;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.add-language-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.add-language-row input {
+    flex: 1;
+}

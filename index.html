@@ -70,9 +70,9 @@
                         <li class="step-item" id="nav-step-2"><span class="step-number">2</span> Contact</li>
                         <li class="step-item" id="nav-step-3"><span class="step-number">3</span> Work Experience</li>
                         <li class="step-item" id="nav-step-4"><span class="step-number">4</span> Education</li>
-                        <li class="step-item" id="nav-step-5"><span class="step-number">5</span> Projects</li>
-                        <li class="step-item" id="nav-step-6"><span class="step-number">6</span> Skills</li>
-                        <li class="step-item" id="nav-step-7"><span class="step-number">7</span> Summary</li>
+                        <li class="step-item" id="nav-step-5"><span class="step-number">5</span> Skills</li>
+                        <li class="step-item" id="nav-step-6"><span class="step-number">6</span> Summary</li>
+                        <li class="step-item" id="nav-step-7"><span class="step-number">7</span> Additional Info</li>
                     </ul>
                 </aside>
 
@@ -191,24 +191,8 @@
                         </div>
                     </div>
 
-                    <!-- STEP 5: PROJECTS -->
+                    <!-- STEP 5: SKILLS -->
                     <div class="step-content step-hidden" id="step-5">
-                        <div class="form-section" id="projects-section">
-                            <h3><i class="fas fa-project-diagram"></i> Projects</h3>
-                            <div class="dynamic-list" id="proj-list"></div>
-                            <button type="button" class="btn btn-secondary btn-small" id="btn-add-proj"><i
-                                    class="fas fa-plus"></i> Add Project</button>
-                        </div>
-                        <div class="step-actions">
-                            <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>
-                                Back</button>
-                            <button type="button" class="btn btn-primary btn-next">Next Step <i
-                                    class="fas fa-arrow-right"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 6: SKILLS -->
-                    <div class="step-content step-hidden" id="step-6">
                         <div class="form-section">
                             <h3><i class="fas fa-tools"></i> Skills</h3>
                             <div class="input-group">
@@ -225,8 +209,8 @@
                         </div>
                     </div>
 
-                    <!-- STEP 7: SUMMARY -->
-                    <div class="step-content step-hidden" id="step-7">
+                    <!-- STEP 6: SUMMARY -->
+                    <div class="step-content step-hidden" id="step-6">
                         <div class="form-section">
                             <h3><i class="fas fa-align-left"></i> Professional Summary</h3>
                             <div class="input-group">
@@ -234,6 +218,141 @@
                                 <textarea id="summary" name="summary" rows="4"
                                     placeholder="Innovative software engineer with 5 years of experience..."
                                     required></textarea>
+                            </div>
+                        </div>
+                        <div class="step-actions">
+                            <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>
+                                Back</button>
+                            <button type="button" class="btn btn-primary btn-next">Next Step <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 7: ADDITIONAL INFORMATION -->
+                    <div class="step-content step-hidden" id="step-7">
+                        <div class="form-section">
+                            <h3><i class="fas fa-plus-circle"></i> Additional Information <span
+                                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: normal;">(Optional)</span>
+                            </h3>
+
+                            <div class="accordion-container">
+
+                                <!-- Personal Details -->
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span><i class="fas fa-user"></i> Personal Details</span>
+                                        <i class="fas fa-chevron-down accordion-icon"></i>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <div class="input-group-row">
+                                            <div class="input-group"><label>Date of Birth</label><input type="date"
+                                                    id="personalDob" name="personalDob"></div>
+                                            <div class="input-group"><label>Nationality</label><input type="text"
+                                                    id="personalNationality" name="personalNationality"
+                                                    placeholder="e.g. Indian"></div>
+                                        </div>
+                                        <div class="input-group-row">
+                                            <div class="input-group">
+                                                <label>Marital Status</label>
+                                                <select id="personalMarital" name="personalMarital">
+                                                    <option value="">Select</option>
+                                                    <option value="Single">Single</option>
+                                                    <option value="Married">Married</option>
+                                                </select>
+                                            </div>
+                                            <div class="input-group"><label>Visa Status</label><input type="text"
+                                                    id="personalVisa" name="personalVisa"
+                                                    placeholder="e.g. Citizen, H1B"></div>
+                                        </div>
+                                        <div class="input-group-row">
+                                            <div class="input-group">
+                                                <label>Gender</label>
+                                                <select id="personalGender" name="personalGender">
+                                                    <option value="">Select</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Other">Other</option>
+                                                    <option value="Decline">Prefer not to say</option>
+                                                </select>
+                                            </div>
+                                            <div class="input-group"><label>Religion</label><input type="text"
+                                                    id="personalReligion" name="personalReligion"
+                                                    placeholder="e.g. Hindu"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Projects -->
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span><i class="fas fa-project-diagram"></i> Projects</span>
+                                        <i class="fas fa-chevron-down accordion-icon"></i>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <div class="dynamic-list" id="proj-list"></div>
+                                        <button type="button" class="btn btn-secondary btn-small" id="btn-add-proj"
+                                            style="margin-top: 10px;"><i class="fas fa-plus"></i> Add Project</button>
+                                    </div>
+                                </div>
+
+                                <!-- Certifications -->
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span><i class="fas fa-certificate"></i> Certifications</span>
+                                        <i class="fas fa-chevron-down accordion-icon"></i>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <div class="rich-text-wrapper">
+                                            <div class="rich-text-toolbar">
+                                                <button type="button" class="btn-format" data-command="bold"
+                                                    title="Bold"><i class="fas fa-bold"></i></button>
+                                                <button type="button" class="btn-format" data-command="italic"
+                                                    title="Italic"><i class="fas fa-italic"></i></button>
+                                                <button type="button" class="btn-format"
+                                                    data-command="insertUnorderedList" title="Bullet List"><i
+                                                        class="fas fa-list-ul"></i></button>
+                                            </div>
+                                            <div class="rich-text-editor" id="certifications-editor"
+                                                contenteditable="true"
+                                                placeholder="Add your certifications here as bullet points..."></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Languages -->
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span><i class="fas fa-language"></i> Languages</span>
+                                        <i class="fas fa-chevron-down accordion-icon"></i>
+                                    </div>
+                                    <div class="accordion-content" id="languages-container">
+                                        <!-- Checkboxes and custom added language tags will be generated by script.js -->
+                                    </div>
+                                </div>
+
+                                <!-- Hobbies -->
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span><i class="fas fa-heart"></i> Hobbies</span>
+                                        <i class="fas fa-chevron-down accordion-icon"></i>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <div class="rich-text-wrapper">
+                                            <div class="rich-text-toolbar">
+                                                <button type="button" class="btn-format" data-command="bold"
+                                                    title="Bold"><i class="fas fa-bold"></i></button>
+                                                <button type="button" class="btn-format" data-command="italic"
+                                                    title="Italic"><i class="fas fa-italic"></i></button>
+                                                <button type="button" class="btn-format"
+                                                    data-command="insertUnorderedList" title="Bullet List"><i
+                                                        class="fas fa-list-ul"></i></button>
+                                            </div>
+                                            <div class="rich-text-editor" id="hobbies-editor" contenteditable="true"
+                                                placeholder="Add your hobbies and interests..."></div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                         <div class="step-actions">
@@ -550,17 +669,28 @@
             <button type="button" class="btn-remove"><i class="fas fa-times"></i></button>
             <div class="input-group-row">
                 <div class="input-group">
-                    <label>Project Name</label>
+                    <label>Project Title</label>
                     <input type="text" name="projName[]" required>
                 </div>
                 <div class="input-group">
-                    <label>Technologies Used</label>
-                    <input type="text" name="projTech[]" required>
+                    <label>Project Link (Optional)</label>
+                    <input type="url" name="projLink[]" placeholder="https://github.com/... ">
                 </div>
             </div>
             <div class="input-group">
                 <label>Description</label>
-                <textarea name="projDesc[]" rows="3" required></textarea>
+                <div class="rich-text-wrapper">
+                    <div class="rich-text-toolbar">
+                        <button type="button" class="btn-format" data-command="bold" title="Bold"><i
+                                class="fas fa-bold"></i></button>
+                        <button type="button" class="btn-format" data-command="italic" title="Italic"><i
+                                class="fas fa-italic"></i></button>
+                        <button type="button" class="btn-format" data-command="insertUnorderedList"
+                            title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                    </div>
+                    <div class="rich-text-editor" contenteditable="true"
+                        placeholder="Discuss the scope, your contributions, and outcomes of the project..."></div>
+                </div>
             </div>
         </div>
     </template>

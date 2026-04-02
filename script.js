@@ -655,6 +655,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Apply selected template class
         resumeDoc.className = 'resume-document template-' + data.template;
 
+        // Populate hidden DOM replica specifically for PDF capturing
+        const hiddenResumeDoc = document.getElementById('resume-document-hidden');
+        if (hiddenResumeDoc) {
+            hiddenResumeDoc.innerHTML = htmlStr;
+            hiddenResumeDoc.className = 'resume-document template-' + data.template;
+        }
+
         // 5. Navigate to preview
         navigateTo('preview');
 
@@ -751,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 if (isPremium) {
                     if (typeof window.triggerPDFDownload === 'function') {
-                        window.triggerPDFDownload();
+                        await window.triggerPDFDownload();
                     }
                 } else if (hasSingleDownload) {
                     if (typeof window.triggerPDFDownload === 'function') {
@@ -775,37 +782,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // This function will be called after successful payment (future integration)
-    window.triggerPDFDownload = function () {
-        const element = document.getElementById('resume-document');
+    window.triggerPDFDownload = async function () {
+        // Guarantee DOM mutations are permanently settled and images loaded before capturing
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        // Use the hidden full-size container reserved exclusively for PDF capture
+        const element = document.getElementById('resume-document-hidden') || document.getElementById('resume-document');
 
         // Setup PDF options
         const opt = {
             margin: 0,
             filename: 'my_resume.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
+            html2canvas: {
+                scale: 2,
                 useCORS: true,
-                windowWidth: 816, // Impose fixed capture width mimicking desktop
-                onclone: (clonedDoc) => {
-                    const clonedEl = clonedDoc.getElementById('resume-document');
-                    const clonedWrapper = clonedDoc.querySelector('.resume-wrapper');
-                    
-                    if (clonedWrapper) {
-                        // Crucial: Strip the mobile-friendly constraints that were clipping 
-                        // the un-scaled layout inside html2canvas
-                        clonedWrapper.style.overflow = 'visible';
-                        clonedWrapper.style.width = 'auto';
-                        clonedWrapper.style.padding = '0';
-                        clonedWrapper.style.height = 'auto';
-                    }
-
-                    if (clonedEl) {
-                        // Remove inline scaling
-                        clonedEl.style.transform = 'none';
-                        clonedEl.style.margin = '0';
-                    }
-                }
+                windowWidth: 816 // Strict fallback tracking of logical width bounds
             },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };

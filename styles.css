@@ -1161,9 +1161,10 @@ textarea {
     .resume-wrapper {
         width: 100%;
         overflow-x: hidden;
-        display: flex;
-        justify-content: center;
-        padding: 1rem 0;
+        display: block;
+        /* Remove flex to fix browser bounding box offsets */
+        padding: 1rem;
+        box-sizing: border-box;
     }
 
     .resume-document {
@@ -1173,7 +1174,8 @@ textarea {
         width: 816px !important;
         /* Calculate scale: (screenWidth - padding) / originalWidth */
         transform: scale(calc((100vw - 2rem) / 816));
-        transform-origin: top center;
+        transform-origin: top left;
+        /* Anchor perfectly to the left */
         /* Adjust layout height shift caused by transform */
         margin-bottom: calc(-1056px * (1 - ((100vw - 2rem) / 816)));
         margin-left: 0;

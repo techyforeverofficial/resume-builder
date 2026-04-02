@@ -778,6 +778,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.triggerPDFDownload = function () {
         const element = document.getElementById('resume-document');
 
+        // Temporarily reset transform for html2canvas to capture properly on mobile
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            element.style.transform = 'none';
+        }
+
         // Setup PDF options
         const opt = {
             margin: 0,
@@ -788,7 +794,15 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Generate and download
-        return html2pdf().set(opt).from(element).save();
+        return html2pdf()
+            .set(opt)
+            .from(element)
+            .save()
+            .then(() => {
+                if (isMobile && typeof adjustMobileScale === 'function') {
+                    adjustMobileScale();
+                }
+            });
     };
 
     // Utility: XSS preventer

@@ -655,13 +655,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Apply selected template class
         resumeDoc.className = 'resume-document template-' + data.template;
 
-        // Populate hidden DOM replica specifically for PDF capturing
-        const hiddenResumeDoc = document.getElementById('resume-document-hidden');
-        if (hiddenResumeDoc) {
-            hiddenResumeDoc.innerHTML = htmlStr;
-            hiddenResumeDoc.className = 'resume-document template-' + data.template;
-        }
-
         // 5. Navigate to preview
         navigateTo('preview');
 
@@ -758,7 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 if (isPremium) {
                     if (typeof window.triggerPDFDownload === 'function') {
-                        await window.triggerPDFDownload();
+                        window.triggerPDFDownload();
                     }
                 } else if (hasSingleDownload) {
                     if (typeof window.triggerPDFDownload === 'function') {
@@ -782,23 +775,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // This function will be called after successful payment (future integration)
-    window.triggerPDFDownload = async function () {
-        // Guarantee DOM mutations are permanently settled and images loaded before capturing
-        await new Promise(resolve => setTimeout(resolve, 150));
-
-        // Use the hidden full-size container reserved exclusively for PDF capture
-        const element = document.getElementById('resume-document-hidden') || document.getElementById('resume-document');
+    window.triggerPDFDownload = function () {
+        const element = document.getElementById('resume-document');
 
         // Setup PDF options
         const opt = {
             margin: 0,
             filename: 'my_resume.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                windowWidth: 816 // Strict fallback tracking of logical width bounds
-            },
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 

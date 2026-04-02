@@ -786,11 +786,22 @@ document.addEventListener('DOMContentLoaded', () => {
             html2canvas: { 
                 scale: 2, 
                 useCORS: true,
+                windowWidth: 816, // Impose fixed capture width mimicking desktop
                 onclone: (clonedDoc) => {
                     const clonedEl = clonedDoc.getElementById('resume-document');
+                    const clonedWrapper = clonedDoc.querySelector('.resume-wrapper');
+                    
+                    if (clonedWrapper) {
+                        // Crucial: Strip the mobile-friendly constraints that were clipping 
+                        // the un-scaled layout inside html2canvas
+                        clonedWrapper.style.overflow = 'visible';
+                        clonedWrapper.style.width = 'auto';
+                        clonedWrapper.style.padding = '0';
+                        clonedWrapper.style.height = 'auto';
+                    }
+
                     if (clonedEl) {
-                        // Crucial: remove inline scaling and margins on the cloned DOM 
-                        // so it renders accurately as a full A4 document in the PDF!
+                        // Remove inline scaling
                         clonedEl.style.transform = 'none';
                         clonedEl.style.margin = '0';
                     }

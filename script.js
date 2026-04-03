@@ -222,6 +222,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (navLinks.about) navLinks.about.addEventListener('click', (e) => { e.preventDefault(); navigateTo('about'); });
     if (navLinks.contact) navLinks.contact.addEventListener('click', (e) => { e.preventDefault(); navigateTo('contact'); });
 
+    // Mobile Hamburger Menu Toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinksContainer = document.querySelector('.nav-links');
+
+    if (menuToggle && navLinksContainer) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navLinksContainer.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navLinksContainer.classList.contains('active') && !navLinksContainer.contains(e.target) && e.target !== menuToggle) {
+                navLinksContainer.classList.remove('active');
+            }
+        });
+
+        // Close dropdown when clicking a nav item (mobile only)
+        navLinksContainer.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    navLinksContainer.classList.remove('active');
+                }
+            });
+        });
+    }
+
     document.getElementById('btn-start').addEventListener('click', () => {
         showStep(1);
         navigateTo('form');

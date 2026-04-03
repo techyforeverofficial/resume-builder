@@ -1489,34 +1489,52 @@ textarea {
 
 /* ======== PRINT PDF SPECIFIC STYLES ======== */
 @media print {
-
-    body,
-    html {
+    body, html {
         margin: 0 !important;
         padding: 0 !important;
         background: white !important;
     }
+}
 
-    #pdf-container {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        max-width: none !important;
-        box-shadow: none !important;
-    }
+/* Fix mobile HTML2Canvas styles by targeting #pdf-container directly outside of @media print */
+#pdf-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 794px !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    background: white !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -9999px !important;
+}
 
-    #pdf-container .resume-document {
-        width: 794px !important;
-        transform: none !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-    }
+#pdf-container .resume-document {
+    width: 794px !important;
+    min-width: 794px !important;
+    transform: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+}
 
-    #pdf-container .profile img,
-    #pdf-container #profile-img-preview {
-        width: 170px !important;
-        height: 170px !important;
-        object-fit: cover !important;
-        max-width: none !important;
-    }
+#pdf-container .resume-document .left {
+    min-width: 35% !important;
+    width: 35% !important;
+}
+
+#pdf-container .resume-document .right {
+    min-width: 65% !important;
+    width: 65% !important;
+}
+
+#pdf-container .profile img,
+#pdf-container #profile-img-preview,
+#pdf-container img {
+    width: 170px !important;
+    height: 170px !important;
+    object-fit: cover !important;
+    max-width: none !important;
+    display: inline-block !important;
 }

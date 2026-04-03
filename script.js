@@ -1040,7 +1040,11 @@ document.addEventListener('DOMContentLoaded', () => {
             html2canvas: {
                 scale: 2, // Ensure good quality 
                 useCORS: true,
-                windowWidth: 794 // Match exact width
+                windowWidth: 794, // Match exact width
+                scrollY: 0,
+                scrollX: 0,
+                x: 0,
+                y: 0
             },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };

@@ -1486,3 +1486,37 @@ textarea {
 .add-language-row input {
     flex: 1;
 }
+
+/* ======== PRINT PDF SPECIFIC STYLES ======== */
+@media print {
+
+    body,
+    html {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+
+    #pdf-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+        box-shadow: none !important;
+    }
+
+    #pdf-container .resume-document {
+        width: 794px !important;
+        transform: none !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+
+    #pdf-container .profile img,
+    #pdf-container #profile-img-preview {
+        width: 170px !important;
+        height: 170px !important;
+        object-fit: cover !important;
+        max-width: none !important;
+    }
+}

@@ -998,29 +998,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // This function will be called after successful payment (future integration)
     window.triggerPDFDownload = function () {
-        const element = document.getElementById('resume-document');
-
-        // Temporarily reset transform for html2canvas to capture properly on mobile
+        const originalElement = document.getElementById('resume-document');
         const isMobile = window.innerWidth <= 768;
-        if (isMobile) {
-            element.style.transform = 'none';
+
+        // 1. Create a dedicated PDF container to isolate from mobile CSS
+        const pdfContainer = document.createElement('div');
+        pdfContainer.id = 'pdf-container';
+
+        // Hide from view but keep it in DOM for rendering
+        pdfContainer.style.position = 'absolute';
+        pdfContainer.style.left = '-9999px';
+        pdfContainer.style.top = '0';
+
+        // Clone the document
+        const clone = originalElement.cloneNode(true);
+
+        // 2. Remove mobile CSS influence & apply fixed layout (794px for A4)
+        clone.style.transform = 'none';
+        clone.style.width = '794px';
+        clone.style.margin = '0';
+        clone.style.padding = '0';
+        clone.style.boxSizing = 'border-box';
+
+        // 3. Image Fix: maintain aspect ratio without stretching
+        const profileImg = clone.querySelector('.profile img, #profile-img-preview, img');
+        if (profileImg) {
+            profileImg.style.width = '170px';
+            profileImg.style.height = '170px';
+            profileImg.style.objectFit = 'cover';
+            profileImg.style.maxWidth = 'none';
         }
 
-        // Setup PDF options
+        pdfContainer.appendChild(clone);
+        document.body.appendChild(pdfContainer);
+
+        // 4. Setup PDF options with higher scaling for better resolution
         const opt = {
             margin: 0,
             filename: 'my_resume.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
+            html2canvas: {
+                scale: 2, // Ensure good quality 
+                useCORS: true,
+                windowWidth: 794 // Match exact width
+            },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        // Generate and download
+        // 5. Generate and download
         return html2pdf()
             .set(opt)
-            .from(element)
+            .from(clone)
             .save()
             .then(() => {
+                // Cleanup container
+                if (document.body.contains(pdfContainer)) {
+                    document.body.removeChild(pdfContainer);
+                }
+
                 if (isMobile && typeof adjustMobileScale === 'function') {
                     adjustMobileScale();
                 }

@@ -94,28 +94,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const templatesList = [
         {
-            id: "template1",
-            name: "Template 1",
-            preview: "templates/template1.jpg"
-        },
-        {
             id: "modern",
-            name: "Template 2",
+            name: "Template 1",
             preview: "templates/modern.jpg"
         },
         {
             id: "classic",
-            name: "Template 3",
+            name: "Template 2",
             preview: ""
         },
         {
             id: "creative",
-            name: "Template 4",
+            name: "Template 3",
             preview: ""
         },
         {
             id: "professional",
-            name: "Template 5",
+            name: "Template 4",
             preview: ""
         }
     ];
@@ -170,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.checked) {
                 selectedTemplate = e.target.value;
                 if (photoContainer) {
-                    photoContainer.style.display = (selectedTemplate === 'template1') ? 'flex' : 'none';
+                    photoContainer.style.display = 'none'; // Hidden: photo system architecture retained, but default templates do not natively implement it
                 }
 
                 // Trigger modal for mobile users
@@ -412,12 +407,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        if (selectedTemplate === 'template1') {
-            if (profilePhotoDataUrl === 'https://via.placeholder.com/150') {
-                alert("Please upload a profile photo for the selected template.");
-                return;
-            }
-        }
 
         // 1. Gather Personal Info
         const formData = new FormData(form);
@@ -498,137 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Build HTML Template string
         let htmlStr = '';
 
-        if (data.template === 'template1') {
-            htmlStr += `
-                <div class="left">
-                    <div class="profile">
-                        <img src="${data.profilePhoto}" alt="Profile">
-                    </div>
-
-                    <div class="contact">
-                        <div class="section-title">CONTACT</div>
-                        <p>${escapeHTML(data.email)}</p>
-                        <p>${escapeHTML(data.phone)}</p>
-                        <p>${escapeHTML(data.city)}${data.country ? ', ' + escapeHTML(data.country) : ''}</p>
-                    </div>
-
-                    <div class="skills">
-                        <div class="section-title">SKILLS</div>
-                        <ul>
-                            ${data.skills.split(',').map(s => `<li>${escapeHTML(s.trim())}</li>`).join('')}
-                        </ul>
-                    </div>
-
-                    ${additionalInfo.languages.length > 0 ? `
-                    <div class="language">
-                        <div class="section-title">LANGUAGES</div>
-                        <ul style="padding-left:1.2rem; margin:0; line-height:1.6;">
-                            ${additionalInfo.languages.map(l => `<li>${escapeHTML(l)}</li>`).join('')}
-                        </ul>
-                    </div>` : ''}
-
-                    ${(additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) ? `
-                    <div class="personal" style="margin-top: 1.5rem;">
-                        <div class="section-title">PERSONAL DETAILS</div>
-                        ${additionalInfo.nationality ? `<p style="margin-bottom:0.25rem;">Nationality: ${escapeHTML(additionalInfo.nationality)}</p>` : ''}
-                        ${additionalInfo.maritalStatus ? `<p style="margin-bottom:0.25rem;">Marital Status: ${escapeHTML(additionalInfo.maritalStatus)}</p>` : ''}
-                        ${additionalInfo.visaStatus ? `<p style="margin-bottom:0.25rem;">Visa Status: ${escapeHTML(additionalInfo.visaStatus)}</p>` : ''}
-                        ${additionalInfo.dob ? `<p style="margin-bottom:0.25rem;">DOB: ${escapeHTML(additionalInfo.dob)}</p>` : ''}
-                    </div>` : ''}
-                </div>
-
-                <div class="right">
-                    <div class="name">${escapeHTML(data.fullName)}</div>
-                    <div class="role">${escapeHTML(data.title)}</div>
-
-                    <div class="about">
-                        <div class="section-title">ABOUT ME</div>
-                        <p>${escapeHTML(data.summary).replace(/\\n/g, '<br>')}</p>
-                    </div>
-
-                    <div class="experience">
-                        <div class="section-title">WORK EXPERIENCE</div>
-            `;
-
-            for (let i = 0; i < experiences.length; i++) {
-                const exp = experiences[i];
-                if (!exp.company.trim()) continue;
-                let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
-                htmlStr += `
-                        <div class="job">
-                            <div class="job-header">
-                                <span>${escapeHTML(exp.role)}</span>
-                                <span>${escapeHTML(durationStr)}</span>
-                            </div>
-                            <div class="company">${escapeHTML(exp.company)}</div>
-                            <div class="exp-desc">${exp.description}</div>
-                            <div class="divider"></div>
-                        </div>
-                `;
-            }
-
-            htmlStr += `
-                    </div>
-
-                    <!-- EDUCATION -->
-                    <div class="education">
-                        <div class="section-title">EDUCATION</div>
-            `;
-
-            for (let i = 0; i < education.length; i++) {
-                const edu = education[i];
-                if (!edu.school.trim()) continue;
-                htmlStr += `
-                        <div class="edu">
-                            <div class="edu-header">
-                                <span>${escapeHTML(edu.degree)}</span>
-                                <span>${escapeHTML(edu.gradMonth + ' ' + edu.gradYear)}</span>
-                            </div>
-                            <div class="institute">${escapeHTML(edu.school)}</div>
-                            <p>${escapeHTML(edu.fieldOfStudy)}</p>
-                            <div class="divider"></div>
-                        </div>
-                `;
-            }
-
-            if (projects.length > 0) {
-                htmlStr += `
-                    </div>
-                    <div class="projects" style="margin-top: 25px;">
-                        <div class="section-title">PROJECTS</div>`;
-                projects.forEach(p => {
-                    htmlStr += `
-                        <div class="job">
-                            <div class="job-header">
-                                <span style="font-weight:bold;">${escapeHTML(p.name)}</span>
-                                ${p.link ? `<a href="${escapeHTML(p.link)}" target="_blank" style="font-size:0.85rem;">View Project</a>` : ''}
-                            </div>
-                            <div class="exp-desc">${p.desc}</div>
-                        </div>`;
-                });
-            }
-
-            if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
-                htmlStr += `
-                    </div>
-                    <div class="certifications" style="margin-top: 25px;">
-                        <div class="section-title">CERTIFICATIONS</div>
-                        <div style="font-size:14px; line-height:1.6;">${additionalInfo.certifications}</div>`;
-            }
-
-            if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
-                htmlStr += `
-                    </div>
-                    <div class="hobbies" style="margin-top: 25px;">
-                        <div class="section-title">HOBBIES & INTERESTS</div>
-                        <div style="font-size:14px; line-height:1.6;">${additionalInfo.hobbies}</div>`;
-            }
-
-            htmlStr += `
-                    </div>
-                </div>
-            `;
-        } else if (data.template === 'professional') {
+        if (data.template === 'professional') {
             htmlStr += `
                 <div class="prof-accent"></div>
                 <div class="prof-header">

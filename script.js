@@ -896,20 +896,20 @@ document.addEventListener('DOMContentLoaded', () => {
             docElement.style.transform = 'none';
             wrapper.style.height = 'auto';
 
-            // Available width accounting for 1rem (16px) left padding
             const screenWidth = window.innerWidth;
-            const availableWidth = screenWidth - 32;
-            const scale = availableWidth / 816;
+            // Subtract 32px to allow a tiny visual margin on mobile screens
+            const scale = (screenWidth - 32) / 816;
 
             docElement.style.transform = `scale(${scale})`;
-            docElement.style.transformOrigin = 'top left';
+            docElement.style.transformOrigin = 'top center';
 
             // Get original height of the content mathematically
             const originalHeight = docElement.scrollHeight || 1056;
 
-            // Set wrapper bounds exactly to the scaled box model
-            wrapper.style.display = 'block';
-            wrapper.style.padding = '16px'; // Top and left padding
+            // Use flex to cleanly center the scaled container without arbitrary layout pushes
+            wrapper.style.display = 'flex';
+            wrapper.style.justifyContent = 'center';
+            wrapper.style.padding = '16px 0'; // Only vertical padding, flex handles horizontal
             wrapper.style.boxSizing = 'border-box';
             wrapper.style.overflow = 'hidden';
             wrapper.style.width = '100%';

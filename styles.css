@@ -599,8 +599,10 @@ textarea {
     background: var(--resume-bg);
     color: var(--resume-text);
     width: 8.5in;
-    min-width: 8.5in; /* Stop responsive mobile screens from crushing desktop grids */
-    flex-shrink: 0; /* Stop .resume-wrapper flex from squeezing */
+    min-width: 8.5in;
+    /* Stop responsive mobile screens from crushing desktop grids */
+    flex-shrink: 0;
+    /* Stop .resume-wrapper flex from squeezing */
     /* Letter width */
     min-height: 11in;
     /* Letter height */
@@ -616,7 +618,8 @@ textarea {
 .resume-document * {
     word-break: break-word;
     overflow-wrap: break-word;
-    min-width: 0; /* Prevents flexbox items from extending beyond % width limits when text doesn't explicitly break */
+    min-width: 0;
+    /* Prevents flexbox items from extending beyond % width limits when text doesn't explicitly break */
 }
 
 /* Resume Header */
@@ -1498,7 +1501,9 @@ textarea {
 
 /* ======== PRINT PDF SPECIFIC STYLES ======== */
 @media print {
-    body, html {
+
+    body,
+    html {
         margin: 0 !important;
         padding: 0 !important;
         background: white !important;

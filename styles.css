@@ -599,6 +599,8 @@ textarea {
     background: var(--resume-bg);
     color: var(--resume-text);
     width: 8.5in;
+    min-width: 8.5in; /* Stop responsive mobile screens from crushing desktop grids */
+    flex-shrink: 0; /* Stop .resume-wrapper flex from squeezing */
     /* Letter width */
     min-height: 11in;
     /* Letter height */

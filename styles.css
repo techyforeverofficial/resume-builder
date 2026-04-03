@@ -612,6 +612,13 @@ textarea {
     overflow: hidden;
 }
 
+/* Force super-long emails, URLs, or unbroken text strings to naturally break, mitigating flex container overflow bleeding */
+.resume-document * {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-width: 0; /* Prevents flexbox items from extending beyond % width limits when text doesn't explicitly break */
+}
+
 /* Resume Header */
 .cv-header {
     text-align: center;

@@ -1034,7 +1034,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Setup PDF options with higher scaling for better resolution
         const opt = {
-            margin: 0,
+            margin: 0.4, // Standard universal spacing on all sides (0.4 inches)
             filename: 'my_resume.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {

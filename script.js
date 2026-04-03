@@ -11,13 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
         form: document.getElementById('form-view'),
         preview: document.getElementById('preview-view'),
         about: document.getElementById('about-view'),
-        contact: document.getElementById('contact-view')
+        contact: document.getElementById('contact-view'),
+        privacy: document.getElementById('privacy-view')
     };
 
     const navLinks = {
         home: document.getElementById('link-home'),
         about: document.getElementById('link-about'),
-        contact: document.getElementById('link-contact')
+        contact: document.getElementById('link-contact'),
+        privacy: document.getElementById('link-privacy-footer')
     };
 
     const navigateTo = (viewName) => {
@@ -221,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (navLinks.home) navLinks.home.addEventListener('click', (e) => { e.preventDefault(); navigateTo('home'); });
     if (navLinks.about) navLinks.about.addEventListener('click', (e) => { e.preventDefault(); navigateTo('about'); });
     if (navLinks.contact) navLinks.contact.addEventListener('click', (e) => { e.preventDefault(); navigateTo('contact'); });
+    if (navLinks.privacy) navLinks.privacy.addEventListener('click', (e) => { e.preventDefault(); navigateTo('privacy'); });
 
     // Mobile Hamburger Menu Toggle
     const menuToggle = document.getElementById('menu-toggle');

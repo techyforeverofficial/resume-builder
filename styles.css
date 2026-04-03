@@ -1500,7 +1500,7 @@ textarea {
 #pdf-container {
     margin: 0 !important;
     padding: 0 !important;
-    width: 794px !important;
+    width: 816px !important;
     max-width: none !important;
     box-shadow: none !important;
     background: white !important;
@@ -1509,13 +1509,17 @@ textarea {
     left: -9999px !important;
 }
 
+#pdf-container * {
+    /* Critical to prevent padding from breaking % widths in templates */
+    box-sizing: border-box !important;
+}
+
 #pdf-container .resume-document {
-    width: 794px !important;
-    min-width: 794px !important;
+    width: 816px !important;
+    min-width: 816px !important;
     transform: none !important;
     margin: 0 !important;
     box-shadow: none !important;
-    box-sizing: border-box !important;
 }
 
 #pdf-container .resume-document.template-template1 .left {

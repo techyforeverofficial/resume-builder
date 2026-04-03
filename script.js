@@ -1013,12 +1013,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clone the document
         const clone = originalElement.cloneNode(true);
 
-        // 2. Remove mobile CSS influence & apply fixed layout (794px for A4)
+        // 2. Remove mobile CSS influence & apply fixed layout
         clone.style.transform = 'none';
-        clone.style.width = '794px';
-        clone.style.margin = '0';
-        clone.style.padding = '0';
-        clone.style.boxSizing = 'border-box';
+        // (padding overrides removed so native template paddings are preserved to stop text bleeding)
 
         // 3. Image Fix: maintain aspect ratio without stretching
         const profileImg = clone.querySelector('.profile img, #profile-img-preview, img');
@@ -1033,14 +1030,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(pdfContainer);
 
         // 4. Setup PDF options with higher scaling for better resolution
+        // margin set to 0 strictly to avoid pagination overflow on full-bleed 8.5x11 templates
         const opt = {
-            margin: 0.4, // Standard universal spacing on all sides (0.4 inches)
+            margin: 0,
             filename: 'my_resume.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
                 scale: 2, // Ensure good quality 
                 useCORS: true,
-                windowWidth: 794, // Match exact width
+                windowWidth: 816, // Match exact width for 8.5in letter size
                 scrollY: 0,
                 scrollX: 0,
                 x: 0,

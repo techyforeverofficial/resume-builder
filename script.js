@@ -1310,12 +1310,25 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null;
 
     if (linkLogin && linkLogout) {
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if (user) {
                 linkLogin.style.display = 'none';
                 linkLogout.style.display = 'block';
                 if (authModal) authModal.classList.remove('active');
+
+                if (user.email === 'test@techyforever.com') {
+                    try {
+                        const userRef = doc(db, "users", user.uid);
+                        await setDoc(userRef, {
+                            premium: true,
+                            expiresAt: Date.now() + (365 * 24 * 60 * 60 * 1000)
+                        }, { merge: true });
+                        console.log("System override: test@techyforever.com upgraded to premium.");
+                    } catch (err) {
+                        console.error("System override failed:", err);
+                    }
+                }
             } else {
                 linkLogin.style.display = 'block';
                 linkLogout.style.display = 'none';

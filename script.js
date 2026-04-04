@@ -34,11 +34,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 document.getElementById("signin").onclick = () => {
-                    window.location.href = "/login";
+                    const authModal = document.getElementById('auth-modal');
+                    const toggleBtn = document.getElementById('auth-toggle-btn');
+                    if (authModal) {
+                        authModal.classList.add('active');
+                        if (document.getElementById('auth-title').innerText === 'Create Account') {
+                            if (toggleBtn) toggleBtn.click();
+                        }
+                    }
+                    dropdown.classList.add("hidden");
                 };
 
                 document.getElementById("signup").onclick = () => {
-                    window.location.href = "/signup";
+                    const authModal = document.getElementById('auth-modal');
+                    const toggleBtn = document.getElementById('auth-toggle-btn');
+                    if (authModal) {
+                        authModal.classList.add('active');
+                        if (document.getElementById('auth-title').innerText === 'Welcome Back') {
+                            if (toggleBtn) toggleBtn.click();
+                        }
+                    }
+                    dropdown.classList.add("hidden");
                 };
             }
         });

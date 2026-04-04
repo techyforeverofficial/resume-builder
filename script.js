@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="cv-name">${escapeHTML(data.fullName)}</div>
                     <div class="cv-contact">
 `;
-            if (data.template === 'modern') {
+            if (data.template === 'modern' || data.template === 'classic') {
                 let contactItems = [];
                 if (data.email) contactItems.push(`<span>${escapeHTML(data.email)}</span>`);
                 if (data.phone) contactItems.push(`<span>${escapeHTML(data.phone)}</span>`);

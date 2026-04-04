@@ -95,45 +95,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const templateContainer = document.getElementById('template-selector-container');
 
     const templatesList = [
-        {
-            id: "modern",
-            name: "Template 1",
-            preview: "templates/modern.jpg"
-        },
-        {
-            id: "classic",
-            name: "Template 2",
-            preview: ""
-        },
-        {
-            id: "creative",
-            name: "Template 3",
-            preview: ""
-        },
-        {
-            id: "professional",
-            name: "Template 4",
-            preview: ""
-        }
+        { id: "modern", name: "Template 1" },
+        { id: "classic", name: "Template 2" },
+        { id: "creative", name: "Template 3" },
+        { id: "professional", name: "Template 4" }
     ];
+
+    const formats = ["webp", "png", "jpg", "jpeg"];
+
+    function loadTemplatePreview(templateId, imgElement, placeholderElement) {
+        let index = 0;
+
+        function tryNext() {
+            if (index >= formats.length) {
+                if (imgElement) imgElement.style.display = 'none';
+                if (placeholderElement) {
+                    placeholderElement.style.display = 'flex';
+                    placeholderElement.innerText = "Preview not available";
+                }
+                return;
+            }
+
+            const path = `templates/${templateId}.${formats[index]}`;
+            const img = new Image();
+
+            img.onload = () => {
+                if (imgElement) {
+                    imgElement.src = path;
+                    imgElement.style.display = 'block';
+                }
+                if (placeholderElement) placeholderElement.style.display = 'none';
+
+                const t = templatesList.find(t => t.id === templateId);
+                if (t) t.resolvedPreview = path;
+            };
+
+            img.onerror = () => {
+                index++;
+                tryNext();
+            };
+
+            img.src = path;
+        }
+
+        tryNext();
+    }
 
     if (templateContainer) {
         templateContainer.innerHTML = templatesList.map(t => {
-            const imageHtml = t.preview
-                ? `<img src="${t.preview}" alt="${t.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                   <div class="template-placeholder" style="display:none;">Preview not available</div>`
-                : `<div class="template-placeholder">Preview not available</div>`;
-
             return `
                 <label class="template-option">
                     <input type="radio" name="template" value="${t.id}">
                     <div class="template-card ${t.id}-card">
-                        <div class="template-preview">${imageHtml}</div>
+                        <div class="template-preview">
+                            <img id="img-prev-${t.id}" alt="${t.name}" style="display:none; width:100%; height:100%; object-fit:cover;">
+                            <div id="placeholder-prev-${t.id}" class="template-placeholder" style="display:flex;">Loading...</div>
+                        </div>
                         <span class="template-name">${t.name}</span>
                     </div>
                 </label>
             `;
         }).join('');
+
+        templatesList.forEach(t => {
+            const imgEl = document.getElementById(`img-prev-${t.id}`);
+            const placeholderEl = document.getElementById(`placeholder-prev-${t.id}`);
+            loadTemplatePreview(t.id, imgEl, placeholderEl);
+        });
     }
 
     const mobileTemplateModal = document.getElementById('mobile-template-modal');
@@ -175,9 +203,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const t = templatesList.find(t => t.id === selectedTemplate);
                     if (t) {
                         document.getElementById('mobile-template-title').innerText = t.name;
-                        document.getElementById('mobile-template-img').innerHTML = t.preview
-                            ? `<img src="${t.preview}" alt="${t.name}">`
-                            : `<div style="padding: 3rem; color: #6b7280;">Preview not available</div>`;
+                        if (t.resolvedPreview) {
+                            document.getElementById('mobile-template-img').innerHTML = `<img src="${t.resolvedPreview}" alt="${t.name}">`;
+                        } else {
+                            document.getElementById('mobile-template-img').innerHTML = `
+                                <img id="mobile-preview-${t.id}" alt="${t.name}" style="display:none; width:100%; height:auto;">
+                                <div id="mobile-placeholder-${t.id}" style="padding: 3rem; color: #6b7280; display:flex; justify-content:center;">Loading...</div>
+                            `;
+                            loadTemplatePreview(t.id, document.getElementById(`mobile-preview-${t.id}`), document.getElementById(`mobile-placeholder-${t.id}`));
+                        }
                         mobileTemplateModal.classList.add('active');
                     }
                 }

@@ -1074,7 +1074,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) {
                         const data = userDoc.data();
-                        if (data.premium === true && data.expiresAt && data.expiresAt > Date.now()) {
+                        if (data.isPremium === true) {
                             isPremium = true;
                         } else if (data.singleDownload === true) {
                             hasSingleDownload = true;
@@ -1226,7 +1226,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const userRef = doc(db, "users", user.uid);
                     const planData = isMonthly ? {
-                        premium: true,
+                        isPremium: true,
                         expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000)
                     } : {
                         singleDownload: true
@@ -1317,18 +1317,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 linkLogout.style.display = 'block';
                 if (authModal) authModal.classList.remove('active');
 
-                if (user.email === 'test@techyforever.com') {
-                    try {
-                        const userRef = doc(db, "users", user.uid);
-                        await setDoc(userRef, {
-                            premium: true,
-                            expiresAt: Date.now() + (365 * 24 * 60 * 60 * 1000)
-                        }, { merge: true });
-                        console.log("System override: test@techyforever.com upgraded to premium.");
-                    } catch (err) {
-                        console.error("System override failed:", err);
-                    }
-                }
             } else {
                 linkLogin.style.display = 'block';
                 linkLogout.style.display = 'none';

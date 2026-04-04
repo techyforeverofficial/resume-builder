@@ -188,7 +188,66 @@ document.addEventListener('DOMContentLoaded', () => {
             const imgEl = document.getElementById(`img-prev-${t.id}`);
             const placeholderEl = document.getElementById(`placeholder-prev-${t.id}`);
             setPreviewImage(t, imgEl, placeholderEl);
+
+            // Desktop Hover Overlay logic
+            const inputEl = document.querySelector(`input[value="${t.id}"]`);
+            if (inputEl) {
+                const labelEl = inputEl.closest('.template-option');
+                if (labelEl) {
+                    labelEl.addEventListener('mouseenter', () => {
+                        // Strict desktop boundary check
+                        if (window.innerWidth > 1024 && t.resolvedPreview) {
+                            const overlay = document.getElementById('desktop-hover-overlay');
+                            const hoverImg = document.getElementById('desktop-hover-img');
+                            if (overlay && hoverImg) {
+                                hoverImg.src = t.resolvedPreview;
+                                overlay.style.visibility = 'visible';
+                                overlay.style.opacity = '1';
+                            }
+                        }
+                    });
+                    labelEl.addEventListener('mouseleave', () => {
+                        const overlay = document.getElementById('desktop-hover-overlay');
+                        if (overlay) {
+                            overlay.style.visibility = 'hidden';
+                            overlay.style.opacity = '0';
+                        }
+                    });
+                }
+            }
         });
+
+        // Initialize Desktop Hover Overlay DOM
+        if (!document.getElementById('desktop-hover-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'desktop-hover-overlay';
+            overlay.style.position = 'fixed';
+            overlay.style.top = '50%';
+            overlay.style.left = '50%';
+            overlay.style.transform = 'translate(-50%, -50%)';
+            overlay.style.zIndex = '9999';
+            overlay.style.pointerEvents = 'none'; // Critical to allow mouseleave to fire
+            overlay.style.visibility = 'hidden';
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
+            overlay.style.background = 'rgba(15, 23, 42, 0.95)';
+            overlay.style.padding = '1.5rem';
+            overlay.style.borderRadius = '16px';
+            overlay.style.boxShadow = '0 25px 50px -12px rgba(0,0,0,0.5)';
+            overlay.style.backdropFilter = 'blur(10px)';
+            overlay.style.border = '1px solid rgba(255,255,255,0.1)';
+            overlay.style.height = '85vh';
+
+            const img = document.createElement('img');
+            img.id = 'desktop-hover-img';
+            img.style.height = '100%';
+            img.style.objectFit = 'contain';
+            img.style.borderRadius = '8px';
+            img.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.2)';
+
+            overlay.appendChild(img);
+            document.body.appendChild(overlay);
+        }
     }
 
     const mobileTemplateModal = document.getElementById('mobile-template-modal');
@@ -225,8 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     photoContainer.style.display = 'none'; // Hidden: photo system architecture retained, but default templates do not natively implement it
                 }
 
-                // Trigger modal for mobile users
-                if (window.innerWidth <= 768 && mobileTemplateModal) {
+                // Trigger modal for mobile and tablet users
+                if (window.innerWidth <= 1024 && mobileTemplateModal) {
                     const t = templatesList.find(t => t.id === selectedTemplate);
                     if (t) {
                         document.getElementById('mobile-template-title').innerText = t.name;

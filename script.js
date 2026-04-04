@@ -5,6 +5,45 @@ import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc } from "https:
 document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
     let pendingPaymentPrompt = false;
+    let isSignUpMode = false;
+
+    window.openLoginModal = () => {
+        isSignUpMode = false;
+        updateAuthModalUI();
+        const modal = document.getElementById('auth-modal');
+        if (modal) modal.classList.add('active');
+    };
+
+    window.openSignupModal = () => {
+        isSignUpMode = true;
+        updateAuthModalUI();
+        const modal = document.getElementById('auth-modal');
+        if (modal) modal.classList.add('active');
+    };
+
+    function updateAuthModalUI() {
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const authToggleText = document.getElementById('auth-toggle-text');
+        const authToggleBtn = document.getElementById('auth-toggle-btn');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authErrorMsg = document.getElementById('auth-error-msg');
+        
+        if (isSignUpMode) {
+            if (authTitle) authTitle.innerText = 'Create Account';
+            if (authSubtitle) authSubtitle.innerText = 'Sign up to start saving resumes';
+            if (authToggleText) authToggleText.innerText = 'Already have an account?';
+            if (authToggleBtn) authToggleBtn.innerText = 'Login';
+            if (authSubmitBtn) authSubmitBtn.innerText = 'Sign Up';
+        } else {
+            if (authTitle) authTitle.innerText = 'Welcome Back';
+            if (authSubtitle) authSubtitle.innerText = 'Login to save your resume';
+            if (authToggleText) authToggleText.innerText = 'Don\'t have an account?';
+            if (authToggleBtn) authToggleBtn.innerText = 'Sign Up';
+            if (authSubmitBtn) authSubmitBtn.innerText = 'Login';
+        }
+        if (authErrorMsg) authErrorMsg.style.display = 'none';
+    }
 
     // --- Real Firebase Auth & Profile Dropdown ---
     const dropdown = document.getElementById("dropdownMenu");
@@ -32,11 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 document.getElementById("signin").onclick = () => {
-                    window.location.href = "/login";
+                    dropdown.classList.add("hidden");
+                    window.openLoginModal();
                 };
 
                 document.getElementById("signup").onclick = () => {
-                    window.location.href = "/signup";
+                    dropdown.classList.add("hidden");
+                    window.openSignupModal();
                 };
             }
         });
@@ -1265,7 +1306,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authErrorMsg = document.getElementById('auth-error-msg');
     const btnSave = document.getElementById('btn-save');
 
-    let isSignUpMode = false;
+    
     let currentUser = null;
 
     if (linkLogin && linkLogout) {
@@ -1304,20 +1345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         authToggleBtn.addEventListener('click', (e) => {
             e.preventDefault();
             isSignUpMode = !isSignUpMode;
-            if (isSignUpMode) {
-                authTitle.innerText = 'Create Account';
-                authSubtitle.innerText = 'Sign up to start saving resumes';
-                authToggleText.innerText = 'Already have an account?';
-                authToggleBtn.innerText = 'Login';
-                authSubmitBtn.innerText = 'Sign Up';
-            } else {
-                authTitle.innerText = 'Welcome Back';
-                authSubtitle.innerText = 'Login to save your resume';
-                authToggleText.innerText = 'Don\'t have an account?';
-                authToggleBtn.innerText = 'Sign Up';
-                authSubmitBtn.innerText = 'Login';
-            }
-            if (authErrorMsg) authErrorMsg.style.display = 'none';
+            updateAuthModalUI();
         });
     }
 

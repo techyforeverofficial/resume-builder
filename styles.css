@@ -1273,8 +1273,25 @@ textarea {
     border-color: var(--accent-color);
 }
 
+.auth-modal-content {
+    background: rgba(20, 20, 40, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-modal-content .payment-title,
+.auth-modal-content label {
+    color: var(--text-primary) !important;
+}
+
+.auth-modal-content .payment-subtitle {
+    color: var(--text-secondary) !important;
+}
+
 .auth-modal-content .input-group {
     margin-bottom: 1.25rem;
+    text-align: left;
 }
 
 .payment-card {

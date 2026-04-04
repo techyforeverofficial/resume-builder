@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
@@ -23,7 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 document.getElementById("myResumes").onclick = () => {
-                    window.location.href = "/my-resumes.html";
+                    navigateTo('dashboard');
+                    fetchMyResumes();
+                    dropdown.classList.add("hidden");
                 };
             } else {
                 dropdown.innerHTML = `
@@ -61,12 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         preview: document.getElementById('preview-view'),
         about: document.getElementById('about-view'),
         contact: document.getElementById('contact-view'),
-        privacy: document.getElementById('privacy-view')
+        privacy: document.getElementById('privacy-view'),
+        dashboard: document.getElementById('dashboard-view')
     };
 
     const navLinks = {
-        about: document.getElementById('link-about'),
-        contact: document.getElementById('link-contact'),
+        about: document.getElementById('link-about-footer'),
+        contact: document.getElementById('link-contact-footer'),
         privacy: document.getElementById('link-privacy-footer')
     };
 
@@ -397,7 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('brand-logo').addEventListener('click', () => navigateTo('home'));
 
     // Navbar links
-    if (navLinks.home) navLinks.home.addEventListener('click', (e) => { e.preventDefault(); navigateTo('home'); });
     if (navLinks.about) navLinks.about.addEventListener('click', (e) => { e.preventDefault(); navigateTo('about'); });
     if (navLinks.contact) navLinks.contact.addEventListener('click', (e) => { e.preventDefault(); navigateTo('contact'); });
     if (navLinks.privacy) navLinks.privacy.addEventListener('click', (e) => { e.preventDefault(); navigateTo('privacy'); });
@@ -435,6 +437,141 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('btn-back-home').addEventListener('click', () => navigateTo('home'));
     document.getElementById('btn-edit').addEventListener('click', () => navigateTo('form'));
+
+    // --- Firestore Dashboard & Save Logic ---
+    async function saveResumeToCloud(formDataPayload) {
+        const user = auth.currentUser;
+        if (!user) {
+            alert("Please sign in to save your resume to the cloud.");
+            return;
+        }
+
+        try {
+            const resumeDataToSave = {
+                userId: user.uid,
+                data: formDataPayload,
+                template: formDataPayload.contact.template, // or selectedTemplate
+                updatedAt: serverTimestamp()
+            };
+            
+            await addDoc(collection(db, "resumes"), resumeDataToSave);
+            alert("Resume saved to cloud successfully!");
+            navigateTo('dashboard');
+            fetchMyResumes();
+        } catch (error) {
+            console.error("Error saving resume: ", error);
+            alert("Failed to save resume. Please try again.");
+        }
+    }
+
+    const saveBtn = document.getElementById('btn-save');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            if (currentResumeData) {
+                saveResumeToCloud(currentResumeData);
+            } else {
+                alert("No resume data generated yet.");
+            }
+        });
+    }
+
+    async function fetchMyResumes() {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const grid = document.getElementById('resumes-grid');
+        const emptyState = document.getElementById('empty-state');
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem;">Loading resumes...</div>';
+        
+        try {
+            const q = query(collection(db, "resumes"), where("userId", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            
+            grid.innerHTML = '';
+            
+            if (querySnapshot.empty) {
+                emptyState.style.display = 'flex';
+                grid.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                grid.style.display = 'grid';
+                
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const resumeObj = data.data;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'resume-dashboard-card';
+                    
+                    // Attempt to find template to show preview
+                    const t = templatesList.find(temp => temp.id === data.template);
+                    let previewImgHtml = '<div style="height: 200px; background:var(--bg-color); border-bottom: 1px solid var(--card-border); display:flex; align-items:center; justify-content:center; color: var(--text-secondary);">No Preview</div>';
+                    if (t && t.resolvedPreview) {
+                        previewImgHtml = `<img src="${t.resolvedPreview}" alt="Resume Preview" style="width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid var(--card-border);">`;
+                    }
+                    
+                    const title = (resumeObj && resumeObj.contact && resumeObj.contact.title) ? resumeObj.contact.title : 'My Resume';
+                    const name = (resumeObj && resumeObj.contact && resumeObj.contact.fullName) ? resumeObj.contact.fullName : 'Untitled';
+
+                    card.innerHTML = `
+                        <div class="card-preview">
+                            ${previewImgHtml}
+                        </div>
+                        <div class="card-content" style="padding: 1.5rem;">
+                            <h4 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">${escapeHTML(name)}</h4>
+                            <p style="margin: 0 0 1rem 0; color: var(--text-secondary);">${escapeHTML(title)}</p>
+                            <div class="card-actions" style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary btn-small btn-view-resume" data-id="${docSnap.id}" style="flex: 1;"><i class="fas fa-eye"></i> View</button>
+                                <button class="btn btn-secondary btn-small btn-delete-resume" data-id="${docSnap.id}" style="color: var(--danger-color); padding: 0.5rem 1rem;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                document.querySelectorAll('.btn-view-resume').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const docId = e.currentTarget.getAttribute('data-id');
+                        try {
+                            const docRef = doc(db, "resumes", docId);
+                            const docSnap = await getDoc(docRef);
+                            if (docSnap.exists()) {
+                                const savedData = docSnap.data();
+                                currentResumeData = savedData.data;
+                                selectedTemplate = savedData.template;
+                                
+                                // Directly open the preview view but regeneration of HTML string is needed.
+                                // Instead of deep form insertion, let's just trigger generation logic based on the data.
+                                // Wait, the generation logic is tied to the form elements directly right now.
+                                // We will have to alert the user for now since the builder wasn't designed for declarative rendering.
+                                alert("Data loaded from cloud. In a full implementation, this would populate the editor. For now, please create a new resume to generate a fresh document.");
+                            }
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.btn-delete-resume').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        if(confirm("Are you sure you want to delete this resume?")) {
+                             const docId = e.currentTarget.getAttribute('data-id');
+                             try {
+                                 await deleteDoc(doc(db, "resumes", docId));
+                                 fetchMyResumes();
+                             } catch (err) {
+                                 console.error(err);
+                                 alert("Failed to delete.");
+                             }
+                        }
+                    });
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching resumes: ", error);
+            grid.innerHTML = '<div style="grid-column: 1/-1; color: var(--danger-color); text-align: center;">Failed to load resumes.</div>';
+        }
+    }
 
     // --- Dynamic Form Fields ---
     const setupDynamicList = (addBtnId, listId, templateId) => {

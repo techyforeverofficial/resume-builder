@@ -30,7 +30,9 @@
         </div>
         <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
         <div class="profile-menu">
-            <button id="profileBtn" style="font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #fff; padding: 0.5rem;"><i class="fas fa-user-circle"></i></button>
+            <button id="profileBtn"
+                style="font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #fff; padding: 0.5rem;"><i
+                    class="fas fa-user-circle"></i></button>
             <div id="dropdownMenu" class="dropdown hidden">
                 <!-- Dynamic items -->
             </div>
@@ -48,6 +50,29 @@
                     <button id="btn-start" class="btn btn-primary btn-large">
                         <i class="fas fa-file-signature"></i> Create Resume
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard View -->
+        <section id="dashboard-view" class="view">
+            <header class="view-header">
+                <h2>My Resumes</h2>
+                <button id="btn-create-new" class="btn btn-primary"><i class="fas fa-plus"></i> Create New
+                    Resume</button>
+            </header>
+            <div class="dashboard-container">
+                <div id="resumes-grid" class="dashboard-grid">
+                    <!-- Cards will be populated here by JS -->
+                </div>
+                <div id="empty-state" class="empty-state" style="display:none;">
+                    <i class="fas fa-folder-open"
+                        style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                    <h3>No resumes found</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">You haven't created any resumes yet.
+                        Start building your professional profile now!</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('btn-create-new').click()">Create
+                        Your First Resume</button>
                 </div>
             </div>
         </section>
@@ -538,7 +563,8 @@
                 </ul>
                 <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">To request data removal, contact us at:
                     <a href="mailto:techyforeverofficial1@gmail.com"
-                        style="color: var(--accent-color);">techyforeverofficial1@gmail.com</a></p>
+                        style="color: var(--accent-color);">techyforeverofficial1@gmail.com</a>
+                </p>
 
                 <h3 style="margin-top: 2rem; margin-bottom: 1rem;"><i class="fas fa-handshake"></i> 7. Third-Party
                     Services</h3>
@@ -579,8 +605,10 @@
             </div>
             <div class="footer-links">
                 <h4>Legal & Support</h4>
+                <a href="#" id="link-about-footer">About Us</a>
+                <a href="#" id="link-contact-footer">Contact Us</a>
                 <a href="#" id="link-privacy-footer">Privacy Policy</a>
-                <a href="mailto:techyforeverofficial1@gmail.com">Contact Support</a>
+                <a href="mailto:techyforeverofficial1@gmail.com">Email Support</a>
             </div>
         </div>
         <div class="footer-bottom">

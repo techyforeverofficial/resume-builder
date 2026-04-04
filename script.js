@@ -222,30 +222,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.createElement('div');
             overlay.id = 'desktop-hover-overlay';
             overlay.style.position = 'fixed';
-            overlay.style.top = '50%';
-            overlay.style.left = '50%';
-            overlay.style.transform = 'translate(-50%, -50%)';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
             overlay.style.zIndex = '9999';
             overlay.style.pointerEvents = 'none'; // Critical to allow mouseleave to fire
             overlay.style.visibility = 'hidden';
             overlay.style.opacity = '0';
             overlay.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
-            overlay.style.background = 'rgba(15, 23, 42, 0.95)';
-            overlay.style.padding = '1.5rem';
-            overlay.style.borderRadius = '16px';
-            overlay.style.boxShadow = '0 25px 50px -12px rgba(0,0,0,0.5)';
-            overlay.style.backdropFilter = 'blur(10px)';
-            overlay.style.border = '1px solid rgba(255,255,255,0.1)';
-            overlay.style.height = '85vh';
+
+            const imgContainer = document.createElement('div');
+            imgContainer.style.background = 'rgba(15, 23, 42, 0.95)';
+            imgContainer.style.padding = '1.5rem';
+            imgContainer.style.borderRadius = '16px';
+            imgContainer.style.boxShadow = '0 25px 50px -12px rgba(0,0,0,0.5)';
+            imgContainer.style.backdropFilter = 'blur(10px)';
+            imgContainer.style.border = '1px solid rgba(255,255,255,0.1)';
 
             const img = document.createElement('img');
             img.id = 'desktop-hover-img';
-            img.style.height = '100%';
-            img.style.objectFit = 'contain';
+            img.style.maxWidth = '90vw';
+            img.style.maxHeight = '85vh';
+            img.style.width = 'auto';
+            img.style.height = 'auto'; // True dimensions prevent raster upscaling
+            img.style.display = 'block';
             img.style.borderRadius = '8px';
             img.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.2)';
 
-            overlay.appendChild(img);
+            imgContainer.appendChild(img);
+            overlay.appendChild(imgContainer);
             document.body.appendChild(overlay);
         }
     }

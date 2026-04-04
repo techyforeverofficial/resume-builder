@@ -499,6 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {
             visaStatus: formData.get('personalVisa') || '',
             gender: formData.get('personalGender') || '',
             religion: formData.get('personalReligion') || '',
+            website: formData.get('website') || '',
+            linkedin: formData.get('linkedin') || '',
             certifications: document.getElementById('certifications-editor') ? document.getElementById('certifications-editor').innerHTML : '',
             hobbies: document.getElementById('hobbies-editor') ? document.getElementById('hobbies-editor').innerHTML : '',
             languages: Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value)
@@ -641,9 +643,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="cv-header">
                     <div class="cv-name">${escapeHTML(data.fullName)}</div>
                     <div class="cv-contact">
-                        <span>${escapeHTML(data.email)}</span> | 
-                        <span>${escapeHTML(data.phone)}</span>
-                    </div>
+`;
+            if (data.template === 'modern') {
+                let contactItems = [];
+                if (data.email) contactItems.push(`<span>${escapeHTML(data.email)}</span>`);
+                if (data.phone) contactItems.push(`<span>${escapeHTML(data.phone)}</span>`);
+                if (data.city) contactItems.push(`<span>${escapeHTML(data.city)}</span>`);
+                if (additionalInfo.website) contactItems.push(`<span>${escapeHTML(additionalInfo.website)}</span>`);
+                if (additionalInfo.linkedin) contactItems.push(`<span>${escapeHTML(additionalInfo.linkedin)}</span>`);
+                htmlStr += `                        ${contactItems.join(' | ')}\n`;
+            } else {
+                htmlStr += `                        <span>${escapeHTML(data.email)}</span> | 
+                        <span>${escapeHTML(data.phone)}</span>\n`;
+            }
+            htmlStr += `                    </div>
                 </div>
 
                 <div class="cv-section">

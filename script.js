@@ -1074,11 +1074,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) {
                         const data = userDoc.data();
-                        
-                        // Robustly check for truthy values across 'isPremium' or legacy 'premium' fields
-                        if (data.isPremium === true || data.isPremium === "true" || data.premium === true || data.premium === "true") {
+                        if (data.isPremium === true) {
                             isPremium = true;
-                        } else if (data.singleDownload === true || data.singleDownload === "true") {
+                        } else if (data.singleDownload === true) {
                             hasSingleDownload = true;
                         }
                     } else {

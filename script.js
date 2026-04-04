@@ -1074,11 +1074,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) {
                         const data = userDoc.data();
-                        if (data.isPremium === true) {
+                        
+                        // Robustly check for truthy values across 'isPremium' or legacy 'premium' fields
+                        if (data.isPremium === true || data.isPremium === "true" || data.premium === true || data.premium === "true") {
                             isPremium = true;
-                        } else if (data.singleDownload === true) {
+                        } else if (data.singleDownload === true || data.singleDownload === "true") {
                             hasSingleDownload = true;
                         }
+                    } else {
+                        console.warn("User document does not exist in Firestore for UID:", user.uid);
                     }
                 } catch (error) {
                     console.error("Error checking premium status:", error);
@@ -1612,8 +1616,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (formV) formV.classList.add('active');
 
                     setTimeout(() => {
-                        if (typeof window.triggerPDFDownload === 'function') {
-                            window.triggerPDFDownload();
+                        const btnDownload = document.getElementById('btn-download');
+                        if (btnDownload) {
+                            btnDownload.click(); // Routes through Premium logic
+                        } else {
+                            if (typeof window.triggerPDFDownload === 'function') {
+                                window.triggerPDFDownload();
+                            }
                         }
                         localStorage.removeItem("downloadResumeId");
                     }, 500);

@@ -1,49 +1,10 @@
 import { auth, db } from './firebase-config.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { collection, addDoc, updateDoc, serverTimestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
     let pendingPaymentPrompt = false;
-    let isSignUpMode = false;
-
-    window.openLoginModal = () => {
-        isSignUpMode = false;
-        updateAuthModalUI();
-        const modal = document.getElementById('auth-modal');
-        if (modal) modal.classList.add('active');
-    };
-
-    window.openSignupModal = () => {
-        isSignUpMode = true;
-        updateAuthModalUI();
-        const modal = document.getElementById('auth-modal');
-        if (modal) modal.classList.add('active');
-    };
-
-    function updateAuthModalUI() {
-        const authTitle = document.getElementById('auth-title');
-        const authSubtitle = document.getElementById('auth-subtitle');
-        const authToggleText = document.getElementById('auth-toggle-text');
-        const authToggleBtn = document.getElementById('auth-toggle-btn');
-        const authSubmitBtn = document.getElementById('auth-submit-btn');
-        const authErrorMsg = document.getElementById('auth-error-msg');
-        
-        if (isSignUpMode) {
-            if (authTitle) authTitle.innerText = 'Create Account';
-            if (authSubtitle) authSubtitle.innerText = 'Sign up to start saving resumes';
-            if (authToggleText) authToggleText.innerText = 'Already have an account?';
-            if (authToggleBtn) authToggleBtn.innerText = 'Login';
-            if (authSubmitBtn) authSubmitBtn.innerText = 'Sign Up';
-        } else {
-            if (authTitle) authTitle.innerText = 'Welcome Back';
-            if (authSubtitle) authSubtitle.innerText = 'Login to save your resume';
-            if (authToggleText) authToggleText.innerText = 'Don\'t have an account?';
-            if (authToggleBtn) authToggleBtn.innerText = 'Sign Up';
-            if (authSubmitBtn) authSubmitBtn.innerText = 'Login';
-        }
-        if (authErrorMsg) authErrorMsg.style.display = 'none';
-    }
 
     // --- Real Firebase Auth & Profile Dropdown ---
     const dropdown = document.getElementById("dropdownMenu");
@@ -71,13 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 document.getElementById("signin").onclick = () => {
-                    dropdown.classList.add("hidden");
-                    window.openLoginModal();
+                    window.location.href = "/login";
                 };
 
                 document.getElementById("signup").onclick = () => {
-                    dropdown.classList.add("hidden");
-                    window.openSignupModal();
+                    window.location.href = "/signup";
                 };
             }
         });
@@ -1074,13 +1033,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) {
                         const data = userDoc.data();
-                        if (data.isPremium === true) {
+                        if (data.premium === true && data.expiresAt && data.expiresAt > Date.now()) {
                             isPremium = true;
                         } else if (data.singleDownload === true) {
                             hasSingleDownload = true;
                         }
-                    } else {
-                        console.warn("User document does not exist in Firestore for UID:", user.uid);
                     }
                 } catch (error) {
                     console.error("Error checking premium status:", error);
@@ -1228,7 +1185,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const userRef = doc(db, "users", user.uid);
                     const planData = isMonthly ? {
-                        isPremium: true,
+                        premium: true,
                         expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000)
                     } : {
                         singleDownload: true
@@ -1308,17 +1265,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const authErrorMsg = document.getElementById('auth-error-msg');
     const btnSave = document.getElementById('btn-save');
 
-    
+    let isSignUpMode = false;
     let currentUser = null;
 
     if (linkLogin && linkLogout) {
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             currentUser = user;
             if (user) {
                 linkLogin.style.display = 'none';
                 linkLogout.style.display = 'block';
                 if (authModal) authModal.classList.remove('active');
-
             } else {
                 linkLogin.style.display = 'block';
                 linkLogout.style.display = 'none';
@@ -1348,7 +1304,20 @@ document.addEventListener('DOMContentLoaded', () => {
         authToggleBtn.addEventListener('click', (e) => {
             e.preventDefault();
             isSignUpMode = !isSignUpMode;
-            updateAuthModalUI();
+            if (isSignUpMode) {
+                authTitle.innerText = 'Create Account';
+                authSubtitle.innerText = 'Sign up to start saving resumes';
+                authToggleText.innerText = 'Already have an account?';
+                authToggleBtn.innerText = 'Login';
+                authSubmitBtn.innerText = 'Sign Up';
+            } else {
+                authTitle.innerText = 'Welcome Back';
+                authSubtitle.innerText = 'Login to save your resume';
+                authToggleText.innerText = 'Don\'t have an account?';
+                authToggleBtn.innerText = 'Sign Up';
+                authSubmitBtn.innerText = 'Login';
+            }
+            if (authErrorMsg) authErrorMsg.style.display = 'none';
         });
     }
 
@@ -1370,32 +1339,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 authForm.reset();
-                if (authModal) authModal.classList.remove('active');
 
-                const pending = localStorage.getItem("pendingResume");
-
-                if (pending) {
-                    try {
-                        const data = JSON.parse(pending);
-                        await saveResumeToFirebase(auth.currentUser, data);
-                        localStorage.removeItem("pendingResume");
-                        alert("Resume saved! Redirecting to dashboard...");
-                        window.location.href = "my-resumes.html";
-                    } catch (err) {
-                        console.error("Error saving pending resume", err);
-                        alert("There was an issue saving your resume automatically.");
-                        window.location.href = "my-resumes.html";
-                    }
-                } else if (pendingPaymentPrompt) {
+                if (pendingPaymentPrompt) {
                     pendingPaymentPrompt = false;
                     setTimeout(() => {
                         if (typeof window.openPaymentModal === 'function') {
                             window.openPaymentModal();
                         }
                     }, 500); // short delay to allow auth state UI updates
-                } else {
-                    alert(isSignUpMode ? "Registration successful!" : "Login successful!");
-                    window.location.href = "my-resumes.html";
                 }
             } catch (error) {
                 authErrorMsg.innerText = error.message;
@@ -1407,48 +1358,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function saveResumeToFirebase(user, resumeData) {
-        const resumeId = localStorage.getItem("editResumeId");
-
-        if (resumeId) {
-            await updateDoc(doc(db, "resumes", resumeId), {
-                data: resumeData,
-                updatedAt: new Date()
-            });
-            console.log("Updated successfully");
-            localStorage.removeItem("editResumeId");
-        } else {
-            const resumesRef = collection(db, "resumes");
-            await addDoc(resumesRef, {
-                userId: user.uid,
-                templateId: resumeData.contact?.template || "modern",
-                name: resumeData.contact?.fullName ? `${resumeData.contact.fullName}'s Resume` : "Untitled Resume",
-                data: resumeData,
-                updatedAt: new Date()
-            });
-            console.log("Saved new resume successfully");
-        }
-    }
-
     if (btnSave) {
         btnSave.addEventListener('click', async () => {
+            if (!currentUser) {
+                if (authModal) authModal.classList.add('active');
+                return;
+            }
             if (!currentResumeData) {
                 alert("Please generate a resume first before saving.");
                 return;
             }
 
-            if (!currentUser) {
-                // store data temporarily
-                localStorage.setItem("pendingResume", JSON.stringify(currentResumeData));
-                window.openLoginModal();
-                return;
-            }
-
             try {
+                const originalText = btnSave.innerHTML;
                 btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
                 btnSave.disabled = true;
 
-                await saveResumeToFirebase(currentUser, currentResumeData);
+                const resumesRef = collection(db, "users", currentUser.uid, "resumes");
+                await addDoc(resumesRef, {
+                    ...currentResumeData,
+                    createdAt: serverTimestamp()
+                });
+
                 alert("Resume saved successfully!");
             } catch (error) {
                 console.error("Error saving resume: ", error);
@@ -1459,178 +1390,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    async function loadResumeForEdit() {
-        const resumeId = localStorage.getItem("editResumeId");
-        if (!resumeId) return;
-
-        try {
-            const snapshot = await getDoc(doc(db, "resumes", resumeId));
-            if (snapshot.exists()) {
-                const dbData = snapshot.data();
-                if (dbData.data) {
-                    populateForm(dbData.data);
-                    // Open the builder natively
-                    if (typeof window.showStep === 'function') window.showStep(1);
-                    const home = document.getElementById('home-view');
-                    const formV = document.getElementById('form-view');
-                    if (home) home.classList.remove('active');
-                    if (formV) formV.classList.add('active');
-                }
-            }
-        } catch (error) {
-            console.error("Error loading resume for edit:", error);
-        }
-    }
-
-    function populateForm(data) {
-        if (!data) return;
-
-        if (data.contact) {
-            const c = data.contact;
-            const names = (c.fullName || "").split(' ');
-            const fName = names[0] || "";
-            const sName = names.slice(1).join(' ') || "";
-            
-            const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
-            
-            setVal('firstName', fName);
-            setVal('surname', sName);
-            setVal('city', c.city);
-            setVal('country', c.country);
-            setVal('phone', c.phone);
-            setVal('email', c.email);
-            setVal('title', c.title);
-            setVal('skills', Array.isArray(c.skills) ? c.skills.join(', ') : c.skills);
-            setVal('summary', c.summary);
-
-            if (c.template) {
-                const radio = document.querySelector(`input[name="template"][value="${c.template}"]`);
-                if (radio) {
-                    radio.checked = true;
-                    radio.dispatchEvent(new Event('change'));
-                }
-            }
-        }
-
-        if (data.additional) {
-            const a = data.additional;
-            const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
-            setVal('personalDob', a.dob);
-            setVal('personalNationality', a.nationality);
-            setVal('personalMarital', a.maritalStatus);
-            setVal('personalVisa', a.visaStatus);
-            setVal('personalGender', a.gender);
-            setVal('personalReligion', a.religion);
-            setVal('linkedin', a.linkedin);
-            setVal('website', a.website);
-
-            const certEd = document.getElementById('certifications-editor');
-            if (certEd && a.certifications) certEd.innerHTML = a.certifications;
-
-            const hobEd = document.getElementById('hobbies-editor');
-            if (hobEd && a.hobbies) hobEd.innerHTML = a.hobbies;
-        }
-
-        function populateList(listId, addBtnId, items, mapper) {
-            const list = document.getElementById(listId);
-            const addBtn = document.getElementById(addBtnId);
-            if (!list || !addBtn || !items || !items.length) return;
-
-            list.innerHTML = ""; 
-            items.forEach(() => {
-                addBtn.click(); 
-            });
-            const nodes = list.querySelectorAll('.dynamic-item');
-            items.forEach((item, index) => mapper(nodes[index], item));
-        }
-
-        if (data.work && data.work.length > 0) {
-            populateList('exp-list', 'btn-add-exp', data.work, (dom, item) => {
-                const setVal = (name, val) => { const el = dom.querySelector(`[name="${name}"]`); if (el && val) el.value = val; };
-                const setCheck = (name, val) => { const el = dom.querySelector(`[name="${name}"]`); if (el) el.checked = val; };
-                
-                setVal('expCompany[]', item.company);
-                setVal('expRole[]', item.role);
-                setVal('expLocation[]', item.location);
-                setCheck('expRemote[]', item.remote);
-                setVal('expStartMonth[]', item.startMonth);
-                setVal('expStartYear[]', item.startYear);
-                setVal('expEndMonth[]', item.endMonth);
-                setVal('expEndYear[]', item.endYear);
-
-                const currentCb = dom.querySelector('.current-work-cb');
-                if (currentCb && item.current) {
-                    currentCb.checked = true;
-                    currentCb.dispatchEvent(new Event('change'));
-                }
-
-                const editor = dom.querySelector('.rich-text-editor');
-                if (editor && item.description) editor.innerHTML = item.description;
-            });
-        }
-
-        if (data.education && data.education.length > 0) {
-            populateList('edu-list', 'btn-add-edu', data.education, (dom, item) => {
-                const setVal = (name, val) => { const el = dom.querySelector(`[name="${name}"]`); if (el && val) el.value = val; };
-                setVal('eduCollege[]', item.school);
-                setVal('eduLocation[]', item.location);
-                setVal('eduDegree[]', item.degree);
-                setVal('eduFieldOfStudy[]', item.fieldOfStudy);
-                setVal('eduGradMonth[]', item.gradMonth);
-                setVal('eduGradYear[]', item.gradYear);
-                setVal('eduCoursework[]', item.coursework);
-            });
-        }
-
-        if (data.projects && data.projects.length > 0) {
-            populateList('proj-list', 'btn-add-proj', data.projects, (dom, item) => {
-                const setVal = (name, val) => { const el = dom.querySelector(`[name="${name}"]`); if (el && val) el.value = val; };
-                setVal('projName[]', item.name);
-                setVal('projLink[]', item.link);
-                
-                const editor = dom.querySelector('.rich-text-editor');
-                if (editor && item.desc) editor.innerHTML = item.desc;
-            });
-        }
-    }
-
-    loadResumeForEdit();
-
-    async function loadResumeForDownload() {
-        const downloadId = localStorage.getItem("downloadResumeId");
-        if (downloadId) {
-            try {
-                const docRef = doc(db, "resumes", downloadId);
-                const snapshot = await getDoc(docRef);
-
-                if (snapshot.exists()) {
-                    populateForm(snapshot.data().data);
-                    
-                    if (typeof window.showStep === 'function') window.showStep(1);
-                    const home = document.getElementById('home-view');
-                    const formV = document.getElementById('form-view');
-                    if (home) home.classList.remove('active');
-                    if (formV) formV.classList.add('active');
-
-                    setTimeout(() => {
-                        const btnDownload = document.getElementById('btn-download');
-                        if (btnDownload) {
-                            btnDownload.click(); // Routes through Premium logic
-                        } else {
-                            if (typeof window.triggerPDFDownload === 'function') {
-                                window.triggerPDFDownload();
-                            }
-                        }
-                        localStorage.removeItem("downloadResumeId");
-                    }, 500);
-                }
-            } catch (err) {
-                console.error("Error formatting PDF for download:", err);
-            }
-        }
-    }
-    
-    loadResumeForDownload();
 
 });

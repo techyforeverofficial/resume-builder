@@ -104,12 +104,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const basePath = "/templates/";
     const formats = ["webp", "png", "jpg", "jpeg"];
 
-    function setPreviewImage(templateId, imgElement, placeholderElement) {
-        console.log("Template ID:", templateId);
+    function setPreviewImage(template, imgElement, placeholderElement) {
+        console.log("Checking template:", template.id, template.name);
         let index = 0;
 
+        const namesToTry = [
+            template.id.toLowerCase(),
+            template.name.toLowerCase().replace(/\\s+/g, '')
+        ];
+        const uniqueNames = [...new Set(namesToTry)];
+
+        const pathsToTry = [];
+        uniqueNames.forEach(name => {
+            formats.forEach(f => {
+                pathsToTry.push(`${basePath}${name}.${f}`);
+            });
+        });
+
         function tryNext() {
-            if (index >= formats.length) {
+            if (index >= pathsToTry.length) {
                 if (imgElement) {
                     imgElement.style.display = 'none';
                     imgElement.src = "";
@@ -122,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const path = `${basePath}${templateId}.${formats[index]}`;
+            const path = pathsToTry[index];
             const testImg = new Image();
 
             testImg.onload = () => {
@@ -132,8 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (placeholderElement) placeholderElement.style.display = 'none';
 
-                const t = templatesList.find(t => t.id === templateId);
-                if (t) t.resolvedPreview = path;
+                template.resolvedPreview = path;
             };
 
             testImg.onerror = () => {
@@ -166,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         templatesList.forEach(t => {
             const imgEl = document.getElementById(`img-prev-${t.id}`);
             const placeholderEl = document.getElementById(`placeholder-prev-${t.id}`);
-            setPreviewImage(t.id, imgEl, placeholderEl);
+            setPreviewImage(t, imgEl, placeholderEl);
         });
     }
 
@@ -216,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <img id="mobile-preview-${t.id}" alt="${t.name}" style="display:none; width:100%; height:auto;">
                                 <div id="mobile-placeholder-${t.id}" style="padding: 3rem; color: #6b7280; display:flex; justify-content:center;">Loading...</div>
                             `;
-                            setPreviewImage(t.id, document.getElementById(`mobile-preview-${t.id}`), document.getElementById(`mobile-placeholder-${t.id}`));
+                            setPreviewImage(t, document.getElementById(`mobile-preview-${t.id}`), document.getElementById(`mobile-placeholder-${t.id}`));
                         }
                         mobileTemplateModal.classList.add('active');
                     }

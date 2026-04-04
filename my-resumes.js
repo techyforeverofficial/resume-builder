@@ -108,6 +108,15 @@ async function loadResumes(user) {
             const editBtn = card.querySelector(".edit");
             const deleteBtn = card.querySelector(".delete");
             const duplicateBtn = card.querySelector(".duplicate");
+            const downloadBtn = card.querySelector(".download");
+
+            if (downloadBtn) {
+                downloadBtn.onclick = (e) => {
+                    const id = e.target.dataset.id;
+                    localStorage.setItem("downloadResumeId", id);
+                    window.location.href = "index.html"; 
+                };
+            }
 
             if (editBtn) {
                 editBtn.onclick = (e) => {

@@ -1594,4 +1594,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadResumeForEdit();
 
+    async function loadResumeForDownload() {
+        const downloadId = localStorage.getItem("downloadResumeId");
+        if (downloadId) {
+            try {
+                const docRef = doc(db, "resumes", downloadId);
+                const snapshot = await getDoc(docRef);
+
+                if (snapshot.exists()) {
+                    populateForm(snapshot.data().data);
+                    
+                    if (typeof window.showStep === 'function') window.showStep(1);
+                    const home = document.getElementById('home-view');
+                    const formV = document.getElementById('form-view');
+                    if (home) home.classList.remove('active');
+                    if (formV) formV.classList.add('active');
+
+                    setTimeout(() => {
+                        if (typeof window.triggerPDFDownload === 'function') {
+                            window.triggerPDFDownload();
+                        }
+                        localStorage.removeItem("downloadResumeId");
+                    }, 500);
+                }
+            } catch (err) {
+                console.error("Error formatting PDF for download:", err);
+            }
+        }
+    }
+    
+    loadResumeForDownload();
+
 });

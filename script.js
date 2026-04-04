@@ -435,6 +435,13 @@ document.addEventListener('DOMContentLoaded', () => {
         showStep(1);
         navigateTo('form');
     });
+    const btnCreateNew = document.getElementById('btn-create-new');
+    if (btnCreateNew) {
+        btnCreateNew.addEventListener('click', () => {
+            showStep(1);
+            navigateTo('form');
+        });
+    }
     document.getElementById('btn-back-home').addEventListener('click', () => navigateTo('home'));
     document.getElementById('btn-edit').addEventListener('click', () => navigateTo('form'));
 

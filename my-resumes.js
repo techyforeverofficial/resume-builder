@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { collection, query, where, getDocs, orderBy, doc, getDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 const dropdown = document.getElementById("dropdownMenu");
 const profileBtn = document.getElementById("profileBtn");
@@ -97,12 +97,74 @@ async function loadResumes(user) {
                 <div class="actions">
                     <button data-id="${doc.id}" class="edit">Edit</button>
                     <button data-id="${doc.id}" class="download">Download</button>
-                    <!-- <button data-id="${doc.id}" class="duplicate">Duplicate</button> -->
+                    <button data-id="${doc.id}" class="duplicate">Duplicate</button>
                     <button data-id="${doc.id}" class="delete">Delete</button>
                 </div>
             `;
 
             grid.appendChild(card);
+
+            // Bind Actions
+            const editBtn = card.querySelector(".edit");
+            const deleteBtn = card.querySelector(".delete");
+            const duplicateBtn = card.querySelector(".duplicate");
+
+            if (editBtn) {
+                editBtn.onclick = (e) => {
+                    const id = e.target.dataset.id;
+                    localStorage.setItem("editResumeId", id);
+                    window.location.href = "index.html"; 
+                };
+            }
+
+            if (deleteBtn) {
+                deleteBtn.onclick = async (e) => {
+                    const id = e.target.dataset.id;
+                    const confirmDelete = confirm("Delete this resume?");
+                    if (!confirmDelete) return;
+
+                    try {
+                        e.target.innerText = "Deleting...";
+                        e.target.disabled = true;
+                        
+                        await deleteDoc(doc(db, "resumes", id));
+                        e.target.closest(".resume-card").remove();
+                    } catch (err) {
+                        console.error("Error deleting", err);
+                        alert("Failed to delete");
+                        e.target.innerText = "Delete";
+                        e.target.disabled = false;
+                    }
+                };
+            }
+
+            if (duplicateBtn) {
+                duplicateBtn.onclick = async (e) => {
+                    const id = e.target.dataset.id;
+                    
+                    try {
+                        e.target.innerText = "Duplicating...";
+                        e.target.disabled = true;
+                        
+                        const original = await getDoc(doc(db, "resumes", id));
+                        if (!original.exists()) return;
+                        
+                        const ogData = original.data();
+                        await addDoc(collection(db, "resumes"), {
+                            ...ogData,
+                            name: (ogData.name || "Resume") + " Copy",
+                            updatedAt: new Date()
+                        });
+                        
+                        location.reload();
+                    } catch (err) {
+                        console.error("Error duplicating", err);
+                        alert("Failed to duplicate");
+                        e.target.innerText = "Duplicate";
+                        e.target.disabled = false;
+                    }
+                };
+            }
         });
         
     } catch (error) {

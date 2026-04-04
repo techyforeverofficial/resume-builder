@@ -1369,7 +1369,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 authForm.reset();
                 if (authModal) authModal.classList.remove('active');
 
-                if (pendingPaymentPrompt) {
+                const pending = localStorage.getItem("pendingResume");
+
+                if (pending) {
+                    try {
+                        const data = JSON.parse(pending);
+                        await saveResumeToFirebase(auth.currentUser, data);
+                        localStorage.removeItem("pendingResume");
+                        alert("Resume saved! Redirecting to dashboard...");
+                        window.location.href = "my-resumes.html";
+                    } catch (err) {
+                        console.error("Error saving pending resume", err);
+                        alert("There was an issue saving your resume automatically.");
+                        window.location.href = "my-resumes.html";
+                    }
+                } else if (pendingPaymentPrompt) {
                     pendingPaymentPrompt = false;
                     setTimeout(() => {
                         if (typeof window.openPaymentModal === 'function') {
@@ -1390,31 +1404,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    async function saveResumeToFirebase(user, resumeData) {
+        const resumesRef = collection(db, "resumes");
+        await addDoc(resumesRef, {
+            userId: user.uid,
+            templateId: resumeData.contact.template || "modern",
+            name: resumeData.contact.fullName ? `${resumeData.contact.fullName}'s Resume` : "Untitled Resume",
+            data: resumeData,
+            updatedAt: new Date()
+        });
+        console.log("Saved successfully");
+    }
+
     if (btnSave) {
         btnSave.addEventListener('click', async () => {
-            if (!currentUser) {
-                if (authModal) authModal.classList.add('active');
-                return;
-            }
             if (!currentResumeData) {
                 alert("Please generate a resume first before saving.");
                 return;
             }
 
+            if (!currentUser) {
+                // store data temporarily
+                localStorage.setItem("pendingResume", JSON.stringify(currentResumeData));
+                window.openLoginModal();
+                return;
+            }
+
             try {
-                const originalText = btnSave.innerHTML;
                 btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
                 btnSave.disabled = true;
 
-                const resumesRef = collection(db, "resumes");
-                await addDoc(resumesRef, {
-                    userId: currentUser.uid,
-                    templateId: currentResumeData.contact.template || "modern",
-                    name: currentResumeData.contact.fullName ? `${currentResumeData.contact.fullName}'s Resume` : "Untitled Resume",
-                    data: currentResumeData,
-                    updatedAt: new Date()
-                });
-
+                await saveResumeToFirebase(currentUser, currentResumeData);
                 alert("Resume saved successfully!");
             } catch (error) {
                 console.error("Error saving resume: ", error);

@@ -101,16 +101,25 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: "professional", name: "Template 4" }
     ];
 
-    const basePath = "/templates/";
+    const basePath = "templates/";
     const formats = ["webp", "png", "jpg", "jpeg"];
 
     function setPreviewImage(template, imgElement, placeholderElement) {
         console.log("Checking template:", template.id, template.name);
         let index = 0;
 
+        const rawName = template.name;
+        const nameLowerSpaces = template.name.toLowerCase();
+        const nameWithoutSpaces = template.name.replace(/\\s+/g, '');
+        const nameLowerNoSpaces = template.name.toLowerCase().replace(/\\s+/g, '');
+
         const namesToTry = [
+            template.id,
             template.id.toLowerCase(),
-            template.name.toLowerCase().replace(/\\s+/g, '')
+            rawName,
+            nameLowerSpaces,
+            nameWithoutSpaces,
+            nameLowerNoSpaces
         ];
         const uniqueNames = [...new Set(namesToTry)];
 

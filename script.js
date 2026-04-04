@@ -1339,6 +1339,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 authForm.reset();
+                if (authModal) authModal.classList.remove('active');
 
                 if (pendingPaymentPrompt) {
                     pendingPaymentPrompt = false;
@@ -1347,6 +1348,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             window.openPaymentModal();
                         }
                     }, 500); // short delay to allow auth state UI updates
+                } else {
+                    alert(isSignUpMode ? "Registration successful!" : "Login successful!");
+                    window.location.href = "my-resumes.html";
                 }
             } catch (error) {
                 authErrorMsg.innerText = error.message;

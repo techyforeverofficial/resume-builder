@@ -1534,3 +1534,70 @@ textarea {
     max-width: none !important;
     display: inline-block !important;
 }
+
+/* Navigation Profiles & Footer */
+.profile-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#profileBtn {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color, #fff);
+  padding: 0.5rem;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background: var(--card-bg, #1e1e2f);
+  border: 1px solid var(--border-color, #2a2a40);
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 150px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+  color: var(--text-color, #fff);
+}
+
+.dropdown-item:hover {
+  background: var(--accent-bg, #2a2a40);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.app-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  background: var(--app-bg, #0f172a);
+  border-top: 1px solid var(--card-border, rgba(255,255,255,0.05));
+  margin-top: auto;
+}
+
+.app-footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.app-footer a:hover {
+  color: var(--accent-color);
+}

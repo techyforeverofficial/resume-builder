@@ -5,46 +5,41 @@ import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc } from "https:
 document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
     let pendingPaymentPrompt = false;
-    // --- Navigation ---
-    // User Profile Dropdown Logic (Dummy State)
-    const isLoggedIn = false;
-    const profileToggle = document.getElementById('profile-menu-toggle');
-    const profileDropdown = document.getElementById('profile-dropdown');
 
-    if (profileDropdown) {
-        if (!isLoggedIn) {
-            profileDropdown.innerHTML = `
-                <a href="#" id="drop-signin" style="display: block; padding: 0.75rem 1.25rem; color: var(--text-primary); text-decoration: none; font-weight: 500; border-bottom: 1px solid #e5e7eb;">Sign In</a>
-                <a href="#" id="drop-signup" style="display: block; padding: 0.75rem 1.25rem; color: var(--text-primary); text-decoration: none; font-weight: 500;">Sign Up</a>
+    // --- Temporary Mock Auth & Profile Dropdown ---
+    const isLoggedIn = false; // change manually for testing
+    const dropdown = document.getElementById("dropdownMenu");
+    const profileBtn = document.getElementById("profileBtn");
+
+    function renderDropdown() {
+        if (!dropdown) return;
+        if (isLoggedIn) {
+            dropdown.innerHTML = `
+                <div class="dropdown-item" id="myResumes">My Resumes</div>
+                <div class="dropdown-item" id="logout">Logout</div>
             `;
         } else {
-            profileDropdown.innerHTML = `
-                <a href="#" id="drop-myresumes" style="display: block; padding: 0.75rem 1.25rem; color: var(--text-primary); text-decoration: none; font-weight: 500; border-bottom: 1px solid #e5e7eb;">My Resumes</a>
-                <a href="#" id="drop-logout" style="display: block; padding: 0.75rem 1.25rem; color: var(--danger-color); text-decoration: none; font-weight: 500;">Logout</a>
+            dropdown.innerHTML = `
+                <div class="dropdown-item" id="signin">Sign In</div>
+                <div class="dropdown-item" id="signup">Sign Up</div>
             `;
         }
     }
 
-    if (profileToggle && profileDropdown) {
-        profileToggle.addEventListener('click', (e) => {
+    if (profileBtn && dropdown) {
+        profileBtn.onclick = (e) => {
             e.stopPropagation();
-            profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
-        });
-
+            dropdown.classList.toggle("hidden");
+        };
         document.addEventListener('click', (e) => {
-            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
-                profileDropdown.style.display = 'none';
+            if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add("hidden");
             }
         });
+        renderDropdown();
     }
 
-    const brandLogo = document.getElementById('brand-logo');
-    if (brandLogo) {
-        brandLogo.addEventListener('click', () => {
-            navigateTo('home');
-        });
-    }
-
+    // --- Navigation ---
     const views = {
         home: document.getElementById('home-view'),
         form: document.getElementById('form-view'),
@@ -55,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const navLinks = {
-        home: document.getElementById('link-home'),
         about: document.getElementById('link-about'),
         contact: document.getElementById('link-contact'),
         privacy: document.getElementById('link-privacy-footer')

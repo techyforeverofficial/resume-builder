@@ -6,24 +6,40 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
     let pendingPaymentPrompt = false;
 
-    // --- Temporary Mock Auth & Profile Dropdown ---
-    const isLoggedIn = false; // change manually for testing
+    // --- Real Firebase Auth & Profile Dropdown ---
     const dropdown = document.getElementById("dropdownMenu");
     const profileBtn = document.getElementById("profileBtn");
 
-    function renderDropdown() {
-        if (!dropdown) return;
-        if (isLoggedIn) {
-            dropdown.innerHTML = `
-                <div class="dropdown-item" id="myResumes">My Resumes</div>
-                <div class="dropdown-item" id="logout">Logout</div>
-            `;
-        } else {
-            dropdown.innerHTML = `
-                <div class="dropdown-item" id="signin">Sign In</div>
-                <div class="dropdown-item" id="signup">Sign Up</div>
-            `;
-        }
+    if (dropdown) {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                dropdown.innerHTML = `
+                    <div class="dropdown-item" id="myResumes">My Resumes</div>
+                    <div class="dropdown-item" id="logout">Logout</div>
+                `;
+
+                document.getElementById("logout").onclick = () => {
+                    signOut(auth);
+                };
+
+                document.getElementById("myResumes").onclick = () => {
+                    window.location.href = "/my-resumes.html";
+                };
+            } else {
+                dropdown.innerHTML = `
+                    <div class="dropdown-item" id="signin">Sign In</div>
+                    <div class="dropdown-item" id="signup">Sign Up</div>
+                `;
+
+                document.getElementById("signin").onclick = () => {
+                    window.location.href = "/login";
+                };
+
+                document.getElementById("signup").onclick = () => {
+                    window.location.href = "/signup";
+                };
+            }
+        });
     }
 
     if (profileBtn && dropdown) {
@@ -36,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropdown.classList.add("hidden");
             }
         });
-        renderDropdown();
     }
 
     // --- Navigation ---
@@ -1359,10 +1374,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
                 btnSave.disabled = true;
 
-                const resumesRef = collection(db, "users", currentUser.uid, "resumes");
+                const resumesRef = collection(db, "resumes");
                 await addDoc(resumesRef, {
-                    ...currentResumeData,
-                    createdAt: serverTimestamp()
+                    userId: currentUser.uid,
+                    templateId: currentResumeData.contact.template || "modern",
+                    name: currentResumeData.contact.fullName ? `${currentResumeData.contact.fullName}'s Resume` : "Untitled Resume",
+                    data: currentResumeData,
+                    updatedAt: new Date()
                 });
 
                 alert("Resume saved successfully!");

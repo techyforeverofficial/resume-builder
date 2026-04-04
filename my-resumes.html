@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Resumes - ResumeForge</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard { padding: 40px; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+        .resume-card { background: rgba(20,20,40,0.8); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.06); }
+        .resume-card img { width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 8.5/11; background: #fff; margin-bottom: 15px;}
+        .resume-card h3 { color: #f8fafc; margin-bottom: 5px; font-size: 1.1rem; }
+        .resume-card p { color: #94a3b8; font-size: 0.85rem; margin-bottom: 15px; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .actions button { flex: 1; padding: 6px; border-radius: 6px; background: rgba(120,120,255,0.2); border: none; color: white; cursor: pointer; transition: background 0.2s; font-size: 0.85rem;}
+        .actions button:hover { background: rgba(120,120,255,0.4); }
+        .actions button.delete { background: rgba(239,68,68,0.2); color: #f87171; }
+        .actions button.delete:hover { background: rgba(239,68,68,0.4); }
+    </style>
+</head>
+<body>
+    <div class="app-bg"></div>
+
+    <nav class="app-navbar">
+        <div class="nav-brand" id="brand-logo" style="cursor:pointer;" onclick="window.location.href='index.html'">
+            <i class="fas fa-file-invoice"></i> ResumeForge
+        </div>
+        <div class="profile-menu">
+            <button id="profileBtn" style="font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #fff; padding: 0.5rem;"><i class="fas fa-user-circle"></i></button>
+            <div id="dropdownMenu" class="dropdown hidden">
+                <!-- Dynamic items -->
+            </div>
+        </div>
+    </nav>
+
+    <main class="app-container">
+        <section class="dashboard">
+            <div class="dashboard-header">
+                <h2>My Resumes</h2>
+                <button id="createNew" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Resume</button>
+            </div>
+
+            <div id="resumeGrid" class="dashboard-grid">
+                <!-- Resumes will load here -->
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="my-resumes.js"></script>
+</body>
+</html>

@@ -25,19 +25,17 @@
 
     <!-- Navigation Header -->
     <nav class="app-navbar">
-        <div class="nav-brand" id="brand-logo">
+        <div class="nav-brand" id="brand-logo" style="cursor: pointer;">
             <i class="fas fa-file-invoice"></i> ResumeForge
         </div>
-        <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
-        <ul class="nav-links">
-            <li><a href="#" id="link-home" class="active">Home</a></li>
-            <li><a href="#" id="link-about">About Us</a></li>
-            <li><a href="#" id="link-contact">Contact Us</a></li>
-            <li><a href="#" id="link-login" class="auth-link"><i class="fas fa-user-circle"></i> Login / Sign Up</a>
-            </li>
-            <li><a href="#" id="link-logout" class="auth-link" style="display: none;"><i
-                        class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
+        <div class="nav-profile-container" style="position: relative;">
+            <button id="profile-menu-toggle" class="profile-icon-btn" style="background: none; border: none; font-size: 1.5rem; color: var(--text-primary); cursor: pointer; padding: 0.5rem;">
+                <i class="fas fa-user-circle"></i>
+            </button>
+            <div id="profile-dropdown" class="profile-dropdown" style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 150px; z-index: 1000; padding: 0.5rem 0;">
+                <!-- Filled dynamically by script.js -->
+            </div>
+        </div>
     </nav>
 
     <main class="app-container">
@@ -920,6 +918,15 @@
             </p>
         </div>
     </div>
+
+    <!-- Main App Footer -->
+    <footer class="app-footer" style="padding: 2rem; text-align: center; background: white; border-top: 1px solid #e5e7eb; margin-top: auto;">
+        <div style="display: flex; justify-content: center; gap: 1.5rem;">
+            <a href="#" id="link-about" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">About Us</a>
+            <a href="#" id="link-contact" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Contact Us</a>
+        </div>
+        <p style="color: #6b7280; margin-top: 1rem; font-size: 0.9rem;">&copy; 2026 ResumeForge. All rights reserved.</p>
+    </footer>
 
     <script type="module" src="script.js"></script>
 </body>

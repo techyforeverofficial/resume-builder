@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- html2pdf for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- EmailJS for Contact Form -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -452,26 +454,38 @@
                 <h3><i class="fas fa-envelope"></i> Get In Touch</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Have questions, feature requests, or
                     feedback? We'd love to hear from you!</p>
-                <form class="contact-form">
+                <form id="contact-us-form" class="contact-form">
                     <div class="input-group-row">
                         <div class="input-group">
-                            <label>Name</label>
-                            <input type="text" placeholder="Your Name">
+                            <label for="contact-name">Name</label>
+                            <input type="text" id="contact-name" placeholder="Your Name" required>
                         </div>
                         <div class="input-group">
-                            <label>Email</label>
-                            <input type="email" placeholder="Your Email">
+                            <label for="contact-email">Email</label>
+                            <input type="email" id="contact-email" placeholder="Your Email" required>
                         </div>
                     </div>
                     <div class="input-group">
-                        <label>Message</label>
-                        <textarea rows="4" placeholder="How can we help you?"></textarea>
+                        <label for="contact-message">Message</label>
+                        <textarea id="contact-message" rows="4" placeholder="How can we help you?" required></textarea>
                     </div>
-                    <button type="button" class="btn btn-primary"
-                        onclick="alert('Message sent successfully!'); this.form.reset();">
+                    <button type="submit" id="btn-send-contact" class="btn btn-primary">
                         <i class="fas fa-paper-plane"></i> Send Message
                     </button>
                 </form>
+
+                <!-- Direct Contact Info -->
+                <div class="direct-contact-info"
+                    style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border); text-align: center;">
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.75rem;">Or reach us
+                        directly at</p>
+                    <a href="mailto:techyforeverofficial1@gmail.com"
+                        style="color: var(--accent-color); font-weight: 500; font-size: 1.1rem; text-decoration: none; transition: all 0.3s ease;"
+                        onmouseover="this.style.textDecoration='underline'"
+                        onmouseout="this.style.textDecoration='none'">
+                        techyforeverofficial1@gmail.com
+                    </a>
+                </div>
             </div>
         </section>
 

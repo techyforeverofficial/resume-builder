@@ -1724,4 +1724,58 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- CONTACT US FORM (EMAILJS) ---
+    const contactForm = document.getElementById('contact-us-form');
+    const contactName = document.getElementById('contact-name');
+    const contactEmail = document.getElementById('contact-email');
+    const contactMessage = document.getElementById('contact-message');
+    const btnSendContact = document.getElementById('btn-send-contact');
+
+    if (contactForm && btnSendContact) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!contactName.value || !contactEmail.value || !contactMessage.value) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            const originalBtnHtml = btnSendContact.innerHTML;
+            btnSendContact.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            btnSendContact.disabled = true;
+
+            try {
+                // IMPORTANT: Replace these with your actual EmailJS configuration keys
+                // 1. Service ID
+                // 2. Template ID
+                // 3. Public Key
+                
+                const serviceID = "YOUR_SERVICE_ID";
+                const templateID = "YOUR_TEMPLATE_ID";
+                const publicKey = "YOUR_PUBLIC_KEY";
+
+                // We can initialize it just-in-time or pass public key inline
+                emailjs.init(publicKey);
+
+                const templateParams = {
+                    from_name: contactName.value,
+                    reply_to: contactEmail.value,
+                    message: contactMessage.value,
+                    to_email: 'techyforeverofficial1@gmail.com'
+                };
+
+                await emailjs.send(serviceID, templateID, templateParams);
+                
+                alert("Message sent successfully!");
+                contactForm.reset();
+            } catch (err) {
+                console.error("EmailJS Error: ", err);
+                alert("Failed to send message, please try again");
+            } finally {
+                btnSendContact.innerHTML = originalBtnHtml;
+                btnSendContact.disabled = false;
+            }
+        });
+    }
+
 });

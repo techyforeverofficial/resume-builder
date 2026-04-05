@@ -1462,6 +1462,30 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
+    // Utility: Toast Notification
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.innerText = message;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.backgroundColor = '#10b981';
+        toast.style.color = '#fff';
+        toast.style.padding = '12px 24px';
+        toast.style.borderRadius = '8px';
+        toast.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+        toast.style.zIndex = '9999';
+        toast.style.fontWeight = '500';
+        toast.style.transition = 'opacity 0.3s ease';
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
     // Utility: XSS preventer
     function escapeHTML(str) {
         if (!str) return '';
@@ -1657,6 +1681,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 authForm.reset();
+                
+                // Immediately close the modal and show success feedback
+                if (authModal) authModal.classList.remove('active');
+                showToast(isSignUpMode ? "Account created successfully!" : "Logged in successfully!");
+
 
                 if (pendingPaymentPrompt) {
                     pendingPaymentPrompt = false;

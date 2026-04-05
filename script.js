@@ -19,8 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="dropdown-item" id="logout">Logout</div>
                 `;
 
-                document.getElementById("logout").onclick = () => {
-                    signOut(auth);
+                document.getElementById("logout").onclick = async () => {
+                    try {
+                        await signOut(auth);
+                        navigateTo('home');
+                        if (typeof showToast === 'function') {
+                            showToast("You have been logged out successfully");
+                        }
+                        dropdown.classList.add("hidden");
+                    } catch (error) {
+                        console.error("Error during logout:", error);
+                    }
                 };
 
                 document.getElementById("myResumes").onclick = () => {

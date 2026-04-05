@@ -1705,8 +1705,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 500); // short delay to allow auth state UI updates
                 }
             } catch (error) {
-                authErrorMsg.innerText = error.message;
-                authErrorMsg.style.display = 'block';
+                if (error.code === 'auth/email-already-in-use') {
+                    authErrorMsg.innerHTML = `
+                        <div style="background-color: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 12px; border-radius: 6px; color: #d97706; font-size: 0.9rem; text-align: left;">
+                            <div style="font-weight: 600; margin-bottom: 4px;"><i class="fas fa-exclamation-circle"></i> Account already exists with this email</div>
+                            <div style="margin-bottom: 8px;">Please login instead.</div>
+                            <button type="button" id="btn-switch-to-login" style="background: none; border: none; color: var(--accent-color); font-weight: 600; cursor: pointer; padding: 0;">[ Go to Login ]</button>
+                        </div>
+                    `;
+                    authErrorMsg.style.display = 'block';
+
+                    const btnSwitch = document.getElementById('btn-switch-to-login');
+                    if (btnSwitch) {
+                        btnSwitch.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const toggleBtn = document.getElementById('auth-toggle-btn');
+                            if (toggleBtn) toggleBtn.click();
+                        });
+                    }
+                } else {
+                    // Fallback for other errors formatting as text to prevent XSS
+                    authErrorMsg.innerText = error.message;
+                    authErrorMsg.style.display = 'block';
+                }
             } finally {
                 authSubmitBtn.disabled = false;
                 authSubmitBtn.innerText = isSignUpMode ? 'Sign Up' : 'Login';

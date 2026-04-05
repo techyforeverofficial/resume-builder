@@ -461,42 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-back-home').addEventListener('click', () => navigateTo('home'));
     document.getElementById('btn-edit').addEventListener('click', () => navigateTo('form'));
 
-    // --- Firestore Dashboard & Save Logic ---
-    async function saveResumeToCloud(formDataPayload) {
-        const user = auth.currentUser;
-        if (!user) {
-            alert("Please sign in to save your resume to the cloud.");
-            return;
-        }
-
-        try {
-            const resumeDataToSave = {
-                userId: user.uid,
-                data: formDataPayload,
-                template: formDataPayload.contact.template, // or selectedTemplate
-                updatedAt: serverTimestamp()
-            };
-            
-            await addDoc(collection(db, "resumes"), resumeDataToSave);
-            alert("Resume saved to cloud successfully!");
-            navigateTo('dashboard');
-            fetchMyResumes();
-        } catch (error) {
-            console.error("Error saving resume: ", error);
-            alert("Failed to save resume. Please try again.");
-        }
-    }
-
-    const saveBtn = document.getElementById('btn-save');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
-            if (currentResumeData) {
-                saveResumeToCloud(currentResumeData);
-            } else {
-                alert("No resume data generated yet.");
-            }
-        });
-    }
+    // --- Firestore Dashboard & Fetch Logic ---
 
     async function fetchMyResumes() {
         const user = auth.currentUser;
@@ -505,34 +470,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const grid = document.getElementById('resumes-grid');
         const emptyState = document.getElementById('empty-state');
         grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem;">Loading resumes...</div>';
-        
+
         try {
             const q = query(collection(db, "resumes"), where("userId", "==", user.uid));
             const querySnapshot = await getDocs(q);
-            
+
             grid.innerHTML = '';
-            
+
             if (querySnapshot.empty) {
                 emptyState.style.display = 'flex';
                 grid.style.display = 'none';
             } else {
                 emptyState.style.display = 'none';
                 grid.style.display = 'grid';
-                
+
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const resumeObj = data.data;
-                    
+
                     const card = document.createElement('div');
                     card.className = 'resume-dashboard-card';
-                    
+
                     // Attempt to find template to show preview
                     const t = templatesList.find(temp => temp.id === data.template);
                     let previewImgHtml = '<div style="height: 200px; background:var(--bg-color); border-bottom: 1px solid var(--card-border); display:flex; align-items:center; justify-content:center; color: var(--text-secondary);">No Preview</div>';
                     if (t && t.resolvedPreview) {
                         previewImgHtml = `<img src="${t.resolvedPreview}" alt="Resume Preview" style="width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid var(--card-border);">`;
                     }
-                    
+
                     const title = (resumeObj && resumeObj.contact && resumeObj.contact.title) ? resumeObj.contact.title : 'My Resume';
                     const name = (resumeObj && resumeObj.contact && resumeObj.contact.fullName) ? resumeObj.contact.fullName : 'Untitled';
 
@@ -554,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                     grid.appendChild(card);
-                    
+
                     const btnEdit = card.querySelector('.btn-edit-resume');
                     const btnDownload = card.querySelector('.btn-download-resume');
                     const btnDuplicate = card.querySelector('.btn-duplicate-resume');
@@ -607,15 +572,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     btnDelete.addEventListener('click', async () => {
                         if (confirm("Are you sure you want to delete this resume?")) {
-                             try {
-                                 btnDelete.disabled = true;
-                                 await deleteDoc(doc(db, "resumes", docSnap.id));
-                                 fetchMyResumes();
-                             } catch (err) {
-                                 console.error(err);
-                                 alert("Failed to delete.");
-                                 btnDelete.disabled = false;
-                             }
+                            try {
+                                btnDelete.disabled = true;
+                                await deleteDoc(doc(db, "resumes", docSnap.id));
+                                fetchMyResumes();
+                            } catch (err) {
+                                console.error(err);
+                                alert("Failed to delete.");
+                                btnDelete.disabled = false;
+                            }
                         }
                     });
                 });
@@ -793,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (list) list.innerHTML = '';
     };
 
-    window.populateForm = function(resumeData) {
+    window.populateForm = function (resumeData) {
         if (!resumeData) return;
         const contact = resumeData.contact || {};
         const additional = resumeData.additional || {};
@@ -801,9 +766,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (contact.template) {
             const radio = document.querySelector(`input[name="template"][value="${contact.template}"]`);
             if (radio) {
-                 radio.checked = true;
-                 const evt = new Event('change');
-                 radio.dispatchEvent(evt);
+                radio.checked = true;
+                const evt = new Event('change');
+                radio.dispatchEvent(evt);
             }
             selectedTemplate = contact.template;
         }
@@ -843,7 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (contact.profilePhoto && contact.profilePhoto !== 'https://via.placeholder.com/150') {
-             profilePhotoDataUrl = contact.profilePhoto;
+            profilePhotoDataUrl = contact.profilePhoto;
         }
 
         document.querySelectorAll('input[name="languages"]').forEach(cb => { cb.checked = false; });
@@ -869,23 +834,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const workData = resumeData.work || [];
         clearDynamicList('exp-list');
-        for (let idx=0; idx < workData.length; idx++) {
+        for (let idx = 0; idx < workData.length; idx++) {
             const exp = workData[idx];
             document.getElementById('btn-add-exp').click();
             const items = document.querySelectorAll('#exp-list .dynamic-item');
             const currentItem = items[items.length - 1];
             if (currentItem) {
-                const safeSet = (sel, val) => { const e = currentItem.querySelector(sel); if(e) e.value = val || ''; };
+                const safeSet = (sel, val) => { const e = currentItem.querySelector(sel); if (e) e.value = val || ''; };
                 safeSet('[name="expCompany[]"]', exp.company);
                 safeSet('[name="expRole[]"]', exp.role);
                 safeSet('[name="expLocation[]"]', exp.location);
-                if(exp.remote) {
+                if (exp.remote) {
                     const e = currentItem.querySelector('[name="expRemote[]"]');
-                    if(e) e.checked = true;
+                    if (e) e.checked = true;
                 }
                 safeSet('[name="expStartMonth[]"]', exp.startMonth);
                 safeSet('[name="expStartYear[]"]', exp.startYear);
-                
+
                 const currentCb = currentItem.querySelector('.current-work-cb');
                 if (exp.current && currentCb) {
                     currentCb.checked = true;
@@ -896,19 +861,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const rT = currentItem.querySelector('.rich-text-editor');
-                if(rT) rT.innerHTML = exp.description || '';
+                if (rT) rT.innerHTML = exp.description || '';
             }
         }
 
         const eduData = resumeData.education || [];
         clearDynamicList('edu-list');
-        for(let idx=0; idx < eduData.length; idx++) {
+        for (let idx = 0; idx < eduData.length; idx++) {
             const edu = eduData[idx];
             document.getElementById('btn-add-edu').click();
             const items = document.querySelectorAll('#edu-list .dynamic-item');
             const currentItem = items[items.length - 1];
             if (currentItem) {
-                const safeSet = (sel, val) => { const e = currentItem.querySelector(sel); if(e) e.value = val || ''; };
+                const safeSet = (sel, val) => { const e = currentItem.querySelector(sel); if (e) e.value = val || ''; };
                 safeSet('[name="eduCollege[]"]', edu.school);
                 safeSet('[name="eduLocation[]"]', edu.location);
                 safeSet('[name="eduDegree[]"]', edu.degree);
@@ -921,17 +886,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const projData = resumeData.projects || [];
         clearDynamicList('proj-list');
-        for(let idx=0; idx < projData.length; idx++) {
+        for (let idx = 0; idx < projData.length; idx++) {
             const proj = projData[idx];
             document.getElementById('btn-add-proj').click();
             const items = document.querySelectorAll('#proj-list .dynamic-item');
             const currentItem = items[items.length - 1];
             if (currentItem) {
-                const safeSet = (sel, val) => { const e = currentItem.querySelector(sel); if(e) e.value = val || ''; };
+                const safeSet = (sel, val) => { const e = currentItem.querySelector(sel); if (e) e.value = val || ''; };
                 safeSet('[name="projName[]"]', proj.name);
                 safeSet('[name="projLink[]"]', proj.link);
                 const rT = currentItem.querySelector('.rich-text-editor');
-                if(rT) rT.innerHTML = proj.desc || '';
+                if (rT) rT.innerHTML = proj.desc || '';
             }
         }
     };
@@ -1032,7 +997,7 @@ document.addEventListener('DOMContentLoaded', () => {
             summary: data.summary
         };
 
-        window.generateResumeHTML = function(resumeData) {
+        window.generateResumeHTML = function (resumeData) {
             let htmlStr = '';
             const data = resumeData.contact || {};
             const experiences = resumeData.work || [];
@@ -1618,30 +1583,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isSignUpMode = false;
     let currentUser = null;
+    let isAuthLoaded = false;
+    let pendingSave = false;
 
-    if (linkLogin && linkLogout) {
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                linkLogin.style.display = 'none';
-                linkLogout.style.display = 'block';
-                if (authModal) authModal.classList.remove('active');
-            } else {
-                linkLogin.style.display = 'block';
-                linkLogout.style.display = 'none';
-            }
-        });
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        isAuthLoaded = true;
 
-        linkLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (authModal) authModal.classList.add('active');
-        });
+        if (user && pendingSave) {
+            pendingSave = false;
+            if (authModal) authModal.classList.remove('active');
+            executeSaveAction();
+        }
+    });
 
-        linkLogout.addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth);
-        });
-    }
 
     if (closeAuthBtn && authModal) {
         closeAuthBtn.addEventListener('click', () => {
@@ -1709,36 +1664,63 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const executeSaveAction = async () => {
+        if (!currentResumeData) {
+            alert("Please generate a resume first before saving.");
+            return;
+        }
+
+        try {
+            const originalText = btnSave.innerHTML;
+            btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btnSave.disabled = true;
+
+            // In the previous codebase this saved to a subcollection "users/{uid}/resumes"
+            // Wait, in my previous edit for dashboard, it was saved to the direct collection "resumes" natively on line 480.
+            // Let's stick to the "resumes" collection since fetchMyResumes() queries it.
+            const resumeDataToSave = {
+                userId: currentUser.uid,
+                data: currentResumeData,
+                template: currentResumeData.contact.template || selectedTemplate,
+                updatedAt: serverTimestamp()
+            };
+
+            await addDoc(collection(db, "resumes"), resumeDataToSave);
+
+            alert("Resume saved successfully!");
+            // Optionally show "View My Resumes"
+            // Let's redirect to dashboard and fetch resumes to show it
+            navigateTo('dashboard');
+            fetchMyResumes();
+
+        } catch (error) {
+            console.error("Error saving resume: ", error);
+            alert("Failed to save resume: " + error.message);
+        } finally {
+            btnSave.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Save to Account';
+            btnSave.disabled = false;
+        }
+    };
+
     if (btnSave) {
-        btnSave.addEventListener('click', async () => {
+        btnSave.addEventListener('click', () => {
+            if (!isAuthLoaded) {
+                alert('Still loading authentication state, please wait...');
+                return;
+            }
             if (!currentUser) {
-                if (authModal) authModal.classList.add('active');
+                pendingSave = true;
+                if (authModal) {
+                    authTitle.innerText = 'Sign In to Save';
+                    authSubtitle.innerText = 'Please log in to save your resume';
+                    authModal.classList.add('active');
+                } else {
+                    alert("Please log in to save your resume.");
+                }
                 return;
             }
-            if (!currentResumeData) {
-                alert("Please generate a resume first before saving.");
-                return;
-            }
 
-            try {
-                const originalText = btnSave.innerHTML;
-                btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-                btnSave.disabled = true;
-
-                const resumesRef = collection(db, "users", currentUser.uid, "resumes");
-                await addDoc(resumesRef, {
-                    ...currentResumeData,
-                    createdAt: serverTimestamp()
-                });
-
-                alert("Resume saved successfully!");
-            } catch (error) {
-                console.error("Error saving resume: ", error);
-                alert("Failed to save resume: " + error.message);
-            } finally {
-                btnSave.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Save to Account';
-                btnSave.disabled = false;
-            }
+            executeSaveAction();
         });
     }
 

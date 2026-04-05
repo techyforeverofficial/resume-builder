@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (user) {
                 dropdown.innerHTML = `
                     <div class="dropdown-item" id="myResumes">My Resumes</div>
+                    <div class="dropdown-item" id="mySubscription">My Subscription</div>
                     <div class="dropdown-item" id="logout">Logout</div>
                 `;
 
@@ -25,6 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById("myResumes").onclick = () => {
                     navigateTo('dashboard');
                     fetchMyResumes();
+                    dropdown.classList.add("hidden");
+                };
+
+                document.getElementById("mySubscription").onclick = () => {
+                    navigateTo('subscription');
+                    if(typeof fetchMySubscription === 'function') fetchMySubscription();
                     dropdown.classList.add("hidden");
                 };
             } else {
@@ -80,7 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
         about: document.getElementById('about-view'),
         contact: document.getElementById('contact-view'),
         privacy: document.getElementById('privacy-view'),
-        dashboard: document.getElementById('dashboard-view')
+        dashboard: document.getElementById('dashboard-view'),
+        subscription: document.getElementById('subscription-view')
     };
 
     const navLinks = {
@@ -1502,9 +1510,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userRef = doc(db, "users", user.uid);
                     const planData = isMonthly ? {
                         premium: true,
-                        expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000)
+                        expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000),
+                        lastPaymentAmount: "19",
+                        lastPaymentDate: Date.now()
                     } : {
-                        singleDownload: true
+                        singleDownload: true,
+                        lastPaymentAmount: "2",
+                        lastPaymentDate: Date.now()
                     };
                     await setDoc(userRef, planData, { merge: true });
                 } catch (error) {
@@ -1778,4 +1790,74 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- SUBSCRIPTION DATA LOGIC ---
+    window.fetchMySubscription = async function() {
+        const subContainer = document.getElementById('sub-details-container');
+        if (!subContainer) return;
+        const user = auth.currentUser;
+        
+        if (!user) {
+            subContainer.innerHTML = '<p style="color: var(--text-secondary);">Please log in to view subscription details.</p>';
+            return;
+        }
+
+        try {
+            subContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Loading subscription details...</p>';
+            const userRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                const data = userSnap.data();
+                
+                let planName = 'Free Plan';
+                let status = '<span style="color: var(--text-secondary); font-weight: bold;">Inactive</span>';
+                let expiryDateStr = 'N/A';
+                let daysRemainingStr = 'N/A';
+                let lastPaymentAmt = data.lastPaymentAmount ? `₹${data.lastPaymentAmount}` : 'N/A';
+                let lastPaymentDate = data.lastPaymentDate ? new Date(data.lastPaymentDate).toLocaleDateString() : 'N/A';
+                let isMonthly = !!data.premium;
+
+                // Auto expire monthly logic visually (Actual logic relies on expiresAt during generation)
+                let expiresAt = data.expiresAt || 0;
+                let isExpired = Date.now() > expiresAt;
+
+                if (isMonthly) {
+                    planName = 'Monthly Plan (₹19/month)';
+                    if (isExpired) {
+                        status = '<span style="color: var(--danger-color); font-weight: bold;">Expired</span>';
+                        expiryDateStr = new Date(expiresAt).toLocaleDateString();
+                        daysRemainingStr = '0 days (Expired)';
+                    } else {
+                        status = '<span style="color: #10b981; font-weight: bold;">Active</span>';
+                        expiryDateStr = new Date(expiresAt).toLocaleDateString();
+                        let diffTime = Math.abs(expiresAt - Date.now());
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        daysRemainingStr = `${diffDays} days`;
+                    }
+                } else if (data.singleDownload) {
+                    planName = 'Single Download (₹2/download)';
+                    // Single downloads are typically consumed upon download. But we show it here if flag is true.
+                    status = '<span style="color: #10b981; font-weight: bold;">Active (Available)</span>';
+                }
+
+                subContainer.innerHTML = `
+                    <div style="background: rgba(15, 23, 42, 0.4); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--card-border); max-width: 500px;">
+                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Current Plan:</strong> ${planName}</p>
+                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Status:</strong> ${status}</p>
+                        ${isMonthly ? `<p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Expiry Date:</strong> ${expiryDateStr}</p>
+                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Days Remaining:</strong> ${daysRemainingStr}</p>` : ''}
+                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Last Payment Amount:</strong> ${lastPaymentAmt}</p>
+                        <p style="margin-bottom: 0;"><strong style="color: var(--text-secondary);">Last Payment Date:</strong> ${lastPaymentDate}</p>
+                    </div>
+                `;
+            } else {
+                subContainer.innerHTML = '<p style="color: var(--text-secondary);">No active subscription found. Upgrade your plan to unlock premium features.</p>';
+            }
+        } catch (error) {
+            console.error("Error fetching subscription:", error);
+            subContainer.innerHTML = '<p style="color: var(--danger-color);">Failed to load subscription details.</p>';
+        }
+    };
+
 });
+

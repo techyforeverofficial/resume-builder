@@ -1749,10 +1749,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 1. Service ID
                 // 2. Template ID
                 // 3. Public Key
-                
-                const serviceID = "YOUR_SERVICE_ID";
-                const templateID = "YOUR_TEMPLATE_ID";
-                const publicKey = "YOUR_PUBLIC_KEY";
+
+                const serviceID = "service_7bticj1";
+                const templateID = "template_eq5mkfp";
+                const publicKey = "wdHW2ZSt5RfVaW1AR";
 
                 // We can initialize it just-in-time or pass public key inline
                 emailjs.init(publicKey);
@@ -1765,7 +1765,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 await emailjs.send(serviceID, templateID, templateParams);
-                
+
                 alert("Message sent successfully!");
                 contactForm.reset();
             } catch (err) {

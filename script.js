@@ -1915,5 +1915,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- Show/Hide Password Toggle ---
+    const togglePasswordBtn = document.getElementById('toggle-auth-password');
+    const authPasswordField = document.getElementById('auth-password');
+    
+    if (togglePasswordBtn && authPasswordField) {
+        togglePasswordBtn.addEventListener('click', () => {
+            const currentType = authPasswordField.getAttribute('type');
+            if (currentType === 'password') {
+                authPasswordField.setAttribute('type', 'text');
+                togglePasswordBtn.classList.remove('fa-eye');
+                togglePasswordBtn.classList.add('fa-eye-slash');
+            } else {
+                authPasswordField.setAttribute('type', 'password');
+                togglePasswordBtn.classList.remove('fa-eye-slash');
+                togglePasswordBtn.classList.add('fa-eye');
+            }
+        });
+    }
+
 });
 

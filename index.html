@@ -951,32 +951,40 @@
     </div>
 
     <!-- Auth Modal -->
-    <div id="auth-modal" class="payment-modal-overlay">
-        <div class="payment-modal-content auth-modal-content">
-            <button class="payment-close-btn" id="close-auth-modal">&times;</button>
-            <h2 class="payment-title" id="auth-title">Welcome Back</h2>
-            <p class="payment-subtitle" id="auth-subtitle">Login to save your resume</p>
+    <div id="auth-modal" class="payment-modal-overlay auth-modal-overlay">
+        <div class="payment-modal-content auth-modal-ui">
+            <button class="auth-close-btn" id="close-auth-modal"><i class="fas fa-times"></i></button>
 
-            <form id="auth-form" class="contact-form" style="text-align: left;">
-                <div class="input-group" style="flex: auto;">
-                    <label>Email</label>
-                    <input type="email" id="auth-email" placeholder="you@example.com" required>
+            <div class="auth-header">
+                <h2 id="auth-title">Welcome Back</h2>
+                <p id="auth-subtitle">Login to save your resume</p>
+            </div>
+
+            <form id="auth-form" class="auth-form-ui">
+                <div class="auth-input-group">
+                    <label>Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="auth-email" placeholder="you@example.com" required>
+                    </div>
                 </div>
-                <div class="input-group" style="flex: auto;">
+                <div class="auth-input-group">
                     <label>Password</label>
-                    <input type="password" id="auth-password" placeholder="••••••••" required>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="auth-password" placeholder="••••••••" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-auth-password" title="Show/Hide Password"></i>
+                    </div>
                 </div>
-                <div id="auth-error-msg"
-                    style="color: var(--danger-color); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;"
-                    id="auth-submit-btn">Login</button>
+                <div id="auth-error-msg" style="display: none; margin-bottom: 1.25rem;"></div>
+
+                <button type="submit" class="auth-submit-btn" id="auth-submit-btn">Login</button>
             </form>
 
-            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); text-align: center;">
-                <span id="auth-toggle-text">Don't have an account?</span>
-                <a href="#" id="auth-toggle-btn"
-                    style="color: var(--accent-color); text-decoration: none; font-weight: 600;">Sign Up</a>
-            </p>
+            <div class="auth-footer">
+                <span id="auth-toggle-text" class="auth-muted">Don't have an account?</span>
+                <a href="#" id="auth-toggle-btn" class="auth-link">Sign Up</a>
+            </div>
         </div>
     </div>
 

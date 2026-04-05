@@ -50,28 +50,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 document.getElementById("signin").onclick = () => {
-                    const authModal = document.getElementById('auth-modal');
-                    const toggleBtn = document.getElementById('auth-toggle-btn');
-                    if (authModal) {
-                        authModal.classList.add('active');
-                        if (document.getElementById('auth-title').innerText === 'Create Account') {
-                            if (toggleBtn) toggleBtn.click();
-                        }
+                    if (typeof window.setAuthMode === 'function') {
+                        window.setAuthMode('login');
                     }
                     dropdown.classList.add("hidden");
                 };
 
                 document.getElementById("signup").onclick = () => {
-                    const authModal = document.getElementById('auth-modal');
-                    const toggleBtn = document.getElementById('auth-toggle-btn');
-                    if (authModal) {
-                        authModal.classList.add('active');
-                        if (document.getElementById('auth-title').innerText === 'Welcome Back') {
-                            if (toggleBtn) toggleBtn.click();
-                        }
+                    if (typeof window.setAuthMode === 'function') {
+                        window.setAuthMode('signup');
                     }
                     dropdown.classList.add("hidden");
                 };
+
             }
         });
     }
@@ -1651,24 +1642,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    window.setAuthMode = function(mode) {
+        if (!authModal) return;
+        isSignUpMode = (mode === 'signup');
+        if (isSignUpMode) {
+            authTitle.innerText = 'Create Account';
+            authSubtitle.innerText = 'Sign up to start saving resumes';
+            authToggleText.innerText = 'Already have an account?';
+            authToggleBtn.innerText = 'Login';
+            authSubmitBtn.innerText = 'Sign Up';
+        } else {
+            authTitle.innerText = 'Welcome Back';
+            authSubtitle.innerText = 'Login to save your resume';
+            authToggleText.innerText = 'Don\'t have an account?';
+            authToggleBtn.innerText = 'Sign Up';
+            authSubmitBtn.innerText = 'Login';
+        }
+        if (authErrorMsg) authErrorMsg.style.display = 'none';
+        authModal.classList.add('active');
+    };
+
     if (authToggleBtn) {
         authToggleBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            isSignUpMode = !isSignUpMode;
-            if (isSignUpMode) {
-                authTitle.innerText = 'Create Account';
-                authSubtitle.innerText = 'Sign up to start saving resumes';
-                authToggleText.innerText = 'Already have an account?';
-                authToggleBtn.innerText = 'Login';
-                authSubmitBtn.innerText = 'Sign Up';
-            } else {
-                authTitle.innerText = 'Welcome Back';
-                authSubtitle.innerText = 'Login to save your resume';
-                authToggleText.innerText = 'Don\'t have an account?';
-                authToggleBtn.innerText = 'Sign Up';
-                authSubmitBtn.innerText = 'Login';
-            }
-            if (authErrorMsg) authErrorMsg.style.display = 'none';
+            window.setAuthMode(isSignUpMode ? 'login' : 'signup');
         });
     }
 

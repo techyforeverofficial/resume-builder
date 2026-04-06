@@ -121,11 +121,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Step Navigation Logic ---
-    let currentStep = 1;
-    const totalSteps = 7;
+    let currentStepIndex = 0;
+    let visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
+    const totalDOMSteps = 8;
 
-    const showStep = (stepNumber) => {
-        for (let i = 1; i <= totalSteps; i++) {
+    const showStepByIndex = (index) => {
+        if (index < 0 || index >= visibleSteps.length) return;
+        const stepNumber = visibleSteps[index];
+
+        for (let i = 1; i <= totalDOMSteps; i++) {
             const stepContent = document.getElementById(`step-${i}`);
             const navItem = document.getElementById(`nav-step-${i}`);
 
@@ -145,23 +149,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        currentStep = stepNumber;
+        
+        let displayNumber = 1;
+        for (let i = 1; i <= totalDOMSteps; i++) {
+            const navItem = document.getElementById(`nav-step-${i}`);
+            if (navItem) {
+                if (visibleSteps.includes(i)) {
+                    navItem.style.display = 'flex';
+                    const numSpan = navItem.querySelector('.step-number');
+                    if (numSpan) numSpan.innerText = displayNumber;
+                    displayNumber++;
+                } else {
+                    navItem.style.display = 'none';
+                }
+            }
+        }
+
+        currentStepIndex = index;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    window.showStepByIndex = showStepByIndex;
+
     document.querySelectorAll('.btn-next').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (currentStep === 1 && !selectedTemplate) {
+            const stepNumber = visibleSteps[currentStepIndex];
+            if (stepNumber === 1 && !selectedTemplate) {
                 alert("Please select a template to continue");
                 return;
             }
-            if (currentStep < totalSteps) showStep(currentStep + 1);
+            if (currentStepIndex < visibleSteps.length - 1) showStepByIndex(currentStepIndex + 1);
         });
     });
 
     document.querySelectorAll('.btn-prev').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (currentStep > 1) showStep(currentStep - 1);
+            if (currentStepIndex > 0) showStepByIndex(currentStepIndex - 1);
         });
     });
 
@@ -355,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectMobileTemplateBtn) {
         selectMobileTemplateBtn.addEventListener('click', () => {
             closeMobileModal();
-            if (currentStep < totalSteps) showStep(currentStep + 1);
+            if (currentStepIndex < visibleSteps.length - 1) showStepByIndex(currentStepIndex + 1);
         });
     }
 
@@ -407,15 +430,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Sidebar clickable navigation
-    for (let i = 1; i <= totalSteps; i++) {
+    for (let i = 1; i <= totalDOMSteps; i++) {
         const navItem = document.getElementById(`nav-step-${i}`);
         if (navItem) {
             navItem.addEventListener('click', () => {
-                if (currentStep === 1 && i > 1 && !selectedTemplate) {
+                if (!visibleSteps.includes(i)) return;
+                const targetIndex = visibleSteps.indexOf(i);
+                if (visibleSteps[currentStepIndex] === 1 && targetIndex > 0 && !selectedTemplate) {
                     alert("Please select a template to continue");
                     return;
                 }
-                showStep(i);
+                showStepByIndex(targetIndex);
             });
         }
     }
@@ -431,13 +456,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     document.getElementById('btn-start').addEventListener('click', () => {
-        showStep(1);
+        showStepByIndex(0);
         navigateTo('form');
     });
     const btnCreateNew = document.getElementById('btn-create-new');
     if (btnCreateNew) {
         btnCreateNew.addEventListener('click', () => {
-            showStep(1);
+            showStepByIndex(0);
             navigateTo('form');
         });
     }
@@ -513,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.populateForm(resumeObj);
                         currentResumeData = resumeObj;
                         selectedTemplate = data.template;
-                        showStep(1);
+                        showStepByIndex(0);
                         navigateTo('form');
                     });
 
@@ -644,8 +669,68 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     setupDynamicList('btn-add-exp', 'exp-list', 'exp-template');
+    setupDynamicList('btn-add-intern-exp', 'intern-exp-list', 'intern-exp-template');
     setupDynamicList('btn-add-edu', 'edu-list', 'edu-template');
     setupDynamicList('btn-add-proj', 'proj-list', 'proj-template');
+
+    // --- Dynamic Experience Logic ---
+    const handleExperienceTypeChange = (type) => {
+        const workSection = document.getElementById('work-experience-section');
+        const internSection = document.getElementById('internship-experience-section');
+        const fresherBanner = document.getElementById('fresher-tip-banner');
+
+        if (!workSection || !internSection) return;
+
+        if (type === 'work') {
+            workSection.style.display = 'block';
+            internSection.style.display = 'none';
+            if(fresherBanner) fresherBanner.style.display = 'none';
+            visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
+        } else if (type === 'internship') {
+            workSection.style.display = 'none';
+            internSection.style.display = 'block';
+            if(fresherBanner) fresherBanner.style.display = 'none';
+            visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
+        } else if (type === 'both') {
+            workSection.style.display = 'block';
+            internSection.style.display = 'block';
+            if(fresherBanner) fresherBanner.style.display = 'none';
+            visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
+        } else if (type === 'fresher') {
+            workSection.style.display = 'none';
+            internSection.style.display = 'none';
+            if(fresherBanner) fresherBanner.style.display = 'block';
+            visibleSteps = [1, 2, 3, 5, 6, 7, 8]; // Skip step 4 completely
+        }
+        
+        // Refresh sidebar and visibility only if we are initialized past setup
+        if (currentStepIndex > 0) {
+            // Need to fix currentStepIndex if it was on a step that just hid (like Step 4 becoming hidden)
+            let currStepLog = visibleSteps[currentStepIndex];
+            if (!currStepLog) {
+                // we were on step 4, and it hid, so fallback to step 3
+                currStepLog = 3;
+                currentStepIndex = visibleSteps.indexOf(3);
+            }
+            showStepByIndex(currentStepIndex);
+        } else {
+             // Init load
+             showStepByIndex(0);
+        }
+    };
+
+    const expRadios = document.querySelectorAll('input[name="experienceType"]');
+    expRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) handleExperienceTypeChange(e.target.value);
+        });
+    });
+    
+    // Initial run
+    const selectedExp = document.querySelector('input[name="experienceType"]:checked');
+    if (selectedExp) {
+        handleExperienceTypeChange(selectedExp.value);
+    }
 
     // --- Accordion Logic ---
     const accordionHeaders = document.querySelectorAll('.accordion-header');
@@ -815,7 +900,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const hobbEditor = document.getElementById('hobbies-editor');
         if (hobbEditor) hobbEditor.innerHTML = additional.hobbies || '';
 
-        const workData = resumeData.work || [];
+        if (resumeData.experienceType) {
+            const expRadio = document.querySelector(`input[name="experienceType"][value="${resumeData.experienceType}"]`);
+            if (expRadio) {
+                expRadio.checked = true;
+                handleExperienceTypeChange(resumeData.experienceType);
+            }
+        } else if (resumeData.work && resumeData.work.length > 0) {
+            const expRadio = document.querySelector(`input[name="experienceType"][value="work"]`);
+            if (expRadio) {
+                expRadio.checked = true;
+                handleExperienceTypeChange('work');
+            }
+        }
+
+        const workData = resumeData.workExperience || resumeData.work || [];
         clearDynamicList('exp-list');
         for (let idx = 0; idx < workData.length; idx++) {
             const exp = workData[idx];
@@ -841,6 +940,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     safeSet('[name="expEndMonth[]"]', exp.endMonth);
                     safeSet('[name="expEndYear[]"]', exp.endYear);
+                }
+
+                const rT = currentItem.querySelector('.rich-text-editor');
+                if (rT) rT.innerHTML = exp.description || '';
+            }
+        }
+
+        const internData = resumeData.internshipExperience || [];
+        clearDynamicList('intern-exp-list');
+        for (let idx = 0; idx < internData.length; idx++) {
+            const exp = internData[idx];
+            document.getElementById('btn-add-intern-exp').click();
+            const items = document.querySelectorAll('#intern-exp-list .dynamic-item');
+            const currentItem = items[items.length - 1];
+            if (currentItem) {
+                const safeSet = (sel, val) => { const e = currentItem.querySelector(sel); if (e) e.value = val || ''; };
+                safeSet('[name="internCompany[]"]', exp.company);
+                safeSet('[name="internRole[]"]', exp.role);
+                safeSet('[name="internLocation[]"]', exp.location);
+                if (exp.remote) {
+                    const e = currentItem.querySelector('[name="internRemote[]"]');
+                    if (e) e.checked = true;
+                }
+                safeSet('[name="internStartMonth[]"]', exp.startMonth);
+                safeSet('[name="internStartYear[]"]', exp.startYear);
+
+                const currentCb = currentItem.querySelector('.current-work-cb');
+                if (exp.current && currentCb) {
+                    currentCb.checked = true;
+                    currentCb.dispatchEvent(new Event('change'));
+                } else {
+                    safeSet('[name="internEndMonth[]"]', exp.endMonth);
+                    safeSet('[name="internEndYear[]"]', exp.endYear);
                 }
 
                 const rT = currentItem.querySelector('.rich-text-editor');
@@ -936,6 +1068,22 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
+        // 3. Gather Internship Experience
+        const internExperiences = Array.from(document.querySelectorAll('#intern-exp-list .dynamic-item')).map(item => {
+            return {
+                company: item.querySelector('[name="internCompany[]"]').value,
+                role: item.querySelector('[name="internRole[]"]').value,
+                location: item.querySelector('[name="internLocation[]"]').value,
+                remote: item.querySelector('[name="internRemote[]"]').checked,
+                startMonth: item.querySelector('[name="internStartMonth[]"]').value,
+                startYear: item.querySelector('[name="internStartYear[]"]').value,
+                endMonth: item.querySelector('[name="internEndMonth[]"]').value,
+                endYear: item.querySelector('[name="internEndYear[]"]').value,
+                current: item.querySelector('.current-work-cb').checked,
+                description: item.querySelector('.rich-text-editor') ? item.querySelector('.rich-text-editor').innerHTML : ''
+            };
+        });
+
         const education = Array.from(document.querySelectorAll('#edu-list .dynamic-item')).map(item => {
             return {
                 school: item.querySelector('[name="eduCollege[]"]').value,
@@ -970,9 +1118,15 @@ document.addEventListener('DOMContentLoaded', () => {
             languages: Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value)
         };
 
+        const expTypeChecked = document.querySelector('input[name="experienceType"]:checked');
+        const experienceType = expTypeChecked ? expTypeChecked.value : 'work';
+
         currentResumeData = {
             contact: data,
-            work: experiences,
+            experienceType: experienceType,
+            workExperience: experiences,
+            internshipExperience: internExperiences,
+            work: experiences, // Legacy fallback
             education: education,
             projects: projects,
             additional: additionalInfo,
@@ -1001,28 +1155,62 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="prof-text">${escapeHTML(resumeData.summary || data.summary)}</div>
                             </div>
                             
+                `;
+                
+                const workExpArray = resumeData.workExperience || resumeData.work || [];
+                const internExpArray = resumeData.internshipExperience || [];
+                
+                if (resumeData.experienceType !== 'fresher') {
+                    if (workExpArray.length > 0) {
+                        htmlStr += `
                             <div class="prof-section">
                                 <div class="prof-section-title">Work Experience</div>
-                `;
-                for (let i = 0; i < experiences.length; i++) {
-                    const exp = experiences[i];
-                    if (!exp.company.trim()) continue;
-                    let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
-                    let locationStr = exp.remote ? 'Remote' : exp.location;
-                    let metaStr = `${escapeHTML(exp.company)} | ${escapeHTML(locationStr)} | ${escapeHTML(durationStr)}`;
-                    htmlStr += `
-                        <div class="prof-item">
-                            <div class="prof-item-title">${escapeHTML(exp.role)}</div>
-                            <div class="prof-item-meta">${metaStr}</div>
-                            <div class="prof-item-desc">
-                                ${exp.description}
-                            </div>
-                        </div>
-                    `;
+                        `;
+                        for (let i = 0; i < workExpArray.length; i++) {
+                            const exp = workExpArray[i];
+                            if (!exp.company.trim()) continue;
+                            let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
+                            let locationStr = exp.remote ? 'Remote' : exp.location;
+                            let metaStr = `${escapeHTML(exp.company)} | ${escapeHTML(locationStr)} | ${escapeHTML(durationStr)}`;
+                            htmlStr += `
+                                <div class="prof-item">
+                                    <div class="prof-item-title">${escapeHTML(exp.role)}</div>
+                                    <div class="prof-item-meta">${metaStr}</div>
+                                    <div class="prof-item-desc">
+                                        ${exp.description}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        htmlStr += `</div>`;
+                    }
+                    
+                    if (internExpArray.length > 0) {
+                        htmlStr += `
+                            <div class="prof-section">
+                                <div class="prof-section-title">Internship Experience</div>
+                        `;
+                        for (let i = 0; i < internExpArray.length; i++) {
+                            const exp = internExpArray[i];
+                            if (!exp.company.trim()) continue;
+                            let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
+                            let locationStr = exp.remote ? 'Remote' : exp.location;
+                            let metaStr = `${escapeHTML(exp.company)} | ${escapeHTML(locationStr)} | ${escapeHTML(durationStr)}`;
+                            htmlStr += `
+                                <div class="prof-item">
+                                    <div class="prof-item-title">${escapeHTML(exp.role)}</div>
+                                    <div class="prof-item-meta">${metaStr}</div>
+                                    <div class="prof-item-desc">
+                                        ${exp.description}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        htmlStr += `</div>`;
+                    }
                 }
-
+                
                 htmlStr += `
-                            </div>
                             <div class="prof-section">
                                 <div class="prof-section-title">Education</div>
                 `;
@@ -1136,28 +1324,60 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${(resumeData.skills || (data.skills ? data.skills.split(',') : [])).map(s => `<span class="cv-skill-tag">${escapeHTML(s.trim())}</span>`).join('')}
                         </div>
                     </div>
-
-                    <div class="cv-section">
-                        <div class="cv-section-title">Work Experience</div>
                 `;
-
-                for (let i = 0; i < experiences.length; i++) {
-                    const exp = experiences[i];
-                    if (!exp.company.trim()) continue; // Skip empty
-                    let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
-                    let locationStr = exp.remote ? 'Remote' : exp.location;
-                    htmlStr += `
-                        <div class="cv-item">
-                            <div class="cv-item-header">
-                                <div class="cv-item-title">${escapeHTML(exp.role)} at ${escapeHTML(exp.company)}</div>
-                                <div class="cv-item-date">${escapeHTML(durationStr)}</div>
-                            </div>
-                            <div class="cv-item-subtitle">${escapeHTML(locationStr)}</div>
-                            <div class="cv-item-desc">${exp.description}</div>
-                        </div>
-                    `;
+                
+                const workExpArray = resumeData.workExperience || resumeData.work || [];
+                const internExpArray = resumeData.internshipExperience || [];
+                
+                if (resumeData.experienceType !== 'fresher') {
+                    if (workExpArray.length > 0) {
+                        htmlStr += `
+                            <div class="cv-section">
+                                <div class="cv-section-title">Work Experience</div>
+                        `;
+                        for (let i = 0; i < workExpArray.length; i++) {
+                            const exp = workExpArray[i];
+                            if (!exp.company.trim()) continue;
+                            let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
+                            let locationStr = exp.remote ? 'Remote' : exp.location;
+                            htmlStr += `
+                                <div class="cv-item">
+                                    <div class="cv-item-header">
+                                        <div class="cv-item-title">${escapeHTML(exp.role)} at ${escapeHTML(exp.company)}</div>
+                                        <div class="cv-item-date">${escapeHTML(durationStr)}</div>
+                                    </div>
+                                    <div class="cv-item-subtitle">${escapeHTML(locationStr)}</div>
+                                    <div class="cv-item-desc">${exp.description}</div>
+                                </div>
+                            `;
+                        }
+                        htmlStr += `</div>`;
+                    }
+                    
+                    if (internExpArray.length > 0) {
+                        htmlStr += `
+                            <div class="cv-section">
+                                <div class="cv-section-title">Internship Experience</div>
+                        `;
+                        for (let i = 0; i < internExpArray.length; i++) {
+                            const exp = internExpArray[i];
+                            if (!exp.company.trim()) continue;
+                            let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
+                            let locationStr = exp.remote ? 'Remote' : exp.location;
+                            htmlStr += `
+                                <div class="cv-item">
+                                    <div class="cv-item-header">
+                                        <div class="cv-item-title">${escapeHTML(exp.role)} at ${escapeHTML(exp.company)}</div>
+                                        <div class="cv-item-date">${escapeHTML(durationStr)}</div>
+                                    </div>
+                                    <div class="cv-item-subtitle">${escapeHTML(locationStr)}</div>
+                                    <div class="cv-item-desc">${exp.description}</div>
+                                </div>
+                            `;
+                        }
+                        htmlStr += `</div>`;
+                    }
                 }
-                htmlStr += `</div>`;
 
                 htmlStr += `
                     <div class="cv-section">

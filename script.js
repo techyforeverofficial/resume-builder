@@ -2101,45 +2101,104 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userSnap.exists()) {
                 const data = userSnap.data();
                 
-                let planName = 'Free Plan';
-                let status = '<span style="color: var(--text-secondary); font-weight: bold;">Inactive</span>';
-                let expiryDateStr = 'N/A';
-                let daysRemainingStr = 'N/A';
-                let lastPaymentAmt = data.lastPaymentAmount ? `₹${data.lastPaymentAmount}` : 'N/A';
-                let lastPaymentDate = data.lastPaymentDate ? new Date(data.lastPaymentDate).toLocaleDateString() : 'N/A';
+                let lastPaymentAmt = data.lastPaymentAmount ? `₹${data.lastPaymentAmount}` : 'Not available';
+                let lastPaymentDate = data.lastPaymentDate ? new Date(data.lastPaymentDate).toLocaleDateString() : 'Not available';
+                
                 let isMonthly = !!data.premium;
+                let planDisplay = 'Free Plan';
+                let priceDisplay = '₹0/month';
+                
+                let statusBadge = '<span class="sub-badge sub-inactive">Inactive</span>';
+                let expiryDateStr = 'Not available';
+                let daysRemainingStr = 'Not available';
+                let progressPercentage = 0;
+                let progressText = '';
 
-                // Auto expire monthly logic visually (Actual logic relies on expiresAt during generation)
                 let expiresAt = data.expiresAt || 0;
                 let isExpired = Date.now() > expiresAt;
 
                 if (isMonthly) {
-                    planName = 'Monthly Plan (₹19/month)';
+                    planDisplay = 'Monthly Plan';
+                    priceDisplay = '₹19/month';
                     if (isExpired) {
-                        status = '<span style="color: var(--danger-color); font-weight: bold;">Expired</span>';
+                        statusBadge = '<span class="sub-badge sub-expired">Expired</span>';
                         expiryDateStr = new Date(expiresAt).toLocaleDateString();
-                        daysRemainingStr = '0 days (Expired)';
+                        daysRemainingStr = '0 days remaining';
+                        progressPercentage = 0;
+                        progressText = 'Expired';
                     } else {
-                        status = '<span style="color: #10b981; font-weight: bold;">Active</span>';
+                        statusBadge = '<span class="sub-badge sub-active">Active</span>';
                         expiryDateStr = new Date(expiresAt).toLocaleDateString();
                         let diffTime = Math.abs(expiresAt - Date.now());
                         let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                        daysRemainingStr = `${diffDays} days`;
+                        daysRemainingStr = `${diffDays} days remaining`;
+                        // Assume 30 days total for progress
+                        progressPercentage = Math.min((diffDays / 30) * 100, 100);
+                        progressText = `${diffDays} days remaining out of 30`;
                     }
                 } else if (data.singleDownload) {
-                    planName = 'Single Download (₹2/download)';
-                    // Single downloads are typically consumed upon download. But we show it here if flag is true.
-                    status = '<span style="color: #10b981; font-weight: bold;">Active (Available)</span>';
+                    planDisplay = 'Single Download';
+                    priceDisplay = '₹2/download';
+                    statusBadge = '<span class="sub-badge sub-active">Available</span>';
                 }
 
                 subContainer.innerHTML = `
-                    <div style="background: rgba(15, 23, 42, 0.4); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--card-border); max-width: 500px;">
-                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Current Plan:</strong> ${planName}</p>
-                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Status:</strong> ${status}</p>
-                        ${isMonthly ? `<p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Expiry Date:</strong> ${expiryDateStr}</p>
-                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Days Remaining:</strong> ${daysRemainingStr}</p>` : ''}
-                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-secondary);">Last Payment Amount:</strong> ${lastPaymentAmt}</p>
-                        <p style="margin-bottom: 0;"><strong style="color: var(--text-secondary);">Last Payment Date:</strong> ${lastPaymentDate}</p>
+                    <div class="sub-dashboard">
+                        <!-- Main Plan Card -->
+                        <div class="sub-card plan-card">
+                            <div class="plan-header">
+                                <div class="plan-info">
+                                    <h4 class="plan-title">${planDisplay}</h4>
+                                    <div class="plan-price">${priceDisplay}</div>
+                                </div>
+                                <div class="plan-status">
+                                    ${statusBadge}
+                                </div>
+                            </div>
+                            
+                            ${isMonthly ? `
+                            <div class="plan-progress-container">
+                                <div class="progress-label"><span>${progressText}</span></div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" style="width: ${progressPercentage}%;"></div>
+                                </div>
+                            </div>` : ''}
+                        </div>
+
+                        <!-- Details Grid Card -->
+                        <div class="sub-card details-card">
+                            <h4 class="details-title">Subscription Details</h4>
+                            <div class="details-grid">
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-calendar-alt"></i></div>
+                                    <div class="detail-info">
+                                        <div class="detail-label">Expiry Date</div>
+                                        <div class="detail-value">${expiryDateStr}</div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-clock"></i></div>
+                                    <div class="detail-info">
+                                        <div class="detail-label">Days Remaining</div>
+                                        <div class="detail-value">${daysRemainingStr}</div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-rupee-sign"></i></div>
+                                    <div class="detail-info">
+                                        <div class="detail-label">Last Payment</div>
+                                        <div class="detail-value">${lastPaymentAmt}</div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-check-circle"></i></div>
+                                    <div class="detail-info">
+                                        <div class="detail-label">Payment Date</div>
+                                        <div class="detail-value">${lastPaymentDate}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             } else {

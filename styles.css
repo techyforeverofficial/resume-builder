@@ -2243,162 +2243,135 @@ textarea {
     gap: 0.5rem;
 }
 
-/* ======== MODERN TEMPLATE SPECIFIC STYLES ======== */
-.template-modern {
-    width: 816px;
-    background: #ffffff;
-    padding: 40px;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-    color: #222;
+/* ======== TEMPLATE 5 ======== */
+.resume-document.template-5 {
+  font-family: Arial, sans-serif;
+  color: #000;
+  background: #ffffff;
+  padding: 40px;
 }
-
-.tmpl-mod-header h1 {
-    font-size: 34px;
-    letter-spacing: 2px;
-    margin: 0;
-    color: #222;
+.resume-document.template-5 .header h1 {
+  font-size: 34px;
+  letter-spacing: 2px;
+  margin: 0;
+  color: #000;
 }
-
-.tmpl-mod-header h2 {
-    font-size: 16px;
-    color: #555;
-    margin-top: 5px;
-    font-weight: normal;
+.resume-document.template-5 .header h2 {
+  font-size: 16px;
+  color: #555;
+  margin-top: 5px;
+  font-weight: normal;
 }
-
-.tmpl-mod-header-line {
-    height: 2px;
-    background: #222;
-    margin: 15px 0 25px;
+.resume-document.template-5 .header-line {
+  height: 2px;
+  background: #222;
+  margin: 15px 0 25px;
 }
-
-.tmpl-mod-container {
-    display: flex;
+.resume-document.template-5 .t5-container {
+  display: flex !important;
+  flex-direction: row;
 }
-
-.tmpl-mod-left {
-    width: 30%;
-    padding-right: 20px;
+.resume-document.template-5 .left {
+  width: 30%;
+  padding-right: 20px;
 }
-
-.tmpl-mod-right {
-    width: 70%;
-    position: relative;
-    padding-left: 40px;
+.resume-document.template-5 .right {
+  width: 70%;
+  position: relative;
+  padding-left: 40px;
 }
-
-.tmpl-mod-timeline {
-    position: absolute;
-    left: 15px;
-    top: 0;
-    width: 2px;
-    height: 100%;
-    background: #222;
+.resume-document.template-5 .timeline {
+  position: absolute;
+  left: 15px;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: #222;
 }
-
-.tmpl-mod-icon-circle {
-    width: 28px;
-    height: 28px;
-    background: #000;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    left: -30px;
-    font-size: 14px;
+.resume-document.template-5 .icon-circle {
+  width: 28px;
+  height: 28px;
+  background: #000;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: -30px;
+  font-size: 14px;
 }
-
-.tmpl-mod-section {
-    margin-bottom: 25px;
+.resume-document.template-5 .section {
+  margin-bottom: 25px;
 }
-
-.tmpl-mod-section h3 {
-    font-size: 14px;
-    letter-spacing: 2px;
-    border-bottom: 1px solid #222;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    color: #222;
+.resume-document.template-5 .section h3 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  border-bottom: 1px solid #222;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  color: #000;
 }
-
-.tmpl-mod-section p, .tmpl-mod-section li {
-    font-size: 13px;
-    margin: 6px 0;
-    color: #222;
+.resume-document.template-5 .section p, 
+.resume-document.template-5 .section li {
+  font-size: 13px;
+  margin: 6px 0;
+  color: #000;
 }
-
-.tmpl-mod-section ul {
-    padding-left: 15px;
-    margin: 0;
+.resume-document.template-5 .section ul {
+  padding-left: 15px;
 }
-
-.tmpl-mod-block {
-    position: relative;
-    margin-bottom: 30px;
+.resume-document.template-5 .block {
+  position: relative;
+  margin-bottom: 30px;
 }
-
-.tmpl-mod-block h3 {
-    font-size: 14px;
-    letter-spacing: 2px;
-    border-bottom: 1px solid #222;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    color: #222;
+.resume-document.template-5 .block h3 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  border-bottom: 1px solid #222;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  color: #000;
 }
-
-.tmpl-mod-block p {
-    font-size: 13px;
-    line-height: 1.6;
-    color: #444;
-    margin: 0;
+.resume-document.template-5 .block p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #444;
 }
-
-.tmpl-mod-job {
-    margin-bottom: 15px;
+.resume-document.template-5 .job {
+  margin-bottom: 15px;
 }
-
-.tmpl-mod-job-title {
-    font-weight: bold;
-    color: #222;
-    font-size: 14px;
+.resume-document.template-5 .job-title {
+  font-weight: bold;
+  color: #000;
 }
-
-.tmpl-mod-job-date {
-    float: right;
-    font-size: 12px;
-    color: #555;
+.resume-document.template-5 .job-date {
+  float: right;
+  font-size: 12px;
+  color: #555;
 }
-
-.tmpl-mod-job-role {
-    font-size: 13px;
-    color: #555;
+.resume-document.template-5 .job-role {
+  font-size: 13px;
+  color: #555;
 }
-
-.tmpl-mod-job ul {
-    padding-left: 15px;
-    margin-top: 5px;
+.resume-document.template-5 .job ul {
+  padding-left: 15px;
+  margin-top: 5px;
 }
-
-.tmpl-mod-job li {
-    font-size: 13px;
-    margin-bottom: 5px;
-    color: #444;
+.resume-document.template-5 .job li {
+  font-size: 13px;
+  margin-bottom: 5px;
+  color: #000;
 }
-
-.tmpl-mod-project {
-    margin-bottom: 10px;
+.resume-document.template-5 .project {
+  margin-bottom: 10px;
 }
-
-.tmpl-mod-project-title {
-    font-weight: bold;
-    font-size: 13px;
-    color: #222;
+.resume-document.template-5 .project-title {
+  font-weight: bold;
+  font-size: 13px;
+  color: #000;
 }
-
-.tmpl-mod-project-desc {
-    font-size: 12px;
-    color: #555;
+.resume-document.template-5 .project-desc {
+  font-size: 12px;
+  color: #555;
 }

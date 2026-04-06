@@ -1023,10 +1023,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-generate').addEventListener('click', (e) => {
         e.preventDefault();
 
+        const expTypeChecked = document.querySelector('input[name="experienceType"]:checked');
+        const experienceType = expTypeChecked ? expTypeChecked.value : 'work';
+
         // Basic Form Validation (Native validation is blocked by hidden step elements)
         const requiredInputs = form.querySelectorAll('[required]');
         for (let input of requiredInputs) {
             if (input.closest('#step-7')) continue; // Skip validation for optional Additional Info sections
+            
+            // Skip dynamic experience fields based on selected type
+            if (experienceType === 'fresher') {
+                if (input.closest('#work-experience-section') || input.closest('#internship-experience-section')) {
+                    continue;
+                }
+            } else if (experienceType === 'work') {
+                if (input.closest('#internship-experience-section')) {
+                    continue;
+                }
+            } else if (experienceType === 'internship') {
+                if (input.closest('#work-experience-section')) {
+                    continue;
+                }
+            }
+
             if (!input.disabled && !input.value.trim()) {
                 alert(`Please fill out all required fields before generating. Blank field found: ${input.previousElementSibling ? input.previousElementSibling.innerText : input.name}`);
                 return; // Stop generation
@@ -1117,10 +1136,6 @@ document.addEventListener('DOMContentLoaded', () => {
             hobbies: document.getElementById('hobbies-editor') ? document.getElementById('hobbies-editor').innerHTML : '',
             languages: Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value)
         };
-
-        const expTypeChecked = document.querySelector('input[name="experienceType"]:checked');
-        const experienceType = expTypeChecked ? expTypeChecked.value : 'work';
-
         currentResumeData = {
             contact: data,
             experienceType: experienceType,

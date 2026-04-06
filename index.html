@@ -209,44 +209,60 @@
                     <!-- STEP 3: EXPERIENCE SELECTION -->
                     <div class="step-content step-hidden" id="step-3">
                         <div class="form-section" id="experience-selection-section">
-                            <h3><i class="fas fa-question-circle"></i> Tell us about your experience</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Select your experience type
-                                to customize your resume layout.</p>
+                            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fas fa-compass"
+                                    style="color: var(--accent-color);"></i> Tell us about your experience</h3>
+                            <p style="color: #94a3b8; font-size: 1.05rem; margin-bottom: 2rem;">Select your background
+                                to dynamically customize your layout workflow.</p>
 
-                            <div class="template-selector"
-                                style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-                                <label class="template-option" style="cursor: pointer;">
+                            <div class="exp-selector-grid">
+                                <label class="exp-option">
                                     <input type="radio" name="experienceType" value="work" checked>
-                                    <div class="template-card"
-                                        style="padding: 1.5rem; border: 1px solid var(--card-border); border-radius: 8px;">
-                                        <span class="template-name" style="margin-top: 0; font-size: 1.1rem;"><i
-                                                class="fas fa-briefcase"></i> Work Experience</span>
+                                    <div class="exp-card">
+                                        <div class="exp-card-header">
+                                            <div class="exp-icon"><i class="fas fa-briefcase"></i></div>
+                                            <div class="exp-check"><i class="fas fa-check-circle"></i></div>
+                                        </div>
+                                        <h4 class="exp-title">Work Experience</h4>
+                                        <p class="exp-desc">For full-time or professional roles</p>
                                     </div>
                                 </label>
-                                <label class="template-option" style="cursor: pointer;">
+                                <label class="exp-option">
                                     <input type="radio" name="experienceType" value="internship">
-                                    <div class="template-card"
-                                        style="padding: 1.5rem; border: 1px solid var(--card-border); border-radius: 8px;">
-                                        <span class="template-name" style="margin-top: 0; font-size: 1.1rem;"><i
-                                                class="fas fa-laptop-code"></i> Internship Experience</span>
+                                    <div class="exp-card">
+                                        <div class="exp-card-header">
+                                            <div class="exp-icon"><i class="fas fa-laptop-code"></i></div>
+                                            <div class="exp-check"><i class="fas fa-check-circle"></i></div>
+                                        </div>
+                                        <h4 class="exp-title">Internship</h4>
+                                        <p class="exp-desc">For internships or training experience</p>
                                     </div>
                                 </label>
-                                <label class="template-option" style="cursor: pointer;">
+                                <label class="exp-option">
                                     <input type="radio" name="experienceType" value="both">
-                                    <div class="template-card"
-                                        style="padding: 1.5rem; border: 1px solid var(--card-border); border-radius: 8px;">
-                                        <span class="template-name" style="margin-top: 0; font-size: 1.1rem;"><i
-                                                class="fas fa-layer-group"></i> Both (Work & Internship)</span>
+                                    <div class="exp-card">
+                                        <div class="exp-card-header">
+                                            <div class="exp-icon"><i class="fas fa-layer-group"></i></div>
+                                            <div class="exp-check"><i class="fas fa-check-circle"></i></div>
+                                        </div>
+                                        <h4 class="exp-title">Both</h4>
+                                        <p class="exp-desc">Include both work and internship details</p>
                                     </div>
                                 </label>
-                                <label class="template-option" style="cursor: pointer;">
+                                <label class="exp-option">
                                     <input type="radio" name="experienceType" value="fresher">
-                                    <div class="template-card"
-                                        style="padding: 1.5rem; border: 1px solid var(--card-border); border-radius: 8px;">
-                                        <span class="template-name" style="margin-top: 0; font-size: 1.1rem;"><i
-                                                class="fas fa-graduation-cap"></i> Fresher (No Experience)</span>
+                                    <div class="exp-card">
+                                        <div class="exp-card-header">
+                                            <div class="exp-icon"><i class="fas fa-graduation-cap"></i></div>
+                                            <div class="exp-check"><i class="fas fa-check-circle"></i></div>
+                                        </div>
+                                        <h4 class="exp-title">Fresher</h4>
+                                        <p class="exp-desc">No experience, focus on education & projects</p>
                                     </div>
                                 </label>
+                            </div>
+
+                            <div class="exp-hint">
+                                <i class="fas fa-info-circle"></i> You can change this later
                             </div>
                         </div>
                         <div class="step-actions">

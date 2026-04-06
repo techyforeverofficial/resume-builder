@@ -1523,11 +1523,28 @@ document.addEventListener('DOMContentLoaded', () => {
             wrapper.style.width = '100%';
             wrapper.style.height = `${(originalHeight * scale) + 32}px`;
         } else {
-            // Desktop fallback
-            docElement.style.transform = 'none';
-            wrapper.style.height = 'auto';
-            wrapper.style.overflow = 'auto';
-            wrapper.style.padding = '0';
+            // Desktop fallback & scaling
+            let desktopScale = 1;
+            if (window.innerWidth >= 1400) {
+                desktopScale = 1.15;
+            } else if (window.innerWidth >= 1100) {
+                desktopScale = 1.05;
+            }
+
+            if (desktopScale > 1) {
+                docElement.style.transform = 'none'; // reset to calculate true height
+                const originalHeight = docElement.scrollHeight || 1056;
+                docElement.style.transform = `scale(${desktopScale})`;
+                docElement.style.transformOrigin = 'top center';
+                wrapper.style.height = `${(originalHeight * desktopScale) + 64}px`;
+                wrapper.style.padding = '32px 0';
+                wrapper.style.overflow = 'hidden';
+            } else {
+                docElement.style.transform = 'none';
+                wrapper.style.height = 'auto';
+                wrapper.style.overflow = 'auto';
+                wrapper.style.padding = '0';
+            }
             wrapper.style.display = 'flex';
             wrapper.style.justifyContent = 'center';
         }

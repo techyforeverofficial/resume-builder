@@ -1720,9 +1720,18 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (toggleBtn) toggleBtn.click();
                         });
                     }
+                } else if (error.code === 'auth/invalid-credential') {
+                    authErrorMsg.innerText = 'Invalid email or password. Please try again.';
+                    authErrorMsg.style.color = '#ef4444';
+                    authErrorMsg.style.fontSize = '0.875rem';
+                    authErrorMsg.style.marginTop = '0.5rem';
+                    authErrorMsg.style.display = 'block';
                 } else {
                     // Fallback for other errors formatting as text to prevent XSS
                     authErrorMsg.innerText = error.message;
+                    authErrorMsg.style.color = '#ef4444';
+                    authErrorMsg.style.fontSize = '0.875rem';
+                    authErrorMsg.style.marginTop = '0.5rem';
                     authErrorMsg.style.display = 'block';
                 }
             } finally {

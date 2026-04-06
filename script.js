@@ -1311,6 +1311,140 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 `;
+            } else if (data.template === 'modern') {
+                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
+                
+                htmlStr += `
+                  <!-- HEADER -->
+                  <div class="tmpl-mod-header">
+                    <h1>${escapeHTML(data.fullName ? data.fullName.toUpperCase() : '')}</h1>
+                    ${data.title ? `<h2>${escapeHTML(data.title.toUpperCase())}</h2>` : ''}
+                    <div class="tmpl-mod-header-line"></div>
+                  </div>
+
+                  <div class="tmpl-mod-container">
+                    <!-- LEFT -->
+                    <div class="tmpl-mod-left">
+                      
+                      <div class="tmpl-mod-section">
+                        <h3>CONTACT</h3>
+                        ${data.phone ? `<p>${escapeHTML(data.phone)}</p>` : ''}
+                        ${data.email ? `<p>${escapeHTML(data.email)}</p>` : ''}
+                        ${data.city || data.country ? `<p>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</p>` : ''}
+                        ${additionalInfo.website ? `<p>${escapeHTML(additionalInfo.website)}</p>` : ''}
+                      </div>
+                      
+                      ${skillsList.length > 0 ? `
+                      <div class="tmpl-mod-section">
+                        <h3>SKILLS</h3>
+                        <ul>
+                          ${skillsList.map(s => `<li>${escapeHTML(s.trim())}</li>`).join('')}
+                        </ul>
+                      </div>` : ''}
+                      
+                      ${additionalInfo.languages && additionalInfo.languages.length > 0 ? `
+                      <div class="tmpl-mod-section">
+                        <h3>LANGUAGES</h3>
+                        <ul>
+                          ${additionalInfo.languages.map(l => `<li>${escapeHTML(l)}</li>`).join('')}
+                        </ul>
+                      </div>` : ''}
+                      
+                      ${projects.length > 0 ? `
+                      <div class="tmpl-mod-section">
+                        <h3>PROJECTS</h3>
+                        ${projects.map(p => `
+                        <div class="tmpl-mod-project">
+                          <div class="tmpl-mod-project-title">${escapeHTML(p.name)}</div>
+                          <div class="tmpl-mod-project-desc">${p.desc}</div>
+                        </div>
+                        `).join('')}
+                      </div>` : ''}
+
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="tmpl-mod-right">
+                      <div class="tmpl-mod-timeline"></div>
+                      
+                      ${(resumeData.summary || data.summary) ? `
+                      <!-- PROFILE -->
+                      <div class="tmpl-mod-block">
+                        <div class="tmpl-mod-icon-circle" style="top: 5px;"><i class="fas fa-user"></i></div>
+                        <h3>PROFILE</h3>
+                        <p>${escapeHTML(resumeData.summary || data.summary)}</p>
+                      </div>` : ''}
+                      
+                `;
+
+                // Experience handling
+                const workExpArray = resumeData.workExperience || resumeData.work || [];
+                const internExpArray = resumeData.internshipExperience || [];
+                
+                if (resumeData.experienceType !== 'fresher') {
+                    if (workExpArray.length > 0) {
+                        htmlStr += `
+                      <div class="tmpl-mod-block">
+                        <div class="tmpl-mod-icon-circle" style="top: 5px;"><i class="fas fa-briefcase"></i></div>
+                        <h3>WORK EXPERIENCE</h3>
+                        ${workExpArray.map(exp => {
+                            if (!exp.company.trim()) return '';
+                            let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'PRESENT' : (exp.endMonth + ' ' + exp.endYear).toUpperCase()}`;
+                            return `
+                                <div class="tmpl-mod-job">
+                                  <span class="tmpl-mod-job-title">${escapeHTML(exp.company)}</span>
+                                  <span class="tmpl-mod-job-date">${escapeHTML(durationStr)}</span>
+                                  <div class="tmpl-mod-job-role">${escapeHTML(exp.role)}</div>
+                                  ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                      </div>`;
+                    }
+
+                    if (internExpArray.length > 0) {
+                        htmlStr += `
+                      <div class="tmpl-mod-block">
+                        <div class="tmpl-mod-icon-circle" style="top: 5px;"><i class="fas fa-laptop-code"></i></div>
+                        <h3>INTERNSHIP EXPERIENCE</h3>
+                        ${internExpArray.map(exp => {
+                            if (!exp.company.trim()) return '';
+                            let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'PRESENT' : (exp.endMonth + ' ' + exp.endYear).toUpperCase()}`;
+                            return `
+                                <div class="tmpl-mod-job">
+                                  <span class="tmpl-mod-job-title">${escapeHTML(exp.company)}</span>
+                                  <span class="tmpl-mod-job-date">${escapeHTML(durationStr)}</span>
+                                  <div class="tmpl-mod-job-role">${escapeHTML(exp.role)}</div>
+                                  ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                      </div>`;
+                    }
+                }
+
+                if (education.length > 0) {
+                    htmlStr += `
+                      <div class="tmpl-mod-block">
+                        <div class="tmpl-mod-icon-circle" style="top: 5px;"><i class="fas fa-graduation-cap"></i></div>
+                        <h3>EDUCATION</h3>
+                        ${education.map(edu => {
+                            if (!edu.school.trim()) return '';
+                            return `
+                                <div class="tmpl-mod-job">
+                                  <span class="tmpl-mod-job-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</span>
+                                  <span class="tmpl-mod-job-date">${escapeHTML(edu.gradMonth + ' ' + edu.gradYear).toUpperCase()}</span>
+                                  <div class="tmpl-mod-job-role">${escapeHTML(edu.school)}, ${escapeHTML(edu.location)}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                      </div>`;
+                }
+
+                htmlStr += `
+                    </div>
+                  </div>
+                `;
             } else {
                 // Original logic for Classic, Creative
                 htmlStr += `

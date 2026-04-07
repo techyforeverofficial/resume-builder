@@ -1167,172 +1167,283 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     
                     <div class="t5-container">
-                        <!-- LEFT -->
-                        <div class="left">
+`;
+                        let leftContent = '';
+                        let rightContent = '';
+                        let leftColHeight = 0;
+                        const MAX_LEFT_HEIGHT = 900; // Estimated max safe height for left column
+
+                        // 1. CONTACT
+                        let contactHtml = '';
+                        if (data.phone) { contactHtml += `<div class="contact-item"><i class="fas fa-phone contact-icon"></i> <span>${escapeHTML(data.phone)}</span></div>`; leftColHeight += 28; }
+                        if (data.email) { contactHtml += `<div class="contact-item"><i class="fas fa-envelope contact-icon"></i> <span>${escapeHTML(data.email)}</span></div>`; leftColHeight += 28; }
+                        if (data.city || data.country) { contactHtml += `<div class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i> <span>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</span></div>`; leftColHeight += 28; }
+                        if (additionalInfo.website) { contactHtml += `<div class="contact-item"><i class="fas fa-globe contact-icon"></i> <span>${escapeHTML(additionalInfo.website)}</span></div>`; leftColHeight += 28; }
+                        if (additionalInfo.linkedin) { contactHtml += `<div class="contact-item"><i class="fab fa-linkedin contact-icon"></i> <span>${escapeHTML(additionalInfo.linkedin)}</span></div>`; leftColHeight += 28; }
+
+                        leftContent += `
                             <div class="section">
                                 <div class="section-header">
                                     <div class="icon-circle"><i class="fas fa-id-badge"></i></div>
                                     <h3>CONTACT</h3>
                                 </div>
-                                ${data.phone ? `<div class="contact-item"><i class="fas fa-phone contact-icon"></i> <span>${escapeHTML(data.phone)}</span></div>` : ''}
-                                ${data.email ? `<div class="contact-item"><i class="fas fa-envelope contact-icon"></i> <span>${escapeHTML(data.email)}</span></div>` : ''}
-                                ${(data.city || data.country) ? `<div class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i> <span>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</span></div>` : ''}
-                                ${additionalInfo.website ? `<div class="contact-item"><i class="fas fa-globe contact-icon"></i> <span>${escapeHTML(additionalInfo.website)}</span></div>` : ''}
-                                ${additionalInfo.linkedin ? `<div class="contact-item"><i class="fab fa-linkedin contact-icon"></i> <span>${escapeHTML(additionalInfo.linkedin)}</span></div>` : ''}
+                                ${contactHtml}
                             </div>
-                `;
-
-                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
-                if (skillsList.length > 0) {
-                    htmlStr += `
-                            <div class="section">
-                                <div class="section-header">
-                                    <div class="icon-circle"><i class="fas fa-tools"></i></div>
-                                    <h3>SKILLS</h3>
-                                </div>
-                                <ul>
-                                    ${skillsList.map(s => `<li>${escapeHTML(s.trim())}</li>`).join('')}
-                                </ul>
-                            </div>
-                    `;
-                }
-
-                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
-                    htmlStr += `
-                            <div class="section">
-                                <div class="section-header">
-                                    <div class="icon-circle"><i class="fas fa-language"></i></div>
-                                    <h3>LANGUAGES</h3>
-                                </div>
-                                <ul>
-                                    ${additionalInfo.languages.map(l => `<li>${escapeHTML(l)}</li>`).join('')}
-                                </ul>
-                            </div>
-                    `;
-                }
-
-                if (projects.length > 0) {
-                    htmlStr += `
-                            <div class="section">
-                                <div class="section-header">
-                                    <div class="icon-circle"><i class="fas fa-project-diagram"></i></div>
-                                    <h3>PROJECTS</h3>
-                                </div>
-                    `;
-                    projects.forEach(p => {
-                        htmlStr += `
-                                <div class="project">
-                                    <div class="project-title">${escapeHTML(p.name)}</div>
-                                    <div class="project-desc">${p.desc}</div>
-                                </div>
                         `;
-                    });
-                    htmlStr += `
-                            </div>
-                    `;
-                }
+                        leftColHeight += 60; // base header height
 
-                htmlStr += `
-                        </div>
-                        
-                        <!-- RIGHT -->
-                        <div class="right">
-                            <div class="timeline"></div>
-                `;
+                        // 2. PERSONAL DETAILS (Always Left)
+                        const hasPersonal = additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.dob;
+                        if (hasPersonal) {
+                            leftContent += `
+                                <div class="section">
+                                    <div class="section-header">
+                                        <div class="icon-circle"><i class="fas fa-user"></i></div>
+                                        <h3>PERSONAL DETAILS</h3>
+                                    </div>
+                            `;
+                            leftColHeight += 60;
+                            if (additionalInfo.nationality) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-flag contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</span></div>`; leftColHeight += 25; }
+                            if (additionalInfo.maritalStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-ring contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</span></div>`; leftColHeight += 25; }
+                            if (additionalInfo.visaStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-passport contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</span></div>`; leftColHeight += 25; }
+                            if (additionalInfo.dob) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-calendar-alt contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>DOB:</strong> ${escapeHTML(additionalInfo.dob)}</span></div>`; leftColHeight += 25; }
+                            leftContent += `</div>`;
+                        }
 
-                const summaryText = resumeData.summary || data.summary || "";
-                if (summaryText.trim() && summaryText !== '<br>') {
-                    htmlStr += `
-                            <div class="block">
-                                <div class="block-header">
-                                    <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
-                                    <h3>PROFILE</h3>
+                        // 3. SKILLS
+                        const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
+                        if (skillsList.length > 0) {
+                            leftContent += `
+                                <div class="section">
+                                    <div class="section-header">
+                                        <div class="icon-circle"><i class="fas fa-tools"></i></div>
+                                        <h3>SKILLS</h3>
+                                    </div>
+                                    <ul>
+                                        ${skillsList.map(s => `<li>${escapeHTML(s.trim())}</li>`).join('')}
+                                    </ul>
                                 </div>
-                                <div style="font-size: 13px; line-height: 1.6; color: #444;">${summaryText}</div>
-                            </div>
-                    `;
-                }
+                            `;
+                            leftColHeight += 60 + (skillsList.length * 20);
+                        }
 
-                const workExpArray = resumeData.workExperience || resumeData.work || [];
-                const internExpArray = resumeData.internshipExperience || [];
-
-                if (resumeData.experienceType !== 'fresher') {
-                    if (workExpArray.length > 0) {
-                        htmlStr += `
-                            <div class="block">
-                                <div class="block-header">
-                                    <div class="icon-circle"><i class="fas fa-briefcase"></i></div>
-                                    <h3>WORK EXPERIENCE</h3>
+                        // 4. LANGUAGES
+                        if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                            leftContent += `
+                                <div class="section">
+                                    <div class="section-header">
+                                        <div class="icon-circle"><i class="fas fa-language"></i></div>
+                                        <h3>LANGUAGES</h3>
+                                    </div>
+                                    <ul>
+                                        ${additionalInfo.languages.map(l => `<li>${escapeHTML(l)}</li>`).join('')}
+                                    </ul>
                                 </div>
-                        `;
-                        for (let i = 0; i < workExpArray.length; i++) {
-                            const exp = workExpArray[i];
-                            if (!exp.company.trim()) continue;
-                            let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
-                            htmlStr += `
-                                <div class="job">
-                                    <span class="job-title">${escapeHTML(exp.company)}</span>
-                                    <span class="job-date">${escapeHTML(durationStr)}</span>
-                                    <div class="job-role">${escapeHTML(exp.role)}</div>
-                                    ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
+                            `;
+                            leftColHeight += 60 + (additionalInfo.languages.length * 20);
+                        }
+
+                        // Reserve space for HOBBIES early (Always left, placed at bottom of left content later)
+                        const hasHobbies = additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>';
+                        let hobbiesHtml = '';
+                        if (hasHobbies) {
+                            const hHeight = 60 + (additionalInfo.hobbies.length / 40) * 20;
+                            leftColHeight += hHeight; // reserve
+                            hobbiesHtml = `
+                                <div class="section">
+                                    <div class="section-header">
+                                        <div class="icon-circle"><i class="fas fa-heart"></i></div>
+                                        <h3>HOBBIES</h3>
+                                    </div>
+                                    <div style="font-size: 13px; color: #000;">${additionalInfo.hobbies}</div>
                                 </div>
                             `;
                         }
-                        htmlStr += `</div>`;
-                    }
 
-                    if (internExpArray.length > 0) {
-                        htmlStr += `
-                            <div class="block">
-                                <div class="block-header">
-                                    <div class="icon-circle"><i class="fas fa-laptop-code"></i></div>
-                                    <h3>INTERNSHIP EXPERIENCE</h3>
-                                </div>
-                        `;
-                        for (let i = 0; i < internExpArray.length; i++) {
-                            const exp = internExpArray[i];
-                            if (!exp.company.trim()) continue;
-                            let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
-                            htmlStr += `
-                                <div class="job">
-                                    <span class="job-title">${escapeHTML(exp.company)}</span>
-                                    <span class="job-date">${escapeHTML(durationStr)}</span>
-                                    <div class="job-role">${escapeHTML(exp.role)}</div>
-                                    ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
-                                </div>
+                        // 5. PROJECTS (Prefer Left, move to Right if no space)
+                        let projectsHtmlRight = '';
+                        if (projects.length > 0) {
+                            let pHeight = 60 + (projects.length * 70);
+                            let pHtmlLeft = `
+                                    <div class="section">
+                                        <div class="section-header">
+                                            <div class="icon-circle"><i class="fas fa-project-diagram"></i></div>
+                                            <h3>PROJECTS</h3>
+                                        </div>
+                            `;
+                            projects.forEach(p => {
+                                pHtmlLeft += `
+                                        <div class="project" style="margin-bottom:10px;">
+                                            <div class="project-title" style="font-weight:bold;font-size:13px;">${escapeHTML(p.name)}</div>
+                                            <div class="project-desc" style="font-size:12px;color:#555;">${p.desc}</div>
+                                        </div>
+                                `;
+                            });
+                            pHtmlLeft += `</div>`;
+
+                            if (leftColHeight + pHeight <= MAX_LEFT_HEIGHT) {
+                                leftContent += pHtmlLeft;
+                                leftColHeight += pHeight;
+                            } else {
+                                projectsHtmlRight = `
+                                    <div class="block">
+                                        <div class="block-header">
+                                            <div class="icon-circle"><i class="fas fa-project-diagram"></i></div>
+                                            <h3>PROJECTS</h3>
+                                        </div>
+                                `;
+                                projects.forEach(p => {
+                                    projectsHtmlRight += `
+                                        <div class="job" style="margin-bottom:15px;">
+                                            <span class="job-title" style="font-weight:bold;color:#000;">${escapeHTML(p.name)}</span>
+                                            <div class="job-role" style="font-size:13px;color:#555;margin-top:5px;">${p.desc}</div>
+                                        </div>
+                                    `;
+                                });
+                                projectsHtmlRight += `</div>`;
+                            }
+                        }
+
+                        // 6. CERTIFICATIONS (Prefer Left, move to Right if no space)
+                        let certsHtmlRight = '';
+                        const hasCerts = additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>';
+                        if (hasCerts) {
+                            let cHeight = 60 + (additionalInfo.certifications.length / 40) * 20;
+                            let cLeftHtml = `
+                                    <div class="section">
+                                        <div class="section-header">
+                                            <div class="icon-circle"><i class="fas fa-certificate"></i></div>
+                                            <h3>CERTIFICATIONS</h3>
+                                        </div>
+                                        <div style="font-size: 13px; color: #000;">${additionalInfo.certifications}</div>
+                                    </div>
+                            `;
+                            if (leftColHeight + cHeight <= MAX_LEFT_HEIGHT) {
+                                leftContent += cLeftHtml;
+                                leftColHeight += cHeight;
+                            } else {
+                                certsHtmlRight = `
+                                    <div class="block">
+                                        <div class="block-header">
+                                            <div class="icon-circle"><i class="fas fa-certificate"></i></div>
+                                            <h3>CERTIFICATIONS</h3>
+                                        </div>
+                                        <div style="font-size: 13px; color: #444; line-height: 1.6;">${additionalInfo.certifications}</div>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        // Append Hobbies at the bottom of left content if it exists
+                        if (hasHobbies) {
+                            leftContent += hobbiesHtml;
+                        }
+
+                        // Construct RIGHT COLUMN
+                        const summaryText = resumeData.summary || data.summary || "";
+                        if (summaryText.trim() && summaryText !== '<br>') {
+                            rightContent += `
+                                    <div class="block">
+                                        <div class="block-header">
+                                            <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
+                                            <h3>PROFILE</h3>
+                                        </div>
+                                        <div style="font-size: 13px; line-height: 1.6; color: #444;">${summaryText}</div>
+                                    </div>
                             `;
                         }
-                        htmlStr += `</div>`;
-                    }
-                }
 
-                if (education.length > 0) {
-                    htmlStr += `
-                            <div class="block">
-                                <div class="block-header">
-                                    <div class="icon-circle"><i class="fas fa-graduation-cap"></i></div>
-                                    <h3>EDUCATION</h3>
-                                </div>
-                    `;
-                    for (let i = 0; i < education.length; i++) {
-                        const edu = education[i];
-                        if (!edu.school.trim()) continue;
-                        let durationStr = `${edu.gradYear}`;
+                        const workExpArray = resumeData.workExperience || resumeData.work || [];
+                        const internExpArray = resumeData.internshipExperience || [];
+                        if (resumeData.experienceType !== 'fresher') {
+                            if (workExpArray.length > 0) {
+                                rightContent += `
+                                    <div class="block">
+                                        <div class="block-header">
+                                            <div class="icon-circle"><i class="fas fa-briefcase"></i></div>
+                                            <h3>WORK EXPERIENCE</h3>
+                                        </div>
+                                `;
+                                for (let i = 0; i < workExpArray.length; i++) {
+                                    const exp = workExpArray[i];
+                                    if (!exp.company.trim()) continue;
+                                    let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
+                                    rightContent += `
+                                        <div class="job">
+                                            <span class="job-title">${escapeHTML(exp.company)}</span>
+                                            <span class="job-date">${escapeHTML(durationStr)}</span>
+                                            <div class="job-role">${escapeHTML(exp.role)}</div>
+                                            ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
+                                        </div>
+                                    `;
+                                }
+                                rightContent += `</div>`;
+                            }
+
+                            if (internExpArray.length > 0) {
+                                rightContent += `
+                                    <div class="block">
+                                        <div class="block-header">
+                                            <div class="icon-circle"><i class="fas fa-laptop-code"></i></div>
+                                            <h3>INTERNSHIP EXPERIENCE</h3>
+                                        </div>
+                                `;
+                                for (let i = 0; i < internExpArray.length; i++) {
+                                    const exp = internExpArray[i];
+                                    if (!exp.company.trim()) continue;
+                                    let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
+                                    rightContent += `
+                                        <div class="job">
+                                            <span class="job-title">${escapeHTML(exp.company)}</span>
+                                            <span class="job-date">${escapeHTML(durationStr)}</span>
+                                            <div class="job-role">${escapeHTML(exp.role)}</div>
+                                            ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
+                                        </div>
+                                    `;
+                                }
+                                rightContent += `</div>`;
+                            }
+                        }
+
+                        if (education.length > 0) {
+                            rightContent += `
+                                    <div class="block">
+                                        <div class="block-header">
+                                            <div class="icon-circle"><i class="fas fa-graduation-cap"></i></div>
+                                            <h3>EDUCATION</h3>
+                                        </div>
+                            `;
+                            for (let i = 0; i < education.length; i++) {
+                                const edu = education[i];
+                                if (!edu.school.trim()) continue;
+                                let durationStr = `${edu.gradYear}`;
+                                rightContent += `
+                                        <div class="job">
+                                            <span class="job-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</span>
+                                            <span class="job-date">${escapeHTML(durationStr)}</span>
+                                            <div class="job-role">${escapeHTML(edu.school)}</div>
+                                        </div>
+                                `;
+                            }
+                            rightContent += `</div>`;
+                        }
+
+                        // Add overflow blocks to right column
+                        if (certsHtmlRight) rightContent += certsHtmlRight;
+                        if (projectsHtmlRight) rightContent += projectsHtmlRight;
+
                         htmlStr += `
-                                <div class="job">
-                                    <span class="job-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</span>
-                                    <span class="job-date">${escapeHTML(durationStr)}</span>
-                                    <div class="job-role">${escapeHTML(edu.school)}</div>
-                                </div>
-                        `;
-                    }
-                    htmlStr += `</div>`;
-                }
-
-                htmlStr += `
+                            <!-- LEFT -->
+                            <div class="left">
+                                ${leftContent}
+                            </div>
+                            <!-- RIGHT -->
+                            <div class="right">
+                                <div class="timeline"></div>
+                                ${rightContent}
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
             } else if (data.template === 'professional') {
                 htmlStr += `
                     <div class="prof-accent"></div>

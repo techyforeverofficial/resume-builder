@@ -2409,3 +2409,127 @@ textarea {
   font-size: 12px;
   color: #555;
 }
+
+/* --- TEMPLATE 6 STYLES --- */
+.resume-document.template-6 {
+    padding: 40px 50px;
+    box-sizing: border-box;
+    color: #222;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+.resume-document.template-6 .name {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.resume-document.template-6 .title {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 5px;
+    color: #555;
+    font-weight: 500;
+}
+
+.resume-document.template-6 .contact {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #555;
+}
+
+.resume-document.template-6 .contact span {
+    margin: 0 5px;
+}
+
+.resume-document.template-6 .divider {
+    margin: 20px 0;
+    border-top: 1px solid #ccc;
+}
+
+.resume-document.template-6 .section-title {
+    background: #d9dee3;
+    padding: 10px 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 14px;
+    margin: 25px 0 15px;
+}
+
+.resume-document.template-6 .summary {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+}
+
+.resume-document.template-6 .job {
+    margin-bottom: 20px;
+}
+
+.resume-document.template-6 .job-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.resume-document.template-6 .job-sub {
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.resume-document.template-6 .date {
+    font-weight: 600;
+    color: #333;
+}
+
+.resume-document.template-6 ul {
+    margin: 8px 0 0 18px;
+    padding: 0;
+}
+
+.resume-document.template-6 li {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+}
+
+/* Fallback desc wrapper */
+.resume-document.template-6 .job-desc {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 8px;
+    color: #444;
+}
+.resume-document.template-6 .job-desc ul {
+    margin-left: 18px;
+}
+
+.resume-document.template-6 .edu {
+    margin-bottom: 15px;
+}
+
+.resume-document.template-6 .edu-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+}
+
+.resume-document.template-6 .edu-sub {
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.resume-document.template-6 .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 30px;
+    margin-top: 10px;
+}
+
+.resume-document.template-6 .skills-grid ul {
+    margin: 0;
+    padding-left: 18px;
+}

@@ -1170,12 +1170,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         <!-- LEFT -->
                         <div class="left">
                             <div class="section">
-                                <h3>CONTACT</h3>
-                                ${data.phone ? `<p>${escapeHTML(data.phone)}</p>` : ''}
-                                ${data.email ? `<p>${escapeHTML(data.email)}</p>` : ''}
-                                ${(data.city || data.country) ? `<p>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</p>` : ''}
-                                ${additionalInfo.website ? `<p>${escapeHTML(additionalInfo.website)}</p>` : ''}
-                                ${additionalInfo.linkedin ? `<p>${escapeHTML(additionalInfo.linkedin)}</p>` : ''}
+                                <div class="section-header">
+                                    <div class="icon-circle"><i class="fas fa-id-badge"></i></div>
+                                    <h3>CONTACT</h3>
+                                </div>
+                                ${data.phone ? `<div class="contact-item"><i class="fas fa-phone contact-icon"></i> <span>${escapeHTML(data.phone)}</span></div>` : ''}
+                                ${data.email ? `<div class="contact-item"><i class="fas fa-envelope contact-icon"></i> <span>${escapeHTML(data.email)}</span></div>` : ''}
+                                ${(data.city || data.country) ? `<div class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i> <span>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</span></div>` : ''}
+                                ${additionalInfo.website ? `<div class="contact-item"><i class="fas fa-globe contact-icon"></i> <span>${escapeHTML(additionalInfo.website)}</span></div>` : ''}
+                                ${additionalInfo.linkedin ? `<div class="contact-item"><i class="fab fa-linkedin contact-icon"></i> <span>${escapeHTML(additionalInfo.linkedin)}</span></div>` : ''}
                             </div>
                 `;
 
@@ -1183,7 +1186,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (skillsList.length > 0) {
                     htmlStr += `
                             <div class="section">
-                                <h3>SKILLS</h3>
+                                <div class="section-header">
+                                    <div class="icon-circle"><i class="fas fa-tools"></i></div>
+                                    <h3>SKILLS</h3>
+                                </div>
                                 <ul>
                                     ${skillsList.map(s => `<li>${escapeHTML(s.trim())}</li>`).join('')}
                                 </ul>
@@ -1194,7 +1200,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.languages && additionalInfo.languages.length > 0) {
                     htmlStr += `
                             <div class="section">
-                                <h3>LANGUAGES</h3>
+                                <div class="section-header">
+                                    <div class="icon-circle"><i class="fas fa-language"></i></div>
+                                    <h3>LANGUAGES</h3>
+                                </div>
                                 <ul>
                                     ${additionalInfo.languages.map(l => `<li>${escapeHTML(l)}</li>`).join('')}
                                 </ul>
@@ -1205,7 +1214,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (projects.length > 0) {
                     htmlStr += `
                             <div class="section">
-                                <h3>PROJECTS</h3>
+                                <div class="section-header">
+                                    <div class="icon-circle"><i class="fas fa-project-diagram"></i></div>
+                                    <h3>PROJECTS</h3>
+                                </div>
                     `;
                     projects.forEach(p => {
                         htmlStr += `
@@ -1232,8 +1244,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (summaryText.trim() && summaryText !== '<br>') {
                     htmlStr += `
                             <div class="block">
-                                <div class="icon-circle" style="top: 5px;">👤</div>
-                                <h3>PROFILE</h3>
+                                <div class="block-header">
+                                    <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
+                                    <h3>PROFILE</h3>
+                                </div>
                                 <div style="font-size: 13px; line-height: 1.6; color: #444;">${summaryText}</div>
                             </div>
                     `;
@@ -1246,8 +1260,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (workExpArray.length > 0) {
                         htmlStr += `
                             <div class="block">
-                                <div class="icon-circle" style="top: 5px;">💼</div>
-                                <h3>WORK EXPERIENCE</h3>
+                                <div class="block-header">
+                                    <div class="icon-circle"><i class="fas fa-briefcase"></i></div>
+                                    <h3>WORK EXPERIENCE</h3>
+                                </div>
                         `;
                         for (let i = 0; i < workExpArray.length; i++) {
                             const exp = workExpArray[i];
@@ -1268,8 +1284,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <div class="block">
-                                <div class="icon-circle" style="top: 5px;">💻</div>
-                                <h3>INTERNSHIP EXPERIENCE</h3>
+                                <div class="block-header">
+                                    <div class="icon-circle"><i class="fas fa-laptop-code"></i></div>
+                                    <h3>INTERNSHIP EXPERIENCE</h3>
+                                </div>
                         `;
                         for (let i = 0; i < internExpArray.length; i++) {
                             const exp = internExpArray[i];
@@ -1291,8 +1309,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (education.length > 0) {
                     htmlStr += `
                             <div class="block">
-                                <div class="icon-circle" style="top: 5px;">🎓</div>
-                                <h3>EDUCATION</h3>
+                                <div class="block-header">
+                                    <div class="icon-circle"><i class="fas fa-graduation-cap"></i></div>
+                                    <h3>EDUCATION</h3>
+                                </div>
                     `;
                     for (let i = 0; i < education.length; i++) {
                         const edu = education[i];

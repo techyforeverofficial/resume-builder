@@ -2278,39 +2278,69 @@ textarea {
 .resume-document.template-5 .right {
   width: 70%;
   position: relative;
-  padding-left: 40px;
+  padding-left: 60px; /* Increased to allow perfectly aligned timeline circle */
 }
 .resume-document.template-5 .timeline {
   position: absolute;
-  left: 15px;
+  left: 15px; /* exactly midway of the 32px icon if icon starts at 0 */
   top: 0;
   width: 2px;
   height: 100%;
   background: #222;
 }
 .resume-document.template-5 .icon-circle {
-  width: 28px;
-  height: 28px;
-  background: #000;
-  color: #fff;
+  width: 32px;
+  height: 32px;
+  background: #1a1a1a;
+  color: #ffffff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  left: -30px;
+  flex-shrink: 0;
   font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 2;
+}
+.resume-document.template-5 .section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.resume-document.template-5 .block-header {
+  display: flex;
+  align-items: center;
+  margin-left: -60px; /* Pulls back exactly 60px to align left edge with .right container */
+  gap: 28px; /* 32px icon + 28px gap = 60px, perfectly aligning text with .block content */
+  margin-bottom: 15px;
+}
+.resume-document.template-5 .contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.resume-document.template-5 .contact-icon {
+  width: 18px;
+  font-size: 14px;
+  color: #1a1a1a;
+  text-align: center;
 }
 .resume-document.template-5 .section {
   margin-bottom: 25px;
 }
+.resume-document.template-5 .section-header h3,
 .resume-document.template-5 .section h3 {
+  flex-grow: 1;
   font-size: 14px;
   letter-spacing: 2px;
   border-bottom: 1px solid #222;
   padding-bottom: 5px;
-  margin-bottom: 10px;
+  margin: 0;
+  margin-bottom: 0; /* overridden for non-flex if any, but handled well now */
   color: #000;
+  line-height: 1;
 }
 .resume-document.template-5 .section p, 
 .resume-document.template-5 .section li {
@@ -2325,13 +2355,17 @@ textarea {
   position: relative;
   margin-bottom: 30px;
 }
+.resume-document.template-5 .block-header h3,
 .resume-document.template-5 .block h3 {
+  flex-grow: 1;
+  width: 100%;
   font-size: 14px;
   letter-spacing: 2px;
   border-bottom: 1px solid #222;
   padding-bottom: 5px;
-  margin-bottom: 10px;
+  margin: 0;
   color: #000;
+  line-height: 1;
 }
 .resume-document.template-5 .block p {
   font-size: 13px;

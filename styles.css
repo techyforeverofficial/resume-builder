@@ -2539,6 +2539,8 @@ textarea {
     box-sizing: border-box;
     font-family: "Helvetica Neue", Arial, sans-serif;
     color: #222;
+    padding: 0; /* Override global padding to allow full-width header */
+    background: #ffffff;
 }
 
 /* HEADER */

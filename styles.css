@@ -2533,3 +2533,128 @@ textarea {
     margin: 0;
     padding-left: 18px;
 }
+
+/* --- TEMPLATE 7 STYLES --- */
+.resume-document.template-7 {
+    box-sizing: border-box;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    color: #222;
+}
+
+/* HEADER */
+.resume-document.template-7 .header {
+    background: #1f3f55;
+    color: #ffffff;
+    text-align: center;
+    padding: 50px 40px 35px;
+}
+
+.resume-document.template-7 .name {
+    font-size: 44px;
+    letter-spacing: 8px;
+    font-weight: 300;
+}
+
+.resume-document.template-7 .contact {
+    margin-top: 15px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+/* BODY */
+.resume-document.template-7 .content {
+    padding: 35px 50px;
+}
+
+/* SECTION */
+.resume-document.template-7 .section {
+    margin-bottom: 28px;
+}
+
+.resume-document.template-7 .section-title {
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: #2d3e4f;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.resume-document.template-7 .section-line {
+    height: 1px;
+    background: #333;
+    margin-bottom: 15px;
+}
+
+/* TEXT */
+.resume-document.template-7 .summary {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #444;
+}
+
+/* EXPERIENCE */
+.resume-document.template-7 .job {
+    margin-bottom: 18px;
+}
+
+.resume-document.template-7 .job-title {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.resume-document.template-7 .job-sub {
+    font-size: 14px;
+    margin: 4px 0 6px;
+    color: #333;
+}
+
+.resume-document.template-7 ul {
+    margin: 0 0 0 18px;
+    padding: 0;
+}
+
+.resume-document.template-7 li {
+    font-size: 14px;
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.resume-document.template-7 .job-desc {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #444;
+}
+
+/* GRID SECTIONS */
+.resume-document.template-7 .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+}
+
+/* EDUCATION */
+.resume-document.template-7 .edu-block {
+    margin-bottom: 15px;
+}
+
+.resume-document.template-7 .edu-title {
+    font-weight: 700;
+}
+
+.resume-document.template-7 .edu-sub {
+    font-size: 14px;
+    margin: 3px 0;
+}
+
+.resume-document.template-7 .edu-date {
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+/* SKILLS / CERTIFICATIONS */
+.resume-document.template-7 .two-col-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 40px;
+}

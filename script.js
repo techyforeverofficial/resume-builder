@@ -282,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="template-preview">
                             <img id="img-prev-${t.id}" alt="${t.name}" style="display:none; width:100%; height:100%; object-fit:cover;">
                             <div id="placeholder-prev-${t.id}" class="template-placeholder" style="display:flex;">Loading...</div>
+                            <div class="template-hover-overlay">Click to select this template</div>
                         </div>
                         <span class="template-name">${t.name}</span>
                     </div>
@@ -391,30 +392,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const templateRadios = document.querySelectorAll('input[name="template"]');
     templateRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                selectedTemplate = e.target.value;
-                if (photoContainer) {
-                    photoContainer.style.display = 'none'; // Hidden: photo system architecture retained, but default templates do not natively implement it
-                }
+        radio.addEventListener('click', (e) => {
+            selectedTemplate = radio.value;
+            if (photoContainer) {
+                photoContainer.style.display = 'none'; // Hidden: photo system architecture retained, but default templates do not natively implement it
+            }
 
-                // Trigger modal for mobile and tablet users
-                if (window.innerWidth <= 1024 && mobileTemplateModal) {
-                    const t = templatesList.find(t => t.id === selectedTemplate);
-                    if (t) {
-                        document.getElementById('mobile-template-title').innerText = t.name;
-                        if (t.resolvedPreview) {
-                            document.getElementById('mobile-template-img').innerHTML = `<img src="${t.resolvedPreview}" alt="${t.name}">`;
-                        } else {
-                            document.getElementById('mobile-template-img').innerHTML = `
-                                <img id="mobile-preview-${t.id}" alt="${t.name}" style="display:none; width:100%; height:auto;">
-                                <div id="mobile-placeholder-${t.id}" style="padding: 3rem; color: #6b7280; display:flex; justify-content:center;">Loading...</div>
-                            `;
-                            setPreviewImage(t, document.getElementById(`mobile-preview-${t.id}`), document.getElementById(`mobile-placeholder-${t.id}`));
-                        }
-                        mobileTemplateModal.classList.add('active');
+            // Trigger modal for mobile and tablet users
+            if (window.innerWidth <= 1024 && mobileTemplateModal) {
+                const t = templatesList.find(t => t.id === selectedTemplate);
+                if (t) {
+                    document.getElementById('mobile-template-title').innerText = t.name;
+                    if (t.resolvedPreview) {
+                        document.getElementById('mobile-template-img').innerHTML = `<img src="${t.resolvedPreview}" alt="${t.name}">`;
+                    } else {
+                        document.getElementById('mobile-template-img').innerHTML = `
+                            <img id="mobile-preview-${t.id}" alt="${t.name}" style="display:none; width:100%; height:auto;">
+                            <div id="mobile-placeholder-${t.id}" style="padding: 3rem; color: #6b7280; display:flex; justify-content:center;">Loading...</div>
+                        `;
+                        setPreviewImage(t, document.getElementById(`mobile-preview-${t.id}`), document.getElementById(`mobile-placeholder-${t.id}`));
                     }
+                    mobileTemplateModal.classList.add('active');
                 }
+            } else {
+                if (currentStepIndex < visibleSteps.length - 1) showStepByIndex(currentStepIndex + 1);
             }
         });
     });

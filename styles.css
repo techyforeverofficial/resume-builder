@@ -517,6 +517,31 @@ textarea {
     padding: 10px;
 }
 
+.template-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.6rem;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.template-card:hover .template-hover-overlay {
+    transform: translateY(0);
+}
+
 .template-name {
     font-weight: 400;
     font-size: 0.85rem;

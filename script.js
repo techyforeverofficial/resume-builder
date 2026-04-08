@@ -282,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="template-preview">
                             <img id="img-prev-${t.id}" alt="${t.name}" style="display:none; width:100%; height:100%; object-fit:cover;">
                             <div id="placeholder-prev-${t.id}" class="template-placeholder" style="display:flex;">Loading...</div>
-                            <div class="template-hover-overlay">Click to select this template</div>
                         </div>
                         <span class="template-name">${t.name}</span>
                     </div>
@@ -343,22 +342,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const imgContainer = document.createElement('div');
             imgContainer.style.background = 'rgba(15, 23, 42, 0.95)';
-            imgContainer.style.padding = '1.5rem';
+            imgContainer.style.padding = '0.5rem';
             imgContainer.style.borderRadius = '16px';
             imgContainer.style.boxShadow = '0 25px 50px -12px rgba(0,0,0,0.5)';
             imgContainer.style.backdropFilter = 'blur(10px)';
             imgContainer.style.border = '1px solid rgba(255,255,255,0.1)';
+            imgContainer.style.display = 'flex';
+            imgContainer.style.flexDirection = 'column';
+            imgContainer.style.overflow = 'hidden';
+
+            const overlayText = document.createElement('div');
+            overlayText.innerText = 'Click to select this template';
+            overlayText.style.width = '100%';
+            overlayText.style.padding = '0.6rem 1rem';
+            overlayText.style.background = 'rgba(255, 255, 255, 0.05)';
+            overlayText.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+            overlayText.style.color = '#fff';
+            overlayText.style.textAlign = 'center';
+            overlayText.style.fontWeight = '500';
+            overlayText.style.fontSize = '0.9rem';
+            overlayText.style.letterSpacing = '0.5px';
+            overlayText.style.marginBottom = '0.5rem';
+            overlayText.style.borderTopLeftRadius = '12px';
+            overlayText.style.borderTopRightRadius = '12px';
 
             const img = document.createElement('img');
             img.id = 'desktop-hover-img';
             img.style.maxWidth = '90vw';
-            img.style.maxHeight = '85vh';
+            img.style.maxHeight = '80vh';
             img.style.width = 'auto';
             img.style.height = 'auto'; // True dimensions prevent raster upscaling
             img.style.display = 'block';
-            img.style.borderRadius = '8px';
+            img.style.borderRadius = '12px';
             img.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.2)';
 
+            imgContainer.appendChild(overlayText);
             imgContainer.appendChild(img);
             overlay.appendChild(imgContainer);
             document.body.appendChild(overlay);

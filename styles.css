@@ -2933,3 +2933,41 @@ textarea {
 .resume-document.template-10 .additional { margin: 6px 0 0 18px; padding: 0; }
 .resume-document.template-10 .additional li { margin-bottom: 6px; font-size: 14px; line-height: 1.5; }
 .resume-document.template-10 .additional-block { display: inline-block; }
+
+/* --- TEMPLATE 11 STYLES --- */
+.resume-document.template-11 {
+    width: 816px;
+    height: 1050px;
+    margin: auto;
+    background: #ffffff;
+    padding: 35px 45px;
+    box-sizing: border-box;
+    color: #222;
+    font-family: 'Roboto', sans-serif;
+}
+
+.resume-document.template-11 .name { font-size: 28px; font-weight: 700; color: #2a6ebb; text-transform: uppercase; }
+.resume-document.template-11 .role { font-size: 14px; font-weight: 600; margin-top: 4px; text-transform: uppercase; }
+.resume-document.template-11 .contact { font-size: 12px; margin-top: 6px; color: #444; }
+
+.resume-document.template-11 .section { margin-top: 18px; }
+.resume-document.template-11 .section-title { font-size: 13px; font-weight: 700; color: #2a6ebb; text-transform: uppercase; padding: 6px 0; margin-bottom: 8px; border-top: 2px solid #2a6ebb; border-bottom: 2px solid #2a6ebb; }
+
+.resume-document.template-11 .text { font-size: 12.5px; line-height: 1.5; color: #333; }
+
+.resume-document.template-11 .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); font-size: 12px; gap: 5px 20px; margin-bottom: 15px;}
+.resume-document.template-11 .skills-grid div { line-height: 1.5; }
+
+.resume-document.template-11 .job { margin-bottom: 12px; }
+.resume-document.template-11 .job-header { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; }
+
+.resume-document.template-11 ul { margin: 5px 0 0 16px; padding: 0; }
+.resume-document.template-11 li { font-size: 12.5px; margin-bottom: 3px; line-height: 1.4; }
+
+.resume-document.template-11 .edu { margin-bottom: 10px; }
+.resume-document.template-11 .edu-header { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; }
+.resume-document.template-11 .sub { font-size: 12px; margin-top: 2px; }
+
+.resume-document.template-11 .additional { margin: 5px 0 0 16px; padding: 0; }
+.resume-document.template-11 .additional li { margin-bottom: 4px; font-size: 12.5px; line-height: 1.4; }
+.resume-document.template-11 .additional-block { display: inline-block; }

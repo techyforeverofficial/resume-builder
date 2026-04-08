@@ -2897,3 +2897,39 @@ textarea {
 .resume-document.template-9 .bold {
     font-weight: 700;
 }
+
+/* --- TEMPLATE 10 STYLES --- */
+.resume-document.template-10 {
+    box-sizing: border-box;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: #ffffff;
+    padding: 45px 55px;
+    color: #222;
+}
+
+.resume-document.template-10 .header { text-align: center; }
+.resume-document.template-10 .name { font-size: 38px; font-weight: 700; color: #7b5aa6; letter-spacing: 2px; text-transform: uppercase; }
+.resume-document.template-10 .contact { margin-top: 10px; font-size: 14px; color: #444; line-height: 1.6; }
+
+.resume-document.template-10 .divider { border-top: 1px solid #bbb; margin: 20px 0 25px; }
+
+.resume-document.template-10 .section { margin-bottom: 22px; }
+.resume-document.template-10 .section-title { color: #7b5aa6; font-weight: 700; font-size: 16px; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+
+.resume-document.template-10 .summary { font-size: 14px; line-height: 1.7; color: #444; }
+
+.resume-document.template-10 .job { margin-bottom: 18px; }
+.resume-document.template-10 .job-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; }
+.resume-document.template-10 .company { font-weight: 700; }
+.resume-document.template-10 .date { font-weight: 600; }
+
+.resume-document.template-10 ul { margin: 6px 0 0 18px; padding: 0; }
+.resume-document.template-10 li { font-size: 14px; margin-bottom: 5px; line-height: 1.5; }
+
+.resume-document.template-10 .edu { margin-bottom: 15px; }
+.resume-document.template-10 .edu-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; }
+.resume-document.template-10 .sub { font-size: 14px; margin-top: 2px; }
+
+.resume-document.template-10 .additional { margin: 6px 0 0 18px; padding: 0; }
+.resume-document.template-10 .additional li { margin-bottom: 6px; font-size: 14px; line-height: 1.5; }
+.resume-document.template-10 .additional-block { display: inline-block; }

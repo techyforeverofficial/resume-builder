@@ -201,7 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: "6", name: "Template 6" },
         { id: "7", name: "Template 7" },
         { id: "8", name: "Template 8" },
-        { id: "9", name: "Template 9" }
+        { id: "9", name: "Template 9" },
+        { id: "10", name: "Template 10" }
     ];
 
     const basePath = "templates/";
@@ -2217,10 +2218,186 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         <!-- RIGHT -->
                         <div class="sidebar">
-                        ${rightContent}
                         </div>
                     </div>
                 `;
+            } else if (data.template === '10') {
+                const nameStr = data.fullName || "Your Name";
+                const summaryText = resumeData.summary || data.summary || "";
+                
+                htmlStr += `
+                    <!-- HEADER -->
+                    <div class="header">
+                        <div class="name">${escapeHTML(nameStr)}</div>
+                        <div class="contact">
+                `;
+                
+                let contactItems = [];
+                if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
+                if (data.phone) contactItems.push(escapeHTML(data.phone));
+                if (data.email) contactItems.push(escapeHTML(data.email));
+                if (additionalInfo.website) contactItems.push(escapeHTML(additionalInfo.website));
+                if (additionalInfo.linkedin) contactItems.push(escapeHTML(additionalInfo.linkedin));
+                htmlStr += contactItems.join(' &bull; ') + `
+                        </div>
+                    </div>
+                `;
+
+                if (summaryText.trim() && summaryText !== '<br>') {
+                    htmlStr += `
+                    <div class="divider"></div>
+                    <!-- SUMMARY -->
+                    <div class="section">
+                        <div class="section-title">SUMMARY</div>
+                        <div class="summary">${summaryText}</div>
+                    </div>
+                    `;
+                }
+
+                const workExpArray = resumeData.workExperience || resumeData.work || [];
+                const internExpArray = resumeData.internshipExperience || [];
+
+                if (resumeData.experienceType !== 'fresher') {
+                    if (workExpArray.length > 0) {
+                        htmlStr += `
+                            <div class="divider"></div>
+                            <!-- EXPERIENCE -->
+                            <div class="section">
+                                <div class="section-title">WORK EXPERIENCE</div>
+                        `;
+                        for (let i = 0; i < workExpArray.length; i++) {
+                            const exp = workExpArray[i];
+                            if (!exp.company.trim()) continue;
+                            let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
+                            htmlStr += `
+                                <div class="job">
+                                    <div class="job-header">
+                                        <div class="company">${escapeHTML(exp.role)}${exp.company ? `, ${escapeHTML(exp.company)}` : ''}</div>
+                                        <div class="date">${escapeHTML(durationStr)}</div>
+                                    </div>
+                                    ${exp.description ? `<ul style="margin: 6px 0 0 18px; padding: 0;"><li style="font-size: 14px; margin-bottom: 5px; line-height: 1.5;">${exp.description.replace(/<br>/g, '</li><li style="font-size: 14px; margin-bottom: 5px; line-height: 1.5;">')}</li></ul>` : ''}
+                                </div>
+                            `;
+                        }
+                        htmlStr += `</div>`;
+                    }
+                    
+                    if (internExpArray.length > 0) {
+                        htmlStr += `
+                            <div class="divider"></div>
+                            <!-- INTERNSHIP EXPERIENCE -->
+                            <div class="section">
+                                <div class="section-title">INTERNSHIP EXPERIENCE</div>
+                        `;
+                        for (let i = 0; i < internExpArray.length; i++) {
+                            const exp = internExpArray[i];
+                            if (!exp.company.trim()) continue;
+                            let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
+                            htmlStr += `
+                                <div class="job">
+                                    <div class="job-header">
+                                        <div class="company">${escapeHTML(exp.role)}${exp.company ? `, ${escapeHTML(exp.company)}` : ''}</div>
+                                        <div class="date">${escapeHTML(durationStr)}</div>
+                                    </div>
+                                    ${exp.description ? `<ul style="margin: 6px 0 0 18px; padding: 0;"><li style="font-size: 14px; margin-bottom: 5px; line-height: 1.5;">${exp.description.replace(/<br>/g, '</li><li style="font-size: 14px; margin-bottom: 5px; line-height: 1.5;">')}</li></ul>` : ''}
+                                </div>
+                            `;
+                        }
+                        htmlStr += `</div>`;
+                    }
+                }
+
+                const education = resumeData.education || [];
+                if (education.length > 0) {
+                    htmlStr += `
+                        <div class="divider"></div>
+                        <!-- EDUCATION -->
+                        <div class="section">
+                            <div class="section-title">EDUCATION</div>
+                    `;
+                    for (let i = 0; i < education.length; i++) {
+                        const edu = education[i];
+                        if (!edu.school.trim()) continue;
+                        let durationStr = `${edu.gradMonth} ${edu.gradYear}`;
+                        htmlStr += `
+                            <div class="edu">
+                                <div class="edu-header">
+                                    <div class="company">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
+                                    <div class="date">${escapeHTML(durationStr)}</div>
+                                </div>
+                                <div class="sub">${escapeHTML(edu.school)}${edu.location ? `, ${escapeHTML(edu.location)}` : ''}</div>
+                                ${edu.coursework.trim() ? `<ul style="margin: 6px 0 0 18px; padding: 0;"><li style="font-size: 14px; margin-bottom: 5px; line-height: 1.5;"><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\\n/g, '<br>')}</li></ul>` : ''}
+                            </div>
+                        `;
+                    }
+                    htmlStr += `</div>`;
+                }
+
+                const projects = resumeData.projects || [];
+                if (projects.length > 0) {
+                    htmlStr += `
+                        <div class="divider"></div>
+                        <!-- PROJECTS -->
+                        <div class="section">
+                            <div class="section-title">PROJECTS</div>
+                    `;
+                    for (let i = 0; i < projects.length; i++) {
+                        const p = projects[i];
+                        htmlStr += `
+                            <div class="job">
+                                <div class="job-header">
+                                    <div class="company">${escapeHTML(p.name)}</div>
+                                    ${p.link ? `<div class="date"><a href="${escapeHTML(p.link)}" style="color:inherit; text-decoration:none;">${escapeHTML(p.link)}</a></div>` : ''}
+                                </div>
+                                ${p.desc ? `<ul style="margin: 6px 0 0 18px; padding: 0;"><li style="font-size: 14px; margin-bottom: 5px; line-height: 1.5;">${p.desc.replace(/<br>/g, '</li><li style="font-size: 14px; margin-bottom: 5px; line-height: 1.5;">')}</li></ul>` : ''}
+                            </div>
+                        `;
+                    }
+                    htmlStr += `</div>`;
+                }
+
+                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
+                
+                if (skillsList.length > 0 || (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') || (additionalInfo.languages && additionalInfo.languages.length > 0) || (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') || additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
+                    
+                    htmlStr += `
+                        <div class="divider"></div>
+                        <!-- ADDITIONAL -->
+                        <div class="section">
+                            <div class="section-title">ADDITIONAL INFORMATION</div>
+                            <ul class="additional">
+                    `;
+
+                    if (skillsList.length > 0) {
+                        htmlStr += `<li><strong>Technical Skills:</strong> ${skillsList.map(s => escapeHTML(s.trim())).join(', ')}</li>`;
+                    }
+                    
+                    if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                        htmlStr += `<li><strong>Languages:</strong> ${additionalInfo.languages.map(l => escapeHTML(l)).join(', ')}</li>`;
+                    }
+
+                    if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
+                        htmlStr += `<li><strong>Certifications:</strong> <span class="additional-block">${additionalInfo.certifications}</span></li>`;
+                    }
+
+                    if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
+                        htmlStr += `<li><strong>Awards/Activities:</strong> <span class="additional-block">${additionalInfo.hobbies}</span></li>`;
+                    }
+
+                    if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
+                        let pdText = [];
+                        if (additionalInfo.nationality) pdText.push(`Nationality: ${escapeHTML(additionalInfo.nationality)}`);
+                        if (additionalInfo.maritalStatus) pdText.push(`Marital Status: ${escapeHTML(additionalInfo.maritalStatus)}`);
+                        if (additionalInfo.visaStatus) pdText.push(`Visa Status: ${escapeHTML(additionalInfo.visaStatus)}`);
+                        if (additionalInfo.dob) pdText.push(`Date of Birth: ${escapeHTML(additionalInfo.dob)}`);
+                        htmlStr += `<li><strong>Personal Details:</strong> ${pdText.join(' | ')}</li>`;
+                    }
+
+                    htmlStr += `
+                            </ul>
+                        </div>
+                    `;
+                }
             } else if (data.template === 'professional') {
                 htmlStr += `
                     <div class="prof-accent"></div>

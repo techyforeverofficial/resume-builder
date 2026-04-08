@@ -2803,3 +2803,97 @@ textarea {
 .resume-document.template-8 .skills ul {
     margin-left: 18px;
 }
+
+/* --- TEMPLATE 9 STYLES --- */
+.resume-document.template-9 {
+    box-sizing: border-box;
+    font-family: Georgia, "Times New Roman", serif;
+    background: #ffffff;
+    padding: 50px 55px;
+    color: #222;
+}
+
+.resume-document.template-9 .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.resume-document.template-9 .name {
+    font-size: 52px;
+    font-weight: 700;
+}
+
+.resume-document.template-9 .tagline {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+.resume-document.template-9 .contact-info {
+    text-align: right;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.resume-document.template-9 .contact-info a {
+    color: #1a5dab;
+    text-decoration: underline;
+}
+
+.resume-document.template-9 .main-layout {
+    display: grid;
+    grid-template-columns: 60% 35%;
+    gap: 5%;
+    margin-top: 40px;
+}
+
+.resume-document.template-9 .section {
+    margin-bottom: 28px;
+}
+
+.resume-document.template-9 .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a5dab;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.resume-document.template-9 .item {
+    margin-bottom: 20px;
+}
+
+.resume-document.template-9 .item-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.resume-document.template-9 .item-sub {
+    font-size: 14px;
+    margin: 4px 0;
+    color: #555;
+    text-transform: uppercase;
+}
+
+.resume-document.template-9 .item-desc {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+}
+
+.resume-document.template-9 .sidebar ul, 
+.resume-document.template-9 .sidebar p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 6px 0;
+}
+
+.resume-document.template-9 .sidebar ul {
+    padding-left: 18px;
+}
+
+.resume-document.template-9 .bold {
+    font-weight: 700;
+}

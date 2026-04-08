@@ -1155,7 +1155,48 @@ document.addEventListener('DOMContentLoaded', () => {
             summary: data.summary
         };
 
-        window.generateResumeHTML = function (resumeData) {
+        window.generateResumeHTML = function (originalResumeData) {
+            // Global central validation logic to scrub empty HTML fields before rendering any template
+            const hasMeaningfulText = (html) => {
+                if (!html) return false;
+                const text = html.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, '').trim();
+                return text.length > 0;
+            };
+            
+            // Deep clone to prevent mutating global state accidentally
+            const resumeData = JSON.parse(JSON.stringify(originalResumeData));
+            
+            resumeData.projects = (resumeData.projects || []).filter(p => 
+                (p.name && p.name.trim() !== '') || 
+                (p.link && p.link.trim() !== '') || 
+                hasMeaningfulText(p.desc)
+            );
+            
+            resumeData.work = (resumeData.work || []).filter(exp => 
+                (exp.company && exp.company.trim() !== '') || 
+                (exp.role && exp.role.trim() !== '') || 
+                hasMeaningfulText(exp.description)
+            );
+            resumeData.workExperience = resumeData.work;
+
+            resumeData.internshipExperience = (resumeData.internshipExperience || []).filter(exp => 
+                (exp.company && exp.company.trim() !== '') || 
+                (exp.role && exp.role.trim() !== '') || 
+                hasMeaningfulText(exp.description)
+            );
+            
+            if (resumeData.additional) {
+                if (!hasMeaningfulText(resumeData.additional.certifications)) resumeData.additional.certifications = '';
+                if (!hasMeaningfulText(resumeData.additional.hobbies)) resumeData.additional.hobbies = '';
+                if (!hasMeaningfulText(resumeData.additional.awardsAndActivities)) resumeData.additional.awardsAndActivities = '';
+                if (resumeData.additional.languages) {
+                    resumeData.additional.languages = resumeData.additional.languages.filter(l => l && l.trim() !== '');
+                }
+            }
+
+            if (!hasMeaningfulText(resumeData.summary)) resumeData.summary = '';
+            if (resumeData.contact && !hasMeaningfulText(resumeData.contact.summary)) resumeData.contact.summary = '';
+
             let htmlStr = '';
             const data = resumeData.contact || {};
             const experiences = resumeData.work || [];

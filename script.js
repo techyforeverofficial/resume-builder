@@ -125,9 +125,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
     const totalDOMSteps = 8;
 
-    const showStepByIndex = (index) => {
+    // Initial Load Handling: Replace current entry with step 0
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState({ stepIndex: 0, inResumeBuilder: true }, '', '');
+    }
+
+    const showStepByIndex = (index, skipHistory = false) => {
         if (index < 0 || index >= visibleSteps.length) return;
         const stepNumber = visibleSteps[index];
+        const isSameStep = (currentStepIndex === index);
 
         for (let i = 1; i <= totalDOMSteps; i++) {
             const stepContent = document.getElementById(`step-${i}`);
@@ -167,9 +173,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentStepIndex = index;
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (!skipHistory && !isSameStep) {
+            window.history.pushState({ stepIndex: index, inResumeBuilder: true }, '', '');
+        }
     };
 
     window.showStepByIndex = showStepByIndex;
+
+    window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.inResumeBuilder !== undefined) {
+            // Ensure the form view is active if we navigate back into it
+            if (!document.getElementById('form-view').classList.contains('active')) {
+                navigateTo('form');
+            }
+            showStepByIndex(e.state.stepIndex, true);
+        }
+    });
 
     document.querySelectorAll('.btn-next').forEach(btn => {
         btn.addEventListener('click', () => {

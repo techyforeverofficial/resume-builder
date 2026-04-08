@@ -97,7 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
         privacy: document.getElementById('link-privacy-footer')
     };
 
-    const navigateTo = (viewName) => {
+    let currentView = 'home';
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState({ page: 'home' }, '', '');
+    }
+
+    const navigateTo = (viewName, skipHistory = false) => {
+        if (currentView === viewName) return;
+
         // Hide all views
         Object.values(views).forEach(v => {
             if (v) v.classList.remove('active');
@@ -113,22 +120,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (navLinks[viewName]) {
             navLinks[viewName].classList.add('active');
-        } else if (viewName === 'form' || viewName === 'preview') {
-            // keep home highlighted or remove all, let's remove all for form/preview 
         }
 
         window.scrollTo(0, 0);
+
+        if (!skipHistory) {
+            const state = { page: viewName };
+            if (viewName === 'form') state.stepIndex = currentStepIndex;
+            window.history.pushState(state, '', '');
+        }
+        currentView = viewName;
     };
 
     // --- Step Navigation Logic ---
     let currentStepIndex = 0;
     let visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
     const totalDOMSteps = 8;
-
-    // Initial Load Handling: Replace current entry with step 0
-    if (window.history && window.history.replaceState) {
-        window.history.replaceState({ stepIndex: 0, inResumeBuilder: true }, '', '');
-    }
 
     const showStepByIndex = (index, skipHistory = false) => {
         if (index < 0 || index >= visibleSteps.length) return;
@@ -175,19 +182,24 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         if (!skipHistory && !isSameStep) {
-            window.history.pushState({ stepIndex: index, inResumeBuilder: true }, '', '');
+            window.history.pushState({ page: 'form', stepIndex: index }, '', '');
         }
     };
 
     window.showStepByIndex = showStepByIndex;
 
     window.addEventListener('popstate', (e) => {
-        if (e.state && e.state.inResumeBuilder !== undefined) {
-            // Ensure the form view is active if we navigate back into it
-            if (!document.getElementById('form-view').classList.contains('active')) {
-                navigateTo('form');
+        if (e.state && e.state.page) {
+            navigateTo(e.state.page, true);
+            if (e.state.page === 'form' && e.state.stepIndex !== undefined) {
+                showStepByIndex(e.state.stepIndex, true);
+            } else if (e.state.page === 'dashboard') {
+                if (typeof fetchMyResumes === 'function') fetchMyResumes();
+            } else if (e.state.page === 'subscription') {
+                if (typeof fetchMySubscription === 'function') fetchMySubscription();
             }
-            showStepByIndex(e.state.stepIndex, true);
+        } else {
+            navigateTo('home', true);
         }
     });
 
@@ -502,13 +514,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     document.getElementById('btn-start').addEventListener('click', () => {
-        showStepByIndex(0);
+        showStepByIndex(0, true);
         navigateTo('form');
     });
     const btnCreateNew = document.getElementById('btn-create-new');
     if (btnCreateNew) {
         btnCreateNew.addEventListener('click', () => {
-            showStepByIndex(0);
+            showStepByIndex(0, true);
             navigateTo('form');
         });
     }
@@ -584,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.populateForm(resumeObj);
                         currentResumeData = resumeObj;
                         selectedTemplate = data.template;
-                        showStepByIndex(0);
+                        showStepByIndex(0, true);
                         navigateTo('form');
                     });
 
@@ -758,10 +770,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 currStepLog = 3;
                 currentStepIndex = visibleSteps.indexOf(3);
             }
-            showStepByIndex(currentStepIndex);
+            showStepByIndex(currentStepIndex, true);
         } else {
              // Init load
-             showStepByIndex(0);
+             showStepByIndex(0, true);
         }
     };
 

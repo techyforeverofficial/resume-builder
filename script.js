@@ -2376,12 +2376,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `<li><strong>Languages:</strong> ${additionalInfo.languages.map(l => escapeHTML(l)).join(', ')}</li>`;
                     }
 
+                    const inlineHTML = (html) => {
+                        if (!html) return '';
+                        return html.replace(/<\/p>|<\/li>|<br\s*\/?>/gi, ', ').replace(/<[^>]+>/g, '').replace(/,\s*,/g, ', ').replace(/,\s*$/, '').replace(/^,\s*/, '').trim();
+                    };
+
                     if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
-                        htmlStr += `<li><strong>Certifications:</strong> <span class="additional-block">${additionalInfo.certifications}</span></li>`;
+                        htmlStr += `<li><strong>Certifications:</strong> <span class="additional-block">${inlineHTML(additionalInfo.certifications)}</span></li>`;
                     }
 
                     if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
-                        htmlStr += `<li><strong>Awards/Activities:</strong> <span class="additional-block">${additionalInfo.hobbies}</span></li>`;
+                        htmlStr += `<li><strong>Hobbies:</strong> <span class="additional-block">${inlineHTML(additionalInfo.hobbies)}</span></li>`;
+                    }
+                    
+                    if (additionalInfo.awardsAndActivities && additionalInfo.awardsAndActivities.trim() !== '' && additionalInfo.awardsAndActivities !== '<br>') {
+                        htmlStr += `<li><strong>Awards/Activities:</strong> <span class="additional-block">${inlineHTML(additionalInfo.awardsAndActivities)}</span></li>`;
                     }
 
                     if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {

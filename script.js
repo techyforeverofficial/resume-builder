@@ -2038,13 +2038,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div>
                 `;
                 
+                let leftContent = '';
+                let rightContent = '';
+                let leftColHeight = 0;
+                const MAX_LEFT_HEIGHT = 800; // Approximated max height for left column
+
                 if (summaryText.trim() && summaryText !== '<br>') {
-                    htmlStr += `
+                    leftContent += `
                             <div class="section">
                                 <div class="section-title">SUMMARY</div>
                                 <div class="item-desc">${summaryText}</div>
                             </div>
                     `;
+                    leftColHeight += 40 + (summaryText.length / 50) * 20;
                 }
 
                 const workExpArray = resumeData.workExperience || resumeData.work || [];
@@ -2052,95 +2058,104 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (resumeData.experienceType !== 'fresher') {
                     if (workExpArray.length > 0) {
-                        htmlStr += `
+                        leftContent += `
                             <div class="section">
                                 <div class="section-title">EXPERIENCE</div>
                         `;
+                        leftColHeight += 40;
                         for (let i = 0; i < workExpArray.length; i++) {
                             const exp = workExpArray[i];
                             if (!exp.company.trim()) continue;
                             let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endMonth + ' ' + exp.endYear}`;
-                            htmlStr += `
+                            leftContent += `
                                 <div class="item">
                                     <div class="item-title">${escapeHTML(exp.company)}${exp.location ? `, ${escapeHTML(exp.location)}` : ''} &mdash; <i>${escapeHTML(exp.role)}</i></div>
                                     <div class="item-sub">${escapeHTML(durationStr)}</div>
                                     ${exp.description ? `<div class="item-desc">${exp.description}</div>` : ''}
                                 </div>
                             `;
+                            leftColHeight += 60 + (exp.description ? (exp.description.length / 50) * 20 : 0);
                         }
-                        htmlStr += `</div>`;
+                        leftContent += `</div>`;
                     }
                     
                     if (internExpArray.length > 0) {
-                        htmlStr += `
+                        leftContent += `
                             <div class="section">
                                 <div class="section-title">INTERNSHIP EXPERIENCE</div>
                         `;
+                        leftColHeight += 40;
                         for (let i = 0; i < internExpArray.length; i++) {
                             const exp = internExpArray[i];
                             if (!exp.company.trim()) continue;
                             let durationStr = `${exp.startMonth} ${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endMonth + ' ' + exp.endYear}`;
-                            htmlStr += `
+                            leftContent += `
                                 <div class="item">
                                     <div class="item-title">${escapeHTML(exp.company)}${exp.location ? `, ${escapeHTML(exp.location)}` : ''} &mdash; <i>${escapeHTML(exp.role)}</i></div>
                                     <div class="item-sub">${escapeHTML(durationStr)}</div>
                                     ${exp.description ? `<div class="item-desc">${exp.description}</div>` : ''}
                                 </div>
                             `;
+                            leftColHeight += 60 + (exp.description ? (exp.description.length / 50) * 20 : 0);
                         }
-                        htmlStr += `</div>`;
+                        leftContent += `</div>`;
                     }
                 }
 
                 const education = resumeData.education || [];
                 if (education.length > 0) {
-                    htmlStr += `
+                    leftContent += `
                             <div class="section">
                                 <div class="section-title">EDUCATION</div>
                     `;
+                    leftColHeight += 40;
                     for (let i = 0; i < education.length; i++) {
                         const edu = education[i];
                         if (!edu.school.trim()) continue;
                         let durationStr = `${edu.gradMonth} ${edu.gradYear}`;
-                        htmlStr += `
+                        leftContent += `
                                 <div class="item">
                                     <div class="item-title">${escapeHTML(edu.school)}${edu.location ? `, ${escapeHTML(edu.location)}` : ''} &mdash; <i>${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</i></div>
                                     <div class="item-sub">${escapeHTML(durationStr)}</div>
                                     ${edu.coursework.trim() ? `<div class="item-desc"><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\\n/g, '<br>')}</div>` : ''}
                                 </div>
                         `;
+                        leftColHeight += 50 + (edu.coursework.trim() ? (edu.coursework.length / 50) * 20 : 0);
                     }
-                    htmlStr += `</div>`;
+                    leftContent += `</div>`;
                 }
 
+                let projectsHtmlRight = '';
                 const projects = resumeData.projects || [];
                 if (projects.length > 0) {
-                    htmlStr += `
+                    let pHeight = 40;
+                    let pContent = `
                             <div class="section">
                                 <div class="section-title">PROJECTS</div>
                     `;
                     for (let i = 0; i < projects.length; i++) {
                         const p = projects[i];
-                        htmlStr += `
+                        pContent += `
                                 <div class="item">
                                     <div class="item-title">${escapeHTML(p.name)} ${p.link ? `&mdash; <i><a href="${escapeHTML(p.link)}" style="color:inherit; text-decoration:none;">${escapeHTML(p.link)}</a></i>` : ''}</div>
                                     ${p.desc ? `<div class="item-desc" style="margin-top: 4px;">${p.desc}</div>` : ''}
                                 </div>
                         `;
+                        pHeight += 40 + (p.desc ? (p.desc.length / 50) * 20 : 0);
                     }
-                    htmlStr += `</div>`;
-                }
+                    pContent += `</div>`;
 
-                htmlStr += `
-                        </div>
-                        
-                        <!-- RIGHT -->
-                        <div class="sidebar">
-                `;
+                    if (leftColHeight + pHeight <= MAX_LEFT_HEIGHT) {
+                        leftContent += pContent;
+                        leftColHeight += pHeight;
+                    } else {
+                        projectsHtmlRight = pContent;
+                    }
+                }
 
                 const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
                 if (skillsList.length > 0) {
-                    htmlStr += `
+                    rightContent += `
                             <div class="section">
                                 <div class="section-title">SKILLS</div>
                                 <ul>
@@ -2151,7 +2166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
-                    htmlStr += `
+                    rightContent += `
                             <div class="section">
                                 <div class="section-title">CERTIFICATIONS</div>
                                 <div class="item-desc">${additionalInfo.certifications}</div>
@@ -2160,7 +2175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (additionalInfo.languages && additionalInfo.languages.length > 0) {
-                    htmlStr += `
+                    rightContent += `
                             <div class="section">
                                 <div class="section-title">LANGUAGES</div>
                                 <ul>
@@ -2171,7 +2186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
-                    htmlStr += `
+                    rightContent += `
                             <div class="section">
                                 <div class="section-title">HOBBIES</div>
                                 <div class="item-desc">${additionalInfo.hobbies}</div>
@@ -2180,7 +2195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
-                    htmlStr += `
+                    rightContent += `
                             <div class="section">
                                 <div class="section-title">PERSONAL DETAILS</div>
                                 <div class="item-desc">
@@ -2193,7 +2208,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
+                // Add Projects to right if needed
+                if (projectsHtmlRight) rightContent += projectsHtmlRight;
+
                 htmlStr += `
+                        ${leftContent}
+                        </div>
+                        
+                        <!-- RIGHT -->
+                        <div class="sidebar">
+                        ${rightContent}
                         </div>
                     </div>
                 `;

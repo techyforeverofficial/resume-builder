@@ -2824,7 +2824,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     htmlStr += `
                             <!-- EXPERTISE (SKILLS) -->
                             <div class="skills">
-                                <div class="section-title">Expertise</div>
+                                <div class="section-title">SKILLS</div>
                                 <div class="section-line"></div>
                                 <ul>
                     `;

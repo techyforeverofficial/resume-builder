@@ -235,7 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: "8", name: "Template 8" },
         { id: "9", name: "Template 9" },
         { id: "10", name: "Template 10" },
-        { id: "11", name: "Template 11" }
+        { id: "11", name: "Template 11" },
+        { id: "12", name: "Template 12" }
     ];
 
     const basePath = "templates/";
@@ -3010,6 +3011,218 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`;
                 }
 
+            } else if (data.template === '12') {
+                const nameStr = data.fullName || "Your Name";
+                // 1. HEADER
+                htmlStr += `
+                    <div class="header">
+                        <div>
+                            <div class="name">\${escapeHTML(nameStr)}</div>
+                            <div class="role">\${escapeHTML(data.title || "")}</div>
+                        </div>
+                        <div class="header-right">
+                `;
+                let contactInfo = [];
+                if (data.phone) contactInfo.push(escapeHTML(data.phone));
+                if (data.email) contactInfo.push(escapeHTML(data.email));
+                if (data.city || data.country) contactInfo.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
+                if (additionalInfo.website) contactInfo.push(escapeHTML(additionalInfo.website));
+                if (additionalInfo.linkedin) contactInfo.push(escapeHTML(additionalInfo.linkedin));
+                htmlStr += contactInfo.join('<br>') + `
+                        </div>
+                    </div>
+                `;
+
+                htmlStr += `<div class="content">`;
+
+                // 2. ABOUT (Summary)
+                const summaryText = resumeData.summary || data.summary || "";
+                if (summaryText.trim() && summaryText !== '<br>') {
+                    htmlStr += `
+                        <div class="section">
+                            <div class="section-title">About Me</div>
+                            <div class="section-line"></div>
+                            <div class="text">\${summaryText}</div>
+                        </div>
+                    `;
+                }
+
+                // 3. WORK EXPERIENCE & INTERNSHIP EXPERIENCE
+                const workExpArray = resumeData.workExperience || resumeData.work || [];
+                const internExpArray = resumeData.internshipExperience || [];
+
+                if (resumeData.experienceType !== 'fresher') {
+                    if (workExpArray.length > 0) {
+                        htmlStr += `
+                        <div class="section">
+                            <div class="section-title">Work Experience</div>
+                            <div class="section-line"></div>`;
+                        
+                        workExpArray.forEach((exp, idx) => {
+                            if (!exp.company.trim()) return;
+                            let durationStr = `\${exp.startYear} – \${exp.current ? 'NOW' : exp.endYear}`;
+                            htmlStr += `
+                            <div class="job">
+                                <div class="job-header">
+                                    <div style="text-transform: uppercase;">\${escapeHTML(exp.company)} – \${escapeHTML(exp.role)}</div>
+                                    <div>\${escapeHTML(durationStr)}</div>
+                                </div>
+                                \${exp.description ? `<div class="job-desc">\${exp.description}</div>` : ''}
+                            </div>
+                            `;
+                            if (idx < workExpArray.length - 1) htmlStr += `<div class="divider"></div>`;
+                        });
+                        htmlStr += `</div>`;
+                    }
+
+                    if (internExpArray.length > 0) {
+                        htmlStr += `
+                        <div class="section">
+                            <div class="section-title">Internship Experience</div>
+                            <div class="section-line"></div>`;
+                        
+                        internExpArray.forEach((exp, idx) => {
+                            if (!exp.company.trim()) return;
+                            let durationStr = `\${exp.startYear} – \${exp.current ? 'NOW' : exp.endYear}`;
+                            htmlStr += `
+                            <div class="job">
+                                <div class="job-header">
+                                    <div style="text-transform: uppercase;">\${escapeHTML(exp.company)} – \${escapeHTML(exp.role)}</div>
+                                    <div>\${escapeHTML(durationStr)}</div>
+                                </div>
+                                \${exp.description ? `<div class="job-desc">\${exp.description}</div>` : ''}
+                            </div>
+                            `;
+                            if (idx < internExpArray.length - 1) htmlStr += `<div class="divider"></div>`;
+                        });
+                        htmlStr += `</div>`;
+                    }
+                }
+
+                // PROJECTS
+                const projects = resumeData.projects || [];
+                if (projects && projects.length > 0) {
+                    htmlStr += `
+                    <div class="section">
+                        <div class="section-title">Projects</div>
+                        <div class="section-line"></div>`;
+                    projects.forEach((p, idx) => {
+                        htmlStr += `
+                        <div class="job">
+                            <div class="job-header">
+                                <div style="text-transform: uppercase;">\${escapeHTML(p.name)}</div>
+                                <div>\${p.link ? `<a style="color:inherit; text-decoration:none;" href="\${escapeHTML(p.link)}">\${escapeHTML(p.link)}</a>` : ''}</div>
+                            </div>
+                            \${p.desc ? `<div class="job-desc">\${p.desc}</div>` : ''}
+                        </div>
+                        `;
+                        if (idx < projects.length - 1) htmlStr += `<div class="divider"></div>`;
+                    });
+                    htmlStr += `</div>`;
+                }
+
+                // 4. EDUCATION (Grid)
+                if (education.length > 0) {
+                    htmlStr += `
+                    <div class="section">
+                        <div class="section-title">Education</div>
+                        <div class="section-line"></div>
+                        <div class="education-grid">
+                    `;
+                    education.forEach(edu => {
+                        if (!edu.school.trim()) return;
+                        let durationStr = `(\${edu.gradYear})`;
+                        htmlStr += `
+                            <div class="edu-item">
+                                <div class="edu-year">\${escapeHTML(durationStr)}</div>
+                                <div class="edu-title" style="text-transform: uppercase;">\${escapeHTML(edu.school)}</div>
+                                <div class="edu-sub">\${escapeHTML(edu.degree)} in \${escapeHTML(edu.fieldOfStudy)}</div>
+                            </div>
+                        `;
+                    });
+                    htmlStr += `
+                        </div>
+                    </div>
+                    `;
+                }
+
+                htmlStr += `<div class="bottom-grid">`;
+
+                // SKILLS AND OTHERS (Left col of bottom grid)
+                htmlStr += `<div>`; // wrapper for left side
+                
+                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
+                if (skillsList.length > 0) {
+                    htmlStr += `
+                    <div class="section skills">
+                        <div class="section-title">Skills</div>
+                        <div class="section-line"></div>
+                        <ul>
+                            \${skillsList.map(s => `<li>\${escapeHTML(s.trim())}</li>`).join('')}
+                        </ul>
+                    </div>
+                    `;
+                }
+
+                if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
+                    htmlStr += `
+                    <div class="section">
+                        <div class="section-title">Certifications</div>
+                        <div class="section-line"></div>
+                        <div class="text">\${additionalInfo.certifications}</div>
+                    </div>
+                    `;
+                }
+                htmlStr += `</div>`; // end wrapper for left side
+
+                // LANGUAGES AND OTHERS (Right col of bottom grid)
+                htmlStr += `<div>`; // wrapper for right side
+                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                    htmlStr += `
+                    <div class="section">
+                        <div class="section-title">Languages</div>
+                        <div class="section-line"></div>
+                    `;
+                    additionalInfo.languages.forEach(l => {
+                        htmlStr += `
+                        <div class="lang-item">
+                            \${escapeHTML(l)}
+                            <div class="bar"><div class="fill \${escapeHTML(l.toLowerCase())}" style="width: 85%;"></div></div>
+                        </div>
+                        `;
+                    });
+                    htmlStr += `</div>`;
+                }
+
+                if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
+                    htmlStr += `
+                    <div class="section">
+                        <div class="section-title">Hobbies</div>
+                        <div class="section-line"></div>
+                        <div class="text">\${additionalInfo.hobbies}</div>
+                    </div>
+                    `;
+                }
+
+                if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
+                    htmlStr += `
+                    <div class="section">
+                        <div class="section-title">Personal Details</div>
+                        <div class="section-line"></div>
+                        <div class="text" style="display:grid; grid-template-columns: 1fr; gap: 5px;">
+                            \${additionalInfo.nationality ? `<div><strong>Nationality:</strong> \${escapeHTML(additionalInfo.nationality)}</div>` : ''}
+                            \${additionalInfo.maritalStatus ? `<div><strong>Marital Status:</strong> \${escapeHTML(additionalInfo.maritalStatus)}</div>` : ''}
+                            \${additionalInfo.visaStatus ? `<div><strong>Visa Status:</strong> \${escapeHTML(additionalInfo.visaStatus)}</div>` : ''}
+                            \${additionalInfo.dob ? `<div><strong>Date of Birth:</strong> \${escapeHTML(additionalInfo.dob)}</div>` : ''}
+                        </div>
+                    </div>`;
+                }
+                
+                htmlStr += `</div>`; // end right side of bottom grid
+                
+                htmlStr += `</div>`; // end bottom-grid
+                
+                htmlStr += `</div>`; // end content
             }
             return htmlStr;
         };

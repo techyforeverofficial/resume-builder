@@ -3179,3 +3179,39 @@ textarea {
 .resume-document.template-13 .project { font-size: 13px; margin-bottom: 15px;}
 .resume-document.template-13 .project strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px;}
 .resume-document.template-13 .bottom-strip { position: absolute; bottom: 0; left: 0; width: 100%; height: 25px; background: #1f5fa8; }
+
+/* ======================================================== */
+/*                  TEMPLATE 14                             */
+/* ======================================================== */
+.resume-document.template-14 {
+    font-family: 'Poppins', sans-serif;
+    background: #ffffff;
+    color: #444;
+}
+
+.resume-document.template-14 .header { display: flex; justify-content: space-between; align-items: center; padding: 30px 40px 10px; }
+.resume-document.template-14 .name { font-size: 34px; font-weight: 700; color: #8b1e3f; letter-spacing: 3px; }
+.resume-document.template-14 .role { font-size: 16px; margin-top: 5px; font-style: italic; color: #444; }
+.resume-document.template-14 .header-bar { width: 280px; height: 40px; background: linear-gradient(to right, #8b1e3f 70%, #5e0f27 30%); }
+
+.resume-document.template-14 .contact { display: flex; justify-content: space-between; flex-wrap: wrap; padding: 10px 40px; font-size: 13px; border-bottom: 1px solid #ddd; gap: 10px; }
+.resume-document.template-14 .content { padding: 20px 40px; }
+.resume-document.template-14 .section { margin-bottom: 25px; }
+.resume-document.template-14 .section-title { font-size: 15px; font-weight: 700; color: #8b1e3f; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
+.resume-document.template-14 .section-line { height: 1px; background: #bbb; margin-bottom: 12px; }
+.resume-document.template-14 .text { font-size: 13px; color: #444; line-height: 1.6; }
+
+.resume-document.template-14 .job { margin-bottom: 18px; }
+.resume-document.template-14 .job-header { display: flex; justify-content: space-between; font-weight: 600; font-size: 13px; }
+.resume-document.template-14 .date { color: #8b1e3f; font-weight: 700; }
+.resume-document.template-14 .job-desc { font-size: 13px; margin: 6px 0; }
+.resume-document.template-14 ul { margin: 5px 0 0 18px; padding-left: 0; list-style-type: disc; }
+.resume-document.template-14 li { font-size: 13px; margin-bottom: 4px; }
+
+.resume-document.template-14 .edu { margin-top: 10px; }
+.resume-document.template-14 .edu-item { display: flex; justify-content: space-between; margin-bottom: 12px; }
+.resume-document.template-14 .edu-title { font-weight: 600; font-size: 13px; }
+.resume-document.template-14 .edu-sub { font-size: 12px; color: #555; }
+
+.resume-document.template-14 .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.resume-document.template-14 .skills ul { margin: 0; padding-left: 18px; }

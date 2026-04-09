@@ -3017,8 +3017,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 htmlStr += `
                     <div class="header">
                         <div>
-                            <div class="name">\${escapeHTML(nameStr)}</div>
-                            <div class="role">\${escapeHTML(data.title || "")}</div>
+                            <div class="name">${escapeHTML(nameStr)}</div>
+                            <div class="role">${escapeHTML(data.title || "")}</div>
                         </div>
                         <div class="header-right">
                 `;
@@ -3042,7 +3042,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="section">
                             <div class="section-title">About Me</div>
                             <div class="section-line"></div>
-                            <div class="text">\${summaryText}</div>
+                            <div class="text">${summaryText}</div>
                         </div>
                     `;
                 }
@@ -3060,14 +3060,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         workExpArray.forEach((exp, idx) => {
                             if (!exp.company.trim()) return;
-                            let durationStr = `\${exp.startYear} – \${exp.current ? 'NOW' : exp.endYear}`;
+                            let durationStr = `${exp.startYear} – ${exp.current ? 'NOW' : exp.endYear}`;
                             htmlStr += `
                             <div class="job">
                                 <div class="job-header">
-                                    <div style="text-transform: uppercase;">\${escapeHTML(exp.company)} – \${escapeHTML(exp.role)}</div>
-                                    <div>\${escapeHTML(durationStr)}</div>
+                                    <div style="text-transform: uppercase;">${escapeHTML(exp.company)} – ${escapeHTML(exp.role)}</div>
+                                    <div>${escapeHTML(durationStr)}</div>
                                 </div>
-                                \${exp.description ? `<div class="job-desc">\${exp.description}</div>` : ''}
+                                ${exp.description ? `<div class="job-desc">${exp.description}</div>` : ''}
                             </div>
                             `;
                             if (idx < workExpArray.length - 1) htmlStr += `<div class="divider"></div>`;
@@ -3083,14 +3083,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         internExpArray.forEach((exp, idx) => {
                             if (!exp.company.trim()) return;
-                            let durationStr = `\${exp.startYear} – \${exp.current ? 'NOW' : exp.endYear}`;
+                            let durationStr = `${exp.startYear} – ${exp.current ? 'NOW' : exp.endYear}`;
                             htmlStr += `
                             <div class="job">
                                 <div class="job-header">
-                                    <div style="text-transform: uppercase;">\${escapeHTML(exp.company)} – \${escapeHTML(exp.role)}</div>
-                                    <div>\${escapeHTML(durationStr)}</div>
+                                    <div style="text-transform: uppercase;">${escapeHTML(exp.company)} – ${escapeHTML(exp.role)}</div>
+                                    <div>${escapeHTML(durationStr)}</div>
                                 </div>
-                                \${exp.description ? `<div class="job-desc">\${exp.description}</div>` : ''}
+                                ${exp.description ? `<div class="job-desc">${exp.description}</div>` : ''}
                             </div>
                             `;
                             if (idx < internExpArray.length - 1) htmlStr += `<div class="divider"></div>`;
@@ -3110,10 +3110,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `
                         <div class="job">
                             <div class="job-header">
-                                <div style="text-transform: uppercase;">\${escapeHTML(p.name)}</div>
-                                <div>\${p.link ? `<a style="color:inherit; text-decoration:none;" href="\${escapeHTML(p.link)}">\${escapeHTML(p.link)}</a>` : ''}</div>
+                                <div style="text-transform: uppercase;">${escapeHTML(p.name)}</div>
+                                <div>${p.link ? `<a style="color:inherit; text-decoration:none;" href="${escapeHTML(p.link)}">${escapeHTML(p.link)}</a>` : ''}</div>
                             </div>
-                            \${p.desc ? `<div class="job-desc">\${p.desc}</div>` : ''}
+                            ${p.desc ? `<div class="job-desc">${p.desc}</div>` : ''}
                         </div>
                         `;
                         if (idx < projects.length - 1) htmlStr += `<div class="divider"></div>`;
@@ -3131,12 +3131,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     education.forEach(edu => {
                         if (!edu.school.trim()) return;
-                        let durationStr = `(\${edu.gradYear})`;
+                        let durationStr = `(${edu.gradYear})`;
                         htmlStr += `
                             <div class="edu-item">
-                                <div class="edu-year">\${escapeHTML(durationStr)}</div>
-                                <div class="edu-title" style="text-transform: uppercase;">\${escapeHTML(edu.school)}</div>
-                                <div class="edu-sub">\${escapeHTML(edu.degree)} in \${escapeHTML(edu.fieldOfStudy)}</div>
+                                <div class="edu-year">${escapeHTML(durationStr)}</div>
+                                <div class="edu-title" style="text-transform: uppercase;">${escapeHTML(edu.school)}</div>
+                                <div class="edu-sub">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
                             </div>
                         `;
                     });
@@ -3158,7 +3158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="section-title">Skills</div>
                         <div class="section-line"></div>
                         <ul>
-                            \${skillsList.map(s => `<li>\${escapeHTML(s.trim())}</li>`).join('')}
+                            ${skillsList.map(s => `<li>${escapeHTML(s.trim())}</li>`).join('')}
                         </ul>
                     </div>
                     `;
@@ -3169,7 +3169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="section">
                         <div class="section-title">Certifications</div>
                         <div class="section-line"></div>
-                        <div class="text">\${additionalInfo.certifications}</div>
+                        <div class="text">${additionalInfo.certifications}</div>
                     </div>
                     `;
                 }
@@ -3186,8 +3186,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     additionalInfo.languages.forEach(l => {
                         htmlStr += `
                         <div class="lang-item">
-                            \${escapeHTML(l)}
-                            <div class="bar"><div class="fill \${escapeHTML(l.toLowerCase())}" style="width: 85%;"></div></div>
+                            ${escapeHTML(l)}
+                            <div class="bar"><div class="fill ${escapeHTML(l.toLowerCase())}" style="width: 85%;"></div></div>
                         </div>
                         `;
                     });
@@ -3199,7 +3199,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="section">
                         <div class="section-title">Hobbies</div>
                         <div class="section-line"></div>
-                        <div class="text">\${additionalInfo.hobbies}</div>
+                        <div class="text">${additionalInfo.hobbies}</div>
                     </div>
                     `;
                 }
@@ -3210,10 +3210,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="section-title">Personal Details</div>
                         <div class="section-line"></div>
                         <div class="text" style="display:grid; grid-template-columns: 1fr; gap: 5px;">
-                            \${additionalInfo.nationality ? `<div><strong>Nationality:</strong> \${escapeHTML(additionalInfo.nationality)}</div>` : ''}
-                            \${additionalInfo.maritalStatus ? `<div><strong>Marital Status:</strong> \${escapeHTML(additionalInfo.maritalStatus)}</div>` : ''}
-                            \${additionalInfo.visaStatus ? `<div><strong>Visa Status:</strong> \${escapeHTML(additionalInfo.visaStatus)}</div>` : ''}
-                            \${additionalInfo.dob ? `<div><strong>Date of Birth:</strong> \${escapeHTML(additionalInfo.dob)}</div>` : ''}
+                            ${additionalInfo.nationality ? `<div><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</div>` : ''}
+                            ${additionalInfo.maritalStatus ? `<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>` : ''}
+                            ${additionalInfo.visaStatus ? `<div><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>` : ''}
+                            ${additionalInfo.dob ? `<div><strong>Date of Birth:</strong> ${escapeHTML(additionalInfo.dob)}</div>` : ''}
                         </div>
                     </div>`;
                 }

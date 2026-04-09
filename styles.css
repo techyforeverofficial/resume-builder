@@ -3139,6 +3139,8 @@ textarea {
 .resume-document.template-13 {
     font-family: 'Poppins', sans-serif;
     color: #444;
+    padding: 0;
+    margin: 0;
 }
 
 .resume-document.template-13 .top-strip { height: 20px; background: #1f5fa8; }
@@ -3154,7 +3156,7 @@ textarea {
 .resume-document.template-13 .text { font-size: 13px; line-height: 1.6; color: #444; }
 
 .resume-document.template-13 .main { display: grid; grid-template-columns: 40% 60%; gap: 30px; margin-top: 15px; }
-.resume-document.template-13 .left { border-right: 1px solid #ccc; padding-right: 20px; }
+.resume-document.template-13 .left { border-right: none; padding-right: 20px; }
 .resume-document.template-13 .edu-item { margin-bottom: 15px; }
 .resume-document.template-13 .edu-year { font-size: 13px; }
 .resume-document.template-13 .edu-title { font-weight: 600; font-size: 14px; margin: 2px 0; }
@@ -3164,9 +3166,9 @@ textarea {
 .resume-document.template-13 .skills li { font-size: 13px; margin-bottom: 6px; }
 
 .resume-document.template-13 .timeline { position: relative; padding-left: 30px; }
-.resume-document.template-13 .timeline:before { content: ""; position: absolute; left: 10px; top: 0; bottom: 0; width: 1px; background: #aaa; }
+.resume-document.template-13 .timeline:before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: #aaa; transform: translateX(-50%); }
 .resume-document.template-13 .job { position: relative; margin-bottom: 25px; }
-.resume-document.template-13 .job:before { content: ""; position: absolute; left: 10px; top: 5px; width: 8px; height: 8px; background: #1f5fa8; border-radius: 50%; transform: translateX(-50%); }
+.resume-document.template-13 .job:before { content: ""; position: absolute; left: 0; top: 5px; width: 8px; height: 8px; background: #000; border-radius: 50%; transform: translateX(-50%); }
 .resume-document.template-13 .job-date { font-size: 13px; margin-bottom: 3px; font-weight: 600;}
 .resume-document.template-13 .job-title { font-weight: 600; font-size: 13px; }
 .resume-document.template-13 .job-desc { font-size: 13px; margin: 6px 0; }

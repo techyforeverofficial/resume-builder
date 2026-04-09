@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 document.getElementById("mySubscription").onclick = () => {
                     navigateTo('subscription');
-                    if (typeof fetchMySubscription === 'function') fetchMySubscription();
+                    if(typeof fetchMySubscription === 'function') fetchMySubscription();
                     dropdown.classList.add("hidden");
                 };
             } else {
@@ -97,7 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
         privacy: document.getElementById('link-privacy-footer')
     };
 
-    const navigateTo = (viewName) => {
+    let currentView = 'home';
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState({ page: 'home' }, '', '');
+    }
+
+    const navigateTo = (viewName, skipHistory = false) => {
+        if (currentView === viewName) return;
+
         // Hide all views
         Object.values(views).forEach(v => {
             if (v) v.classList.remove('active');
@@ -113,22 +120,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (navLinks[viewName]) {
             navLinks[viewName].classList.add('active');
-        } else if (viewName === 'form' || viewName === 'preview') {
-            // keep home highlighted or remove all, let's remove all for form/preview 
         }
 
         window.scrollTo(0, 0);
+
+        if (!skipHistory) {
+            const state = { page: viewName };
+            if (viewName === 'form') state.stepIndex = currentStepIndex;
+            window.history.pushState(state, '', '');
+        }
+        currentView = viewName;
     };
 
     // --- Step Navigation Logic ---
     let currentStepIndex = 0;
     let visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
     const totalDOMSteps = 8;
-
-    // Initial Load Handling: Replace current entry with step 0
-    if (window.history && window.history.replaceState) {
-        window.history.replaceState({ stepIndex: 0, inResumeBuilder: true }, '', '');
-    }
 
     const showStepByIndex = (index, skipHistory = false) => {
         if (index < 0 || index >= visibleSteps.length) return;
@@ -155,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
+        
         let displayNumber = 1;
         for (let i = 1; i <= totalDOMSteps; i++) {
             const navItem = document.getElementById(`nav-step-${i}`);
@@ -175,19 +182,24 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         if (!skipHistory && !isSameStep) {
-            window.history.pushState({ stepIndex: index, inResumeBuilder: true }, '', '');
+            window.history.pushState({ page: 'form', stepIndex: index }, '', '');
         }
     };
 
     window.showStepByIndex = showStepByIndex;
 
     window.addEventListener('popstate', (e) => {
-        if (e.state && e.state.inResumeBuilder !== undefined) {
-            // Ensure the form view is active if we navigate back into it
-            if (!document.getElementById('form-view').classList.contains('active')) {
-                navigateTo('form');
+        if (e.state && e.state.page) {
+            navigateTo(e.state.page, true);
+            if (e.state.page === 'form' && e.state.stepIndex !== undefined) {
+                showStepByIndex(e.state.stepIndex, true);
+            } else if (e.state.page === 'dashboard') {
+                if (typeof fetchMyResumes === 'function') fetchMyResumes();
+            } else if (e.state.page === 'subscription') {
+                if (typeof fetchMySubscription === 'function') fetchMySubscription();
             }
-            showStepByIndex(e.state.stepIndex, true);
+        } else {
+            navigateTo('home', true);
         }
     });
 
@@ -502,13 +514,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     document.getElementById('btn-start').addEventListener('click', () => {
-        showStepByIndex(0);
+        showStepByIndex(0, true);
         navigateTo('form');
     });
     const btnCreateNew = document.getElementById('btn-create-new');
     if (btnCreateNew) {
         btnCreateNew.addEventListener('click', () => {
-            showStepByIndex(0);
+            showStepByIndex(0, true);
             navigateTo('form');
         });
     }
@@ -584,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.populateForm(resumeObj);
                         currentResumeData = resumeObj;
                         selectedTemplate = data.template;
-                        showStepByIndex(0);
+                        showStepByIndex(0, true);
                         navigateTo('form');
                     });
 
@@ -730,25 +742,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'work') {
             workSection.style.display = 'block';
             internSection.style.display = 'none';
-            if (fresherBanner) fresherBanner.style.display = 'none';
+            if(fresherBanner) fresherBanner.style.display = 'none';
             visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
         } else if (type === 'internship') {
             workSection.style.display = 'none';
             internSection.style.display = 'block';
-            if (fresherBanner) fresherBanner.style.display = 'none';
+            if(fresherBanner) fresherBanner.style.display = 'none';
             visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
         } else if (type === 'both') {
             workSection.style.display = 'block';
             internSection.style.display = 'block';
-            if (fresherBanner) fresherBanner.style.display = 'none';
+            if(fresherBanner) fresherBanner.style.display = 'none';
             visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
         } else if (type === 'fresher') {
             workSection.style.display = 'none';
             internSection.style.display = 'none';
-            if (fresherBanner) fresherBanner.style.display = 'block';
+            if(fresherBanner) fresherBanner.style.display = 'block';
             visibleSteps = [1, 2, 3, 5, 6, 7, 8]; // Skip step 4 completely
         }
-
+        
         // Refresh sidebar and visibility only if we are initialized past setup
         if (currentStepIndex > 0) {
             // Need to fix currentStepIndex if it was on a step that just hid (like Step 4 becoming hidden)
@@ -758,10 +770,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 currStepLog = 3;
                 currentStepIndex = visibleSteps.indexOf(3);
             }
-            showStepByIndex(currentStepIndex);
+            showStepByIndex(currentStepIndex, true);
         } else {
-            // Init load
-            showStepByIndex(0);
+             // Init load
+             showStepByIndex(0, true);
         }
     };
 
@@ -771,7 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.checked) handleExperienceTypeChange(e.target.value);
         });
     });
-
+    
     // Initial run
     const selectedExp = document.querySelector('input[name="experienceType"]:checked');
     if (selectedExp) {
@@ -1076,7 +1088,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const requiredInputs = form.querySelectorAll('[required]');
         for (let input of requiredInputs) {
             if (input.closest('#step-7')) continue; // Skip validation for optional Additional Info sections
-
+            
             // Skip dynamic experience fields based on selected type
             if (experienceType === 'fresher') {
                 if (input.closest('#work-experience-section') || input.closest('#internship-experience-section')) {
@@ -1202,29 +1214,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 const text = html.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, '').trim();
                 return text.length > 0;
             };
-
+            
             // Deep clone to prevent mutating global state accidentally
             const resumeData = JSON.parse(JSON.stringify(originalResumeData));
-
-            resumeData.projects = (resumeData.projects || []).filter(p =>
-                (p.name && p.name.trim() !== '') ||
-                (p.link && p.link.trim() !== '') ||
+            
+            resumeData.projects = (resumeData.projects || []).filter(p => 
+                (p.name && p.name.trim() !== '') || 
+                (p.link && p.link.trim() !== '') || 
                 hasMeaningfulText(p.desc)
             );
-
-            resumeData.work = (resumeData.work || []).filter(exp =>
-                (exp.company && exp.company.trim() !== '') ||
-                (exp.role && exp.role.trim() !== '') ||
+            
+            resumeData.work = (resumeData.work || []).filter(exp => 
+                (exp.company && exp.company.trim() !== '') || 
+                (exp.role && exp.role.trim() !== '') || 
                 hasMeaningfulText(exp.description)
             );
             resumeData.workExperience = resumeData.work;
 
-            resumeData.internshipExperience = (resumeData.internshipExperience || []).filter(exp =>
-                (exp.company && exp.company.trim() !== '') ||
-                (exp.role && exp.role.trim() !== '') ||
+            resumeData.internshipExperience = (resumeData.internshipExperience || []).filter(exp => 
+                (exp.company && exp.company.trim() !== '') || 
+                (exp.role && exp.role.trim() !== '') || 
                 hasMeaningfulText(exp.description)
             );
-
+            
             if (resumeData.additional) {
                 if (!hasMeaningfulText(resumeData.additional.certifications)) resumeData.additional.certifications = '';
                 if (!hasMeaningfulText(resumeData.additional.hobbies)) resumeData.additional.hobbies = '';
@@ -1254,20 +1266,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     <div class="t5-container">
 `;
-                let leftContent = '';
-                let rightContent = '';
-                let leftColHeight = 0;
-                const MAX_LEFT_HEIGHT = 900; // Estimated max safe height for left column
+                        let leftContent = '';
+                        let rightContent = '';
+                        let leftColHeight = 0;
+                        const MAX_LEFT_HEIGHT = 900; // Estimated max safe height for left column
 
-                // 1. CONTACT
-                let contactHtml = '';
-                if (data.phone) { contactHtml += `<div class="contact-item"><i class="fas fa-phone contact-icon"></i> <span>${escapeHTML(data.phone)}</span></div>`; leftColHeight += 28; }
-                if (data.email) { contactHtml += `<div class="contact-item"><i class="fas fa-envelope contact-icon"></i> <span>${escapeHTML(data.email)}</span></div>`; leftColHeight += 28; }
-                if (data.city || data.country) { contactHtml += `<div class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i> <span>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</span></div>`; leftColHeight += 28; }
-                if (additionalInfo.website) { contactHtml += `<div class="contact-item"><i class="fas fa-globe contact-icon"></i> <span>${escapeHTML(additionalInfo.website)}</span></div>`; leftColHeight += 28; }
-                if (additionalInfo.linkedin) { contactHtml += `<div class="contact-item"><i class="fab fa-linkedin contact-icon"></i> <span>${escapeHTML(additionalInfo.linkedin)}</span></div>`; leftColHeight += 28; }
+                        // 1. CONTACT
+                        let contactHtml = '';
+                        if (data.phone) { contactHtml += `<div class="contact-item"><i class="fas fa-phone contact-icon"></i> <span>${escapeHTML(data.phone)}</span></div>`; leftColHeight += 28; }
+                        if (data.email) { contactHtml += `<div class="contact-item"><i class="fas fa-envelope contact-icon"></i> <span>${escapeHTML(data.email)}</span></div>`; leftColHeight += 28; }
+                        if (data.city || data.country) { contactHtml += `<div class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i> <span>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</span></div>`; leftColHeight += 28; }
+                        if (additionalInfo.website) { contactHtml += `<div class="contact-item"><i class="fas fa-globe contact-icon"></i> <span>${escapeHTML(additionalInfo.website)}</span></div>`; leftColHeight += 28; }
+                        if (additionalInfo.linkedin) { contactHtml += `<div class="contact-item"><i class="fab fa-linkedin contact-icon"></i> <span>${escapeHTML(additionalInfo.linkedin)}</span></div>`; leftColHeight += 28; }
 
-                leftContent += `
+                        leftContent += `
                             <div class="section">
                                 <div class="section-header">
                                     <div class="icon-circle"><i class="fas fa-id-badge"></i></div>
@@ -1276,30 +1288,30 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${contactHtml}
                             </div>
                         `;
-                leftColHeight += 60; // base header height
+                        leftColHeight += 60; // base header height
 
-                // 2. PERSONAL DETAILS (Always Left)
-                const hasPersonal = additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.dob;
-                if (hasPersonal) {
-                    leftContent += `
+                        // 2. PERSONAL DETAILS (Always Left)
+                        const hasPersonal = additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.dob;
+                        if (hasPersonal) {
+                            leftContent += `
                                 <div class="section">
                                     <div class="section-header">
                                         <div class="icon-circle"><i class="fas fa-user"></i></div>
                                         <h3>PERSONAL DETAILS</h3>
                                     </div>
                             `;
-                    leftColHeight += 60;
-                    if (additionalInfo.nationality) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-flag contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</span></div>`; leftColHeight += 25; }
-                    if (additionalInfo.maritalStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-ring contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</span></div>`; leftColHeight += 25; }
-                    if (additionalInfo.visaStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-passport contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</span></div>`; leftColHeight += 25; }
-                    if (additionalInfo.dob) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-calendar-alt contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>DOB:</strong> ${escapeHTML(additionalInfo.dob)}</span></div>`; leftColHeight += 25; }
-                    leftContent += `</div>`;
-                }
+                            leftColHeight += 60;
+                            if (additionalInfo.nationality) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-flag contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</span></div>`; leftColHeight += 25; }
+                            if (additionalInfo.maritalStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-ring contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</span></div>`; leftColHeight += 25; }
+                            if (additionalInfo.visaStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-passport contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</span></div>`; leftColHeight += 25; }
+                            if (additionalInfo.dob) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-calendar-alt contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>DOB:</strong> ${escapeHTML(additionalInfo.dob)}</span></div>`; leftColHeight += 25; }
+                            leftContent += `</div>`;
+                        }
 
-                // 3. SKILLS
-                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
-                if (skillsList.length > 0) {
-                    leftContent += `
+                        // 3. SKILLS
+                        const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
+                        if (skillsList.length > 0) {
+                            leftContent += `
                                 <div class="section">
                                     <div class="section-header">
                                         <div class="icon-circle"><i class="fas fa-tools"></i></div>
@@ -1310,12 +1322,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </ul>
                                 </div>
                             `;
-                    leftColHeight += 60 + (skillsList.length * 20);
-                }
+                            leftColHeight += 60 + (skillsList.length * 20);
+                        }
 
-                // 4. LANGUAGES
-                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
-                    leftContent += `
+                        // 4. LANGUAGES
+                        if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                            leftContent += `
                                 <div class="section">
                                     <div class="section-header">
                                         <div class="icon-circle"><i class="fas fa-language"></i></div>
@@ -1326,16 +1338,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </ul>
                                 </div>
                             `;
-                    leftColHeight += 60 + (additionalInfo.languages.length * 20);
-                }
+                            leftColHeight += 60 + (additionalInfo.languages.length * 20);
+                        }
 
-                // Reserve space for HOBBIES early (Always left, placed at bottom of left content later)
-                const hasHobbies = additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>';
-                let hobbiesHtml = '';
-                if (hasHobbies) {
-                    const hHeight = 60 + (additionalInfo.hobbies.length / 40) * 20;
-                    leftColHeight += hHeight; // reserve
-                    hobbiesHtml = `
+                        // Reserve space for HOBBIES early (Always left, placed at bottom of left content later)
+                        const hasHobbies = additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>';
+                        let hobbiesHtml = '';
+                        if (hasHobbies) {
+                            const hHeight = 60 + (additionalInfo.hobbies.length / 40) * 20;
+                            leftColHeight += hHeight; // reserve
+                            hobbiesHtml = `
                                 <div class="section">
                                     <div class="section-header">
                                         <div class="icon-circle"><i class="fas fa-heart"></i></div>
@@ -1344,58 +1356,58 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <div style="font-size: 13px; color: #000;">${additionalInfo.hobbies}</div>
                                 </div>
                             `;
-                }
+                        }
 
-                // 5. PROJECTS (Prefer Left, move to Right if no space)
-                let projectsHtmlRight = '';
-                if (projects.length > 0) {
-                    let pHeight = 60 + (projects.length * 70);
-                    let pHtmlLeft = `
+                        // 5. PROJECTS (Prefer Left, move to Right if no space)
+                        let projectsHtmlRight = '';
+                        if (projects.length > 0) {
+                            let pHeight = 60 + (projects.length * 70);
+                            let pHtmlLeft = `
                                     <div class="section">
                                         <div class="section-header">
                                             <div class="icon-circle"><i class="fas fa-project-diagram"></i></div>
                                             <h3>PROJECTS</h3>
                                         </div>
                             `;
-                    projects.forEach(p => {
-                        pHtmlLeft += `
+                            projects.forEach(p => {
+                                pHtmlLeft += `
                                         <div class="project" style="margin-bottom:10px;">
                                             <div class="project-title" style="font-weight:bold;font-size:13px;">${escapeHTML(p.name)}</div>
                                             <div class="project-desc" style="font-size:12px;color:#555;">${p.desc}</div>
                                         </div>
                                 `;
-                    });
-                    pHtmlLeft += `</div>`;
+                            });
+                            pHtmlLeft += `</div>`;
 
-                    if (leftColHeight + pHeight <= MAX_LEFT_HEIGHT) {
-                        leftContent += pHtmlLeft;
-                        leftColHeight += pHeight;
-                    } else {
-                        projectsHtmlRight = `
+                            if (leftColHeight + pHeight <= MAX_LEFT_HEIGHT) {
+                                leftContent += pHtmlLeft;
+                                leftColHeight += pHeight;
+                            } else {
+                                projectsHtmlRight = `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-project-diagram"></i></div>
                                             <h3>PROJECTS</h3>
                                         </div>
                                 `;
-                        projects.forEach(p => {
-                            projectsHtmlRight += `
+                                projects.forEach(p => {
+                                    projectsHtmlRight += `
                                         <div class="job" style="margin-bottom:15px;">
                                             <span class="job-title" style="font-weight:bold;color:#000;">${escapeHTML(p.name)}</span>
                                             <div class="job-role" style="font-size:13px;color:#555;margin-top:5px;">${p.desc}</div>
                                         </div>
                                     `;
-                        });
-                        projectsHtmlRight += `</div>`;
-                    }
-                }
+                                });
+                                projectsHtmlRight += `</div>`;
+                            }
+                        }
 
-                // 6. CERTIFICATIONS (Prefer Left, move to Right if no space)
-                let certsHtmlRight = '';
-                const hasCerts = additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>';
-                if (hasCerts) {
-                    let cHeight = 60 + (additionalInfo.certifications.length / 40) * 20;
-                    let cLeftHtml = `
+                        // 6. CERTIFICATIONS (Prefer Left, move to Right if no space)
+                        let certsHtmlRight = '';
+                        const hasCerts = additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>';
+                        if (hasCerts) {
+                            let cHeight = 60 + (additionalInfo.certifications.length / 40) * 20;
+                            let cLeftHtml = `
                                     <div class="section">
                                         <div class="section-header">
                                             <div class="icon-circle"><i class="fas fa-certificate"></i></div>
@@ -1404,11 +1416,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <div style="font-size: 13px; color: #000;">${additionalInfo.certifications}</div>
                                     </div>
                             `;
-                    if (leftColHeight + cHeight <= MAX_LEFT_HEIGHT) {
-                        leftContent += cLeftHtml;
-                        leftColHeight += cHeight;
-                    } else {
-                        certsHtmlRight = `
+                            if (leftColHeight + cHeight <= MAX_LEFT_HEIGHT) {
+                                leftContent += cLeftHtml;
+                                leftColHeight += cHeight;
+                            } else {
+                                certsHtmlRight = `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-certificate"></i></div>
@@ -1417,18 +1429,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <div style="font-size: 13px; color: #444; line-height: 1.6;">${additionalInfo.certifications}</div>
                                     </div>
                                 `;
-                    }
-                }
+                            }
+                        }
 
-                // Append Hobbies at the bottom of left content if it exists
-                if (hasHobbies) {
-                    leftContent += hobbiesHtml;
-                }
+                        // Append Hobbies at the bottom of left content if it exists
+                        if (hasHobbies) {
+                            leftContent += hobbiesHtml;
+                        }
 
-                // Construct RIGHT COLUMN
-                const summaryText = resumeData.summary || data.summary || "";
-                if (summaryText.trim() && summaryText !== '<br>') {
-                    rightContent += `
+                        // Construct RIGHT COLUMN
+                        const summaryText = resumeData.summary || data.summary || "";
+                        if (summaryText.trim() && summaryText !== '<br>') {
+                            rightContent += `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
@@ -1437,24 +1449,24 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <div style="font-size: 13px; line-height: 1.6; color: #444;">${summaryText}</div>
                                     </div>
                             `;
-                }
+                        }
 
-                const workExpArray = resumeData.workExperience || resumeData.work || [];
-                const internExpArray = resumeData.internshipExperience || [];
-                if (resumeData.experienceType !== 'fresher') {
-                    if (workExpArray.length > 0) {
-                        rightContent += `
+                        const workExpArray = resumeData.workExperience || resumeData.work || [];
+                        const internExpArray = resumeData.internshipExperience || [];
+                        if (resumeData.experienceType !== 'fresher') {
+                            if (workExpArray.length > 0) {
+                                rightContent += `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-briefcase"></i></div>
                                             <h3>WORK EXPERIENCE</h3>
                                         </div>
                                 `;
-                        for (let i = 0; i < workExpArray.length; i++) {
-                            const exp = workExpArray[i];
-                            if (!exp.company.trim()) continue;
-                            let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
-                            rightContent += `
+                                for (let i = 0; i < workExpArray.length; i++) {
+                                    const exp = workExpArray[i];
+                                    if (!exp.company.trim()) continue;
+                                    let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
+                                    rightContent += `
                                         <div class="job">
                                             <span class="job-title">${escapeHTML(exp.company)}</span>
                                             <span class="job-date">${escapeHTML(durationStr)}</span>
@@ -1462,23 +1474,23 @@ document.addEventListener('DOMContentLoaded', () => {
                                             ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
                                         </div>
                                     `;
-                        }
-                        rightContent += `</div>`;
-                    }
+                                }
+                                rightContent += `</div>`;
+                            }
 
-                    if (internExpArray.length > 0) {
-                        rightContent += `
+                            if (internExpArray.length > 0) {
+                                rightContent += `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-laptop-code"></i></div>
                                             <h3>INTERNSHIP EXPERIENCE</h3>
                                         </div>
                                 `;
-                        for (let i = 0; i < internExpArray.length; i++) {
-                            const exp = internExpArray[i];
-                            if (!exp.company.trim()) continue;
-                            let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
-                            rightContent += `
+                                for (let i = 0; i < internExpArray.length; i++) {
+                                    const exp = internExpArray[i];
+                                    if (!exp.company.trim()) continue;
+                                    let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
+                                    rightContent += `
                                         <div class="job">
                                             <span class="job-title">${escapeHTML(exp.company)}</span>
                                             <span class="job-date">${escapeHTML(durationStr)}</span>
@@ -1486,39 +1498,39 @@ document.addEventListener('DOMContentLoaded', () => {
                                             ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
                                         </div>
                                     `;
+                                }
+                                rightContent += `</div>`;
+                            }
                         }
-                        rightContent += `</div>`;
-                    }
-                }
 
-                if (education.length > 0) {
-                    rightContent += `
+                        if (education.length > 0) {
+                            rightContent += `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-graduation-cap"></i></div>
                                             <h3>EDUCATION</h3>
                                         </div>
                             `;
-                    for (let i = 0; i < education.length; i++) {
-                        const edu = education[i];
-                        if (!edu.school.trim()) continue;
-                        let durationStr = `${edu.gradYear}`;
-                        rightContent += `
+                            for (let i = 0; i < education.length; i++) {
+                                const edu = education[i];
+                                if (!edu.school.trim()) continue;
+                                let durationStr = `${edu.gradYear}`;
+                                rightContent += `
                                         <div class="job">
                                             <span class="job-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</span>
                                             <span class="job-date">${escapeHTML(durationStr)}</span>
                                             <div class="job-role">${escapeHTML(edu.school)}</div>
                                         </div>
                                 `;
-                    }
-                    rightContent += `</div>`;
-                }
+                            }
+                            rightContent += `</div>`;
+                        }
 
-                // Add overflow blocks to right column
-                if (certsHtmlRight) rightContent += certsHtmlRight;
-                if (projectsHtmlRight) rightContent += projectsHtmlRight;
+                        // Add overflow blocks to right column
+                        if (certsHtmlRight) rightContent += certsHtmlRight;
+                        if (projectsHtmlRight) rightContent += projectsHtmlRight;
 
-                htmlStr += `
+                        htmlStr += `
                             <!-- LEFT -->
                             <div class="left">
                                 ${leftContent}
@@ -1634,7 +1646,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (skillsList.length > 0) {
                     htmlStr += `<div class="section-title">KEY SKILLS</div>
                                 <div class="skills-grid">`;
-
+                    
                     const col1 = [], col2 = [], col3 = [];
                     skillsList.forEach((s, idx) => {
                         if (idx % 3 === 0) col1.push(s);
@@ -1681,7 +1693,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="name">${escapeHTML(data.fullName || "").toUpperCase()}</div>
                         <div class="contact">
                 `;
-
+                
                 let contactItems = [];
                 if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
                 if (data.phone) contactItems.push(escapeHTML(data.phone));
@@ -1798,7 +1810,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                htmlStr += `<div class="grid-2">`;
+                htmlStr += `<div class="grid-2">`; 
 
                 const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
                 if (skillsList.length > 0) {
@@ -1816,7 +1828,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     htmlStr += `<ul>`; col1.forEach(s => { htmlStr += `<li>${escapeHTML(s.trim())}</li>`; }); htmlStr += `</ul>`;
                     htmlStr += `<ul>`; col2.forEach(s => { htmlStr += `<li>${escapeHTML(s.trim())}</li>`; }); htmlStr += `</ul>`;
-
+                    
                     htmlStr += `
                             </div>
                         </div>
@@ -1832,8 +1844,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                 }
-
-                htmlStr += `</div>`;
+                
+                htmlStr += `</div>`; 
 
                 htmlStr += `<div class="grid-2">`;
 
@@ -1863,7 +1875,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                htmlStr += `</div>`;
+                htmlStr += `</div>`; 
 
                 if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
                     htmlStr += `
@@ -1882,7 +1894,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                htmlStr += `</div>`;
+                htmlStr += `</div>`; 
             } else if (data.template === '8') {
                 const nameStr = data.fullName || "";
                 let init1 = "", init2 = "";
@@ -2089,7 +2101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '9') {
                 const nameStr = data.fullName || "Your Name";
                 const summaryText = resumeData.summary || data.summary || "";
-
+                
                 htmlStr += `
                     <!-- TOP -->
                     <div class="top">
@@ -2109,7 +2121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.linkedin) {
                     htmlStr += `<div class="bold"><a href="${escapeHTML(additionalInfo.linkedin)}" style="text-decoration:none; color:inherit;">${escapeHTML(additionalInfo.linkedin)}</a></div>`;
                 }
-
+                
                 htmlStr += `
                         </div>
                     </div>
@@ -2119,7 +2131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <!-- LEFT -->
                         <div>
                 `;
-
+                
                 let leftContent = '';
                 let rightContent = '';
                 let leftColHeight = 0;
@@ -2160,7 +2172,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         leftContent += `</div>`;
                     }
-
+                    
                     if (internExpArray.length > 0) {
                         leftContent += `
                             <div class="section">
@@ -2305,14 +2317,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '10') {
                 const nameStr = data.fullName || "Your Name";
                 const summaryText = resumeData.summary || data.summary || "";
-
+                
                 htmlStr += `
                     <!-- HEADER -->
                     <div class="header">
                         <div class="name">${escapeHTML(nameStr)}</div>
                         <div class="contact">
                 `;
-
+                
                 let contactItems = [];
                 if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
                 if (data.phone) contactItems.push(escapeHTML(data.phone));
@@ -2362,7 +2374,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-
+                    
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <div class="divider"></div>
@@ -2438,9 +2450,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
-
+                
                 if (skillsList.length > 0 || (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') || (additionalInfo.languages && additionalInfo.languages.length > 0) || (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') || additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
-
+                    
                     htmlStr += `
                         <div class="divider"></div>
                         <!-- ADDITIONAL -->
@@ -2452,7 +2464,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (skillsList.length > 0) {
                         htmlStr += `<li><strong>Technical Skills:</strong> ${skillsList.map(s => escapeHTML(s.trim())).join(', ')}</li>`;
                     }
-
+                    
                     if (additionalInfo.languages && additionalInfo.languages.length > 0) {
                         htmlStr += `<li><strong>Languages:</strong> ${additionalInfo.languages.map(l => escapeHTML(l)).join(', ')}</li>`;
                     }
@@ -2469,7 +2481,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
                         htmlStr += `<li><strong>Hobbies:</strong> <span class="additional-block">${inlineHTML(additionalInfo.hobbies)}</span></li>`;
                     }
-
+                    
                     if (additionalInfo.awardsAndActivities && additionalInfo.awardsAndActivities.trim() !== '' && additionalInfo.awardsAndActivities !== '<br>') {
                         htmlStr += `<li><strong>Awards/Activities:</strong> <span class="additional-block">${inlineHTML(additionalInfo.awardsAndActivities)}</span></li>`;
                     }
@@ -2491,14 +2503,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '11') {
                 const nameStr = data.fullName || "Your Name";
                 const summaryText = resumeData.summary || data.summary || "";
-
+                
                 htmlStr += `
                     <!-- HEADER -->
                     <div class="name">${escapeHTML(nameStr)}</div>
                     ${data.title ? `<div class="role">${escapeHTML(data.title)}</div>` : ''}
                     <div class="contact">
                 `;
-
+                
                 let contactItems = [];
                 if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
                 if (data.phone) contactItems.push(escapeHTML(data.phone));
@@ -2533,10 +2545,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (idx % 3 === 1) col2.push(s);
                         else col3.push(s);
                     });
-
-                    if (col1.length > 0) htmlStr += `<div>${col1.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
-                    if (col2.length > 0) htmlStr += `<div>${col2.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
-                    if (col3.length > 0) htmlStr += `<div>${col3.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
+                    
+                    if(col1.length > 0) htmlStr += `<div>${col1.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
+                    if(col2.length > 0) htmlStr += `<div>${col2.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
+                    if(col3.length > 0) htmlStr += `<div>${col3.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
 
                     htmlStr += `
                         </div>
@@ -2569,7 +2581,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-
+                    
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <!-- INTERNSHIP EXPERIENCE -->
@@ -2640,14 +2652,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if ((additionalInfo.certifications && additionalInfo.certifications !== '') || (additionalInfo.languages && additionalInfo.languages.length > 0) || (additionalInfo.hobbies && additionalInfo.hobbies !== '') || additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.awardsAndActivities) {
-
+                    
                     htmlStr += `
                         <!-- ADDITIONAL -->
                         <div class="section">
                             <div class="section-title">ADDITIONAL INFORMATION</div>
                             <ul class="additional">
                     `;
-
+                    
                     if (additionalInfo.languages && additionalInfo.languages.length > 0) {
                         htmlStr += `<li><strong>Languages:</strong> ${additionalInfo.languages.map(l => escapeHTML(l)).join(', ')}</li>`;
                     }
@@ -2664,7 +2676,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (additionalInfo.hobbies && additionalInfo.hobbies !== '') {
                         htmlStr += `<li><strong>Hobbies:</strong> <span class="additional-block">${inlineHTML(additionalInfo.hobbies)}</span></li>`;
                     }
-
+                    
                     if (additionalInfo.awardsAndActivities && additionalInfo.awardsAndActivities !== '') {
                         htmlStr += `<li><strong>Awards/Activities:</strong> <span class="additional-block">${inlineHTML(additionalInfo.awardsAndActivities)}</span></li>`;
                     }
@@ -2697,10 +2709,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             
                 `;
-
+                
                 const workExpArray = resumeData.workExperience || resumeData.work || [];
                 const internExpArray = resumeData.internshipExperience || [];
-
+                
                 if (resumeData.experienceType !== 'fresher') {
                     if (workExpArray.length > 0) {
                         htmlStr += `
@@ -2725,7 +2737,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-
+                    
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <div class="prof-section">
@@ -2750,7 +2762,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `</div>`;
                     }
                 }
-
+                
                 htmlStr += `
                             <div class="prof-section">
                                 <div class="prof-section-title">Education</div>
@@ -2866,10 +2878,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 `;
-
+                
                 const workExpArray = resumeData.workExperience || resumeData.work || [];
                 const internExpArray = resumeData.internshipExperience || [];
-
+                
                 if (resumeData.experienceType !== 'fresher') {
                     if (workExpArray.length > 0) {
                         htmlStr += `
@@ -2894,7 +2906,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-
+                    
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <div class="cv-section">
@@ -3230,9 +3242,9 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.style.zIndex = '9999';
         toast.style.fontWeight = '500';
         toast.style.transition = 'opacity 0.3s ease';
-
+        
         document.body.appendChild(toast);
-
+        
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
@@ -3395,7 +3407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    window.setAuthMode = function (mode) {
+    window.setAuthMode = function(mode) {
         if (!authModal) return;
         isSignUpMode = (mode === 'signup');
         if (isSignUpMode) {
@@ -3440,7 +3452,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 authForm.reset();
-
+                
                 // Immediately close the modal and show success feedback
                 if (authModal) authModal.classList.remove('active');
                 showToast(isSignUpMode ? "Account created successfully!" : "Logged in successfully!");
@@ -3609,11 +3621,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- SUBSCRIPTION DATA LOGIC ---
-    window.fetchMySubscription = async function () {
+    window.fetchMySubscription = async function() {
         const subContainer = document.getElementById('sub-details-container');
         if (!subContainer) return;
         const user = auth.currentUser;
-
+        
         if (!user) {
             subContainer.innerHTML = '<p style="color: var(--text-secondary);">Please log in to view subscription details.</p>';
             return;
@@ -3626,14 +3638,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (userSnap.exists()) {
                 const data = userSnap.data();
-
+                
                 let lastPaymentAmt = data.lastPaymentAmount ? `₹${data.lastPaymentAmount}` : 'Not available';
                 let lastPaymentDate = data.lastPaymentDate ? new Date(data.lastPaymentDate).toLocaleDateString() : 'Not available';
-
+                
                 let isMonthly = !!data.premium;
                 let planDisplay = 'Free Plan';
                 let priceDisplay = '₹0/month';
-
+                
                 let statusBadge = '<span class="sub-badge sub-inactive">Inactive</span>';
                 let expiryDateStr = 'Not available';
                 let daysRemainingStr = 'Not available';
@@ -3656,7 +3668,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         statusBadge = '<span class="sub-badge sub-active">Active</span>';
                         expiryDateStr = new Date(expiresAt).toLocaleDateString();
                         let diffTime = Math.abs(expiresAt - Date.now());
-                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                         daysRemainingStr = `${diffDays} days remaining`;
                         // Assume 30 days total for progress
                         progressPercentage = Math.min((diffDays / 30) * 100, 100);
@@ -3739,7 +3751,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Show/Hide Password Toggle ---
     const togglePasswordBtn = document.getElementById('toggle-auth-password');
     const authPasswordField = document.getElementById('auth-password');
-
+    
     if (togglePasswordBtn && authPasswordField) {
         togglePasswordBtn.addEventListener('click', () => {
             const currentType = authPasswordField.getAttribute('type');

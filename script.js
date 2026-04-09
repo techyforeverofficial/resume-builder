@@ -1228,6 +1228,35 @@ document.addEventListener('DOMContentLoaded', () => {
             // Deep clone to prevent mutating global state accidentally
             const resumeData = JSON.parse(JSON.stringify(originalResumeData));
             
+            // Normalize dates globally across all templates
+            const normalizeExperienceDates = (expList) => {
+                if (!expList) return;
+                expList.forEach(exp => {
+                    let sY = parseInt(exp.startYear) || 0;
+                    let eY = parseInt(exp.endYear) || 0;
+                    
+                    if (exp.current || exp.endYear === 'NOW' || exp.endYear === 'Present' || exp.endYear === 'PRESENT') {
+                        exp.current = true;
+                        exp.endYear = 'Present'; // Make standard
+                        exp.endMonth = '';
+                        eY = 9999;
+                    }
+
+                    if (sY > 0 && eY > 0 && sY > eY && !exp.current) {
+                        let tY = exp.startYear;
+                        exp.startYear = exp.endYear;
+                        exp.endYear = tY;
+
+                        let tM = exp.startMonth;
+                        exp.startMonth = exp.endMonth;
+                        exp.endMonth = tM;
+                    }
+                });
+            };
+            normalizeExperienceDates(resumeData.workExperience);
+            normalizeExperienceDates(resumeData.work);
+            normalizeExperienceDates(resumeData.internshipExperience);
+            
             resumeData.projects = (resumeData.projects || []).filter(p => 
                 (p.name && p.name.trim() !== '') || 
                 (p.link && p.link.trim() !== '') || 

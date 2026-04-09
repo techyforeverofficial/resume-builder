@@ -237,7 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: "9", name: "Template 9" },
         { id: "10", name: "Template 10" },
         { id: "11", name: "Template 11" },
-        { id: "12", name: "Template 12" }
+        { id: "12", name: "Template 12" },
+        { id: "13", name: "Template 13" }
     ];
 
     const basePath = "templates/";

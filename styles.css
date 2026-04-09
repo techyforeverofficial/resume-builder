@@ -3189,10 +3189,11 @@ textarea {
     color: #444;
 }
 
-.resume-document.template-14 .header { display: flex; justify-content: space-between; align-items: center; padding: 30px 40px 10px; }
-.resume-document.template-14 .name { font-size: 34px; font-weight: 700; color: #8b1e3f; letter-spacing: 3px; }
-.resume-document.template-14 .role { font-size: 16px; margin-top: 5px; font-style: italic; color: #444; }
-.resume-document.template-14 .header-bar { width: 280px; height: 40px; background: linear-gradient(to right, #8b1e3f 70%, #5e0f27 30%); }
+.resume-document.template-14 .header { display: flex; justify-content: space-between; align-items: stretch; padding: 30px 40px 10px; }
+.resume-document.template-14 .header > div:first-child { display: flex; flex-direction: column; justify-content: center; }
+.resume-document.template-14 .name { font-size: 34px; font-weight: 700; color: #8b1e3f; letter-spacing: 3px; line-height: 1.1; }
+.resume-document.template-14 .role { font-size: 16px; margin-top: 5px; font-style: italic; color: #444; line-height: 1.1; }
+.resume-document.template-14 .header-bar { width: 280px; background: linear-gradient(to right, #8b1e3f 70%, #5e0f27 30%); align-self: stretch; margin: -4px 0; border-radius: 1px; }
 
 .resume-document.template-14 .contact { display: flex; justify-content: space-between; flex-wrap: wrap; padding: 10px 40px; font-size: 13px; border-bottom: 1px solid #ddd; gap: 10px; }
 .resume-document.template-14 .content { padding: 20px 40px; }

@@ -97,14 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         privacy: document.getElementById('link-privacy-footer')
     };
 
-    let currentView = 'home';
-    if (window.history && window.history.replaceState) {
-        window.history.replaceState({ page: 'home' }, '', '');
-    }
-
-    const navigateTo = (viewName, skipHistory = false) => {
-        if (currentView === viewName) return;
-
+    const navigateTo = (viewName) => {
         // Hide all views
         Object.values(views).forEach(v => {
             if (v) v.classList.remove('active');
@@ -120,16 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (navLinks[viewName]) {
             navLinks[viewName].classList.add('active');
+        } else if (viewName === 'form' || viewName === 'preview') {
+            // keep home highlighted or remove all, let's remove all for form/preview 
         }
 
         window.scrollTo(0, 0);
-
-        if (!skipHistory) {
-            const state = { page: viewName };
-            if (viewName === 'form') state.stepIndex = currentStepIndex;
-            window.history.pushState(state, '', '');
-        }
-        currentView = viewName;
     };
 
     // --- Step Navigation Logic ---
@@ -137,10 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
     const totalDOMSteps = 8;
 
-    const showStepByIndex = (index, skipHistory = false) => {
+    const showStepByIndex = (index) => {
         if (index < 0 || index >= visibleSteps.length) return;
         const stepNumber = visibleSteps[index];
-        const isSameStep = (currentStepIndex === index);
 
         for (let i = 1; i <= totalDOMSteps; i++) {
             const stepContent = document.getElementById(`step-${i}`);
@@ -180,28 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentStepIndex = index;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        if (!skipHistory && !isSameStep) {
-            window.history.pushState({ page: 'form', stepIndex: index }, '', '');
-        }
     };
 
     window.showStepByIndex = showStepByIndex;
-
-    window.addEventListener('popstate', (e) => {
-        if (e.state && e.state.page) {
-            navigateTo(e.state.page, true);
-            if (e.state.page === 'form' && e.state.stepIndex !== undefined) {
-                showStepByIndex(e.state.stepIndex, true);
-            } else if (e.state.page === 'dashboard') {
-                if (typeof fetchMyResumes === 'function') fetchMyResumes();
-            } else if (e.state.page === 'subscription') {
-                if (typeof fetchMySubscription === 'function') fetchMySubscription();
-            }
-        } else {
-            navigateTo('home', true);
-        }
-    });
 
     document.querySelectorAll('.btn-next').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -514,13 +482,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     document.getElementById('btn-start').addEventListener('click', () => {
-        showStepByIndex(0, true);
+        showStepByIndex(0);
         navigateTo('form');
     });
     const btnCreateNew = document.getElementById('btn-create-new');
     if (btnCreateNew) {
         btnCreateNew.addEventListener('click', () => {
-            showStepByIndex(0, true);
+            showStepByIndex(0);
             navigateTo('form');
         });
     }
@@ -596,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.populateForm(resumeObj);
                         currentResumeData = resumeObj;
                         selectedTemplate = data.template;
-                        showStepByIndex(0, true);
+                        showStepByIndex(0);
                         navigateTo('form');
                     });
 
@@ -770,10 +738,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 currStepLog = 3;
                 currentStepIndex = visibleSteps.indexOf(3);
             }
-            showStepByIndex(currentStepIndex, true);
+            showStepByIndex(currentStepIndex);
         } else {
              // Init load
-             showStepByIndex(0, true);
+             showStepByIndex(0);
         }
     };
 

@@ -2279,6 +2279,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         <!-- RIGHT -->
                         <div class="sidebar">
+                            ${rightContent}
                         </div>
                     </div>
                 `;

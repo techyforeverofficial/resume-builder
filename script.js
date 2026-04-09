@@ -7,21 +7,35 @@ document.addEventListener('DOMContentLoaded', () => {
     let pendingPaymentPrompt = false;
 
     // --- Dynamic Education Field Validation ---
-    document.addEventListener('input', function(e) {
-        if (e.target && e.target.name === 'eduDegree[]') {
-            const degreeLower = e.target.value.toLowerCase();
-            const isSchoolLevel = ['ssc', '10th', 'class 10', 'school'].some(word => degreeLower.includes(word));
-            const parentBlock = e.target.closest('.item-block');
-            if (parentBlock) {
-                const fieldOfStudyInput = parentBlock.querySelector('[name="eduFieldOfStudy[]"]');
-                if (fieldOfStudyInput) {
-                    if (isSchoolLevel) {
-                        fieldOfStudyInput.removeAttribute('required');
-                    } else {
-                        fieldOfStudyInput.setAttribute('required', 'required');
-                    }
+    const validateEduDegree = function(degreeInput) {
+        if (!degreeInput) return;
+        const degreeLower = degreeInput.value.toLowerCase();
+        // Check for common school-level terms
+        const isSchoolLevel = ['ssc', '10th', 'class 10', 'school', '10', 'hsc', '12th'].some(word => degreeLower.includes(word));
+        const parentBlock = degreeInput.closest('.item-block');
+        if (parentBlock) {
+            const fieldOfStudyInput = parentBlock.querySelector('[name="eduFieldOfStudy[]"]');
+            if (fieldOfStudyInput) {
+                const parentGroup = fieldOfStudyInput.closest('.input-group');
+                if (isSchoolLevel) {
+                    fieldOfStudyInput.removeAttribute('required');
+                    fieldOfStudyInput.disabled = true;
+                    fieldOfStudyInput.value = ''; // Ensure value is scrubbed cleanly
+                    if (parentGroup) parentGroup.style.display = 'none'; // Visibly hide the container
+                } else {
+                    fieldOfStudyInput.setAttribute('required', 'required');
+                    fieldOfStudyInput.disabled = false;
+                    if (parentGroup) parentGroup.style.display = 'block'; // Restore visibility
                 }
             }
+        }
+    };
+
+    window.validateEduDegree = validateEduDegree;
+
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.name === 'eduDegree[]') {
+            validateEduDegree(e.target);
         }
     });
 
@@ -1042,6 +1056,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 safeSet('[name="eduGradMonth[]"]', edu.gradMonth);
                 safeSet('[name="eduGradYear[]"]', edu.gradYear);
                 safeSet('[name="eduCoursework[]"]', edu.coursework);
+                
+                // Immediately check and hide the field of study if previously populated with a school term
+                if (window.validateEduDegree) {
+                    window.validateEduDegree(currentItem.querySelector('[name="eduDegree[]"]'));
+                }
             }
         }
 

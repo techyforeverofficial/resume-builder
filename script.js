@@ -6,6 +6,25 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
     let pendingPaymentPrompt = false;
 
+    // --- Dynamic Education Field Validation ---
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.name === 'eduDegree[]') {
+            const degreeLower = e.target.value.toLowerCase();
+            const isSchoolLevel = ['ssc', '10th', 'class 10', 'school'].some(word => degreeLower.includes(word));
+            const parentBlock = e.target.closest('.item-block');
+            if (parentBlock) {
+                const fieldOfStudyInput = parentBlock.querySelector('[name="eduFieldOfStudy[]"]');
+                if (fieldOfStudyInput) {
+                    if (isSchoolLevel) {
+                        fieldOfStudyInput.removeAttribute('required');
+                    } else {
+                        fieldOfStudyInput.setAttribute('required', 'required');
+                    }
+                }
+            }
+        }
+    });
+
     // --- Real Firebase Auth & Profile Dropdown ---
     const dropdown = document.getElementById("dropdownMenu");
     const profileBtn = document.getElementById("profileBtn");
@@ -1486,7 +1505,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 let durationStr = `${edu.gradYear}`;
                                 rightContent += `
                                         <div class="job">
-                                            <span class="job-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</span>
+                                            <span class="job-title">${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</span>
                                             <span class="job-date">${escapeHTML(durationStr)}</span>
                                             <div class="job-role">${escapeHTML(edu.school)}</div>
                                         </div>
@@ -1585,7 +1604,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `
                             <div class="edu">
                                 <div class="edu-header">
-                                    <div>${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
+                                    <div>${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</div>
                                     <div>${escapeHTML(edu.gradMonth + ' ' + edu.gradYear)}</div>
                                 </div>
                                 <div class="edu-sub">${escapeHTML(edu.school)}, ${escapeHTML(edu.location)}</div>
@@ -1765,7 +1784,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `
                             <div>
                                 <div class="edu-block">
-                                    <div class="edu-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
+                                    <div class="edu-title">${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</div>
                                     <div class="edu-sub">${escapeHTML(edu.school)}, ${escapeHTML(edu.location)}</div>
                                     ${edu.coursework.trim() ? `<div class="job-desc" style="font-size:14px; margin:3px 0;"><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\\n/g, '<br>')}</div>` : ''}
                                     <div class="edu-date">${escapeHTML(edu.gradMonth + ' ' + edu.gradYear)}</div>
@@ -1915,7 +1934,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="edu-block">
                                 <div class="edu-year">${escapeHTML(edu.gradMonth + ' ' + edu.gradYear)}</div>
                                 <div class="edu-title">${escapeHTML(edu.school)}</div>
-                                <div class="edu-sub">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}<br>${escapeHTML(edu.location)}</div>
+                                <div class="edu-sub">${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}<br>${escapeHTML(edu.location)}</div>
                             </div>
                         `;
                     }
@@ -2178,7 +2197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         let durationStr = `${edu.gradMonth} ${edu.gradYear}`;
                         leftContent += `
                                 <div class="item">
-                                    <div class="item-title">${escapeHTML(edu.school)}${edu.location ? `, ${escapeHTML(edu.location)}` : ''} &mdash; <i>${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</i></div>
+                                    <div class="item-title">${escapeHTML(edu.school)}${edu.location ? `, ${escapeHTML(edu.location)}` : ''} &mdash; <i>${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</i></div>
                                     <div class="item-sub">${escapeHTML(durationStr)}</div>
                                     ${edu.coursework.trim() ? `<div class="item-desc"><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\\n/g, '<br>')}</div>` : ''}
                                 </div>
@@ -2385,7 +2404,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `
                             <div class="edu">
                                 <div class="edu-header">
-                                    <div class="company">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
+                                    <div class="company">${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</div>
                                     <div class="date">${escapeHTML(durationStr)}</div>
                                 </div>
                                 <div class="sub">${escapeHTML(edu.school)}${edu.location ? `, ${escapeHTML(edu.location)}` : ''}</div>
@@ -2588,7 +2607,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `
                             <div class="edu">
                                 <div class="edu-header">
-                                    <div>${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
+                                    <div>${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</div>
                                     <div>${escapeHTML(durationStr)}</div>
                                 </div>
                                 <div class="sub">${escapeHTML(edu.school)}${edu.location ? `, ${escapeHTML(edu.location)}` : ''}</div>
@@ -2801,7 +2820,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `
                                 <div class="edu-item">
                                     <div class="edu-year">${escapeHTML(durationStr)}</div>
-                                    <div class="edu-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
+                                    <div class="edu-title">${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</div>
                                     <div class="edu-sub">${escapeHTML(edu.school)}${edu.location ? `, ${escapeHTML(edu.location)}` : ''}</div>
                                     ${edu.coursework.trim() ? `<ul style="margin: 6px 0 0 14px; padding: 0;"><li style="font-size: 12px; margin-bottom: 3px; line-height: 1.4;"><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\\n/g, '<br>')}</li></ul>` : ''}
                                 </div>
@@ -2983,7 +3002,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!edu.school.trim()) continue;
                     htmlStr += `
                         <div class="prof-item">
-                            <div class="prof-item-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
+                            <div class="prof-item-title">${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</div>
                             <div class="prof-item-meta">${escapeHTML(edu.school)} | ${escapeHTML(edu.location)} | ${escapeHTML(edu.gradMonth + ' ' + edu.gradYear)}</div>
                             ${edu.coursework.trim() ? `<div class="prof-text" style="margin-top: 5px;"><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\\n/g, '<br>')}</div>` : ''}
                         </div>
@@ -3153,7 +3172,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     htmlStr += `
                         <div class="cv-item">
                             <div class="cv-item-header">
-                                <div class="cv-item-title">${escapeHTML(edu.degree)} in ${escapeHTML(edu.fieldOfStudy)}</div>
+                                <div class="cv-item-title">${escapeHTML(edu.degree)}${edu.fieldOfStudy && edu.fieldOfStudy.trim() ? ' in ' + escapeHTML(edu.fieldOfStudy) : ''}</div>
                                 <div class="cv-item-date">${escapeHTML(edu.gradMonth + ' ' + edu.gradYear)}</div>
                             </div>
                             <div class="cv-item-subtitle">${escapeHTML(edu.school)}, ${escapeHTML(edu.location)}</div>

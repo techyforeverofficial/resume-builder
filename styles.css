@@ -3228,7 +3228,7 @@ textarea {
     flex-direction: column;
 }
 
-.resume-document.template-15 .header { padding: 32px 0 0 40px; display: flex; align-items: flex-start; justify-content: space-between; position: relative; gap: 60px; }
+.resume-document.template-15 .header { padding: 24px 0 0 40px; display: flex; align-items: flex-start; justify-content: space-between; position: relative; gap: 60px; }
 .resume-document.template-15 .header-left h1 { font-family: 'Raleway', sans-serif; font-size: 40px; font-weight: 800; color: #26456d; letter-spacing: 1px; line-height: 1.1; text-transform: uppercase; margin: 0; }
 .resume-document.template-15 .header-left .title { font-family: 'Source Sans 3', sans-serif; font-size: 18px; font-weight: 400; color: #444; margin-top: 4px; letter-spacing: 0.3px; }
 .resume-document.template-15 .header-box { flex: 1; height: 56px; background: #26456d; border-radius: 2px 0 0 2px; margin-top: 5px; }

@@ -3168,7 +3168,7 @@ textarea {
 .resume-document.template-13 .timeline { position: relative; padding-left: 30px; }
 .resume-document.template-13 .timeline:before { content: ""; position: absolute; left: 10px; top: 0; bottom: 0; width: 1px; background: #aaa; transform: translateX(-50%); }
 .resume-document.template-13 .job { position: relative; margin-bottom: 25px; }
-.resume-document.template-13 .job:before { content: ""; position: absolute; left: 10px; top: 6px; width: 8px; height: 8px; background: #000; border-radius: 50%; transform: translateX(-50%); }
+.resume-document.template-13 .job:before { display: none; }
 .resume-document.template-13 .job-date { font-size: 13px; margin-bottom: 3px; font-weight: 600;}
 .resume-document.template-13 .job-title { font-weight: 600; font-size: 13px; }
 .resume-document.template-13 .job-desc { font-size: 13px; margin: 6px 0; }

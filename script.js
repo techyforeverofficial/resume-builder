@@ -151,11 +151,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!skipHistory) {
-            history.pushState(
-                { page: viewName, step: (viewName === 'form' ? currentStepIndex : null) },
-                "",
-                `?page=${viewName}${viewName === 'form' ? `&step=${currentStepIndex}` : ""}`
-            );
+            if (viewName === "home") {
+                history.pushState({ page: "home", step: null }, "", "/");
+            } else {
+                history.pushState(
+                    { page: viewName, step: (viewName === 'form' ? currentStepIndex : null) },
+                    "",
+                    `?page=${viewName}${viewName === 'form' && currentStepIndex !== null ? `&step=${currentStepIndex}` : ""}`
+                );
+            }
         }
 
         window.scrollTo(0, 0);
@@ -5056,20 +5060,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Parse URL on Initial Load
     const params = new URLSearchParams(window.location.search);
-    const initialPage = params.get("page") || "home";
-    let initialStep = params.get("step");
-    if (initialStep !== null) {
-        initialStep = Number(initialStep);
-        if (isNaN(initialStep) || initialStep < 0) {
-            initialStep = 0;
-        }
-    }
+    const page = params.get("page");
 
-    navigateTo(initialPage, true);
-    if (initialPage === 'form' && initialStep !== null) {
-        showStepByIndex(initialStep, true);
-    } else if (initialPage === 'form') {
-        showStepByIndex(0, true);
+    if (!page || page === "home") {
+        navigateTo("home", true);
+        history.replaceState({ page: "home", step: null }, "", "/");
+    } else {
+        let step = params.get("step");
+        navigateTo(page, true);
+
+        if (page === 'form' && step !== null) {
+            step = Number(step);
+            if (!isNaN(step) && step >= 0) {
+                showStepByIndex(step, true);
+            }
+        }
     }
 
 });

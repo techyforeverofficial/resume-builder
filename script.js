@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         privacy: document.getElementById('link-privacy-footer')
     };
 
-    const navigateTo = (viewName) => {
+    const navigateTo = (viewName, skipHistory = false) => {
         // Hide all views
         Object.values(views).forEach(v => {
             if (v) v.classList.remove('active');
@@ -150,6 +150,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // keep home highlighted or remove all, let's remove all for form/preview 
         }
 
+        if (!skipHistory) {
+            history.pushState(
+                { page: viewName, step: (viewName === 'form' ? currentStepIndex : null) },
+                "",
+                `?page=${viewName}${viewName === 'form' ? `&step=${currentStepIndex}` : ""}`
+            );
+        }
+
         window.scrollTo(0, 0);
     };
 
@@ -158,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
     const totalDOMSteps = 8;
 
-    const showStepByIndex = (index) => {
+    const showStepByIndex = (index, skipHistory = false) => {
         if (index < 0 || index >= visibleSteps.length) return;
         const stepNumber = visibleSteps[index];
 
@@ -199,6 +207,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         currentStepIndex = index;
+
+        if (!skipHistory) {
+            history.pushState(
+                { page: 'form', step: currentStepIndex },
+                "",
+                `?page=form&step=${currentStepIndex}`
+            );
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -5023,6 +5040,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 togglePasswordBtn.classList.add('fa-eye');
             }
         });
+    }
+
+    // --- Global SPA Navigation ---
+    window.addEventListener('popstate', (e) => {
+        if (!e.state) return;
+        const { page, step } = e.state;
+        
+        navigateTo(page, true);
+        
+        if (page === 'form' && step !== null && step !== undefined) {
+            showStepByIndex(step, true);
+        }
+    });
+
+    // Parse URL on Initial Load
+    const params = new URLSearchParams(window.location.search);
+    const initialPage = params.get("page") || "home";
+    let initialStep = params.get("step");
+    if (initialStep !== null) {
+        initialStep = Number(initialStep);
+        if (isNaN(initialStep) || initialStep < 0) {
+            initialStep = 0;
+        }
+    }
+
+    navigateTo(initialPage, true);
+    if (initialPage === 'form' && initialStep !== null) {
+        showStepByIndex(initialStep, true);
+    } else if (initialPage === 'form') {
+        showStepByIndex(0, true);
     }
 
 });

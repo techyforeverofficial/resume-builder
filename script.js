@@ -4247,10 +4247,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         ].filter(Boolean).join(', ');
 
                         htmlStr += `
-                                <div class="edu">
+                                <div class="edu-item">
                                     <div class="edu-left">${escapeHTML(dateStr)}</div>
                                     <div class="edu-right">
-                                        <strong>${escapeHTML(degreeStr)}</strong>${schoolLine ? `<br>\n                                        ${escapeHTML(schoolLine)}` : ''}
+                                        <div class="edu-title">${escapeHTML(degreeStr)}</div>
+                                        ${schoolLine ? `<div class="edu-sub">${escapeHTML(schoolLine)}</div>` : ''}
                                     </div>
                                 </div>
                         `;

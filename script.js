@@ -277,7 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: "13", name: "Template 13" },
         { id: "14", name: "Template 14" },
         { id: "15", name: "Template 15" },
-        { id: "16", name: "Template 16" }
+        { id: "16", name: "Template 16" },
+        { id: "17", name: "Template 17" }
     ];
 
     const basePath = "templates/";
@@ -4307,6 +4308,152 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`;
                 }
 
+            } else if (data.template === '17') {
+                htmlStr += `<div class="resume">
+    <div class="header">
+        <div class="name">${escapeHTML(contact.fullName || '')}</div>
+    </div>
+    <div class="content">
+        <div class="top-info">
+            ${contact.phone || contact.email || contact.address || contact.linkedIn ? `<div><span>Contact</span></div>` : ''}
+            ${contact.address ? `<div><span>Address</span> ${escapeHTML(contact.address)}</div>` : ''}
+            ${contact.phone ? `<div><span>Phone</span> ${escapeHTML(contact.phone)}</div>` : ''}
+            ${contact.email ? `<div><span>Email</span> ${escapeHTML(contact.email)}</div>` : ''}
+            ${contact.linkedIn ? `<div><span>LinkedIn</span> ${escapeHTML(contact.linkedIn)}</div>` : ''}
+        </div>`;
+
+                if (contact.summary && contact.summary.trim() !== '' && contact.summary !== '<br>') {
+                    htmlStr += `
+        <div class="text">${contact.summary}</div>`;
+                }
+
+                if (skills && skills.length > 0) {
+                    htmlStr += `
+        <div class="section">
+            <div class="section-title">Skills</div>
+            <div class="skills">
+                ${skills.map(s => `<div class="skill">${escapeHTML(s)}</div>`).join('')}
+            </div>
+        </div>`;
+                }
+
+                if (workExperience && workExperience.length > 0) {
+                    const hasWork = data.experienceType === 'work' || data.experienceType === 'both';
+                    const hasIntern = data.experienceType === 'internship' || data.experienceType === 'both';
+                    
+                    if (data.experienceType !== 'fresher') {
+                        let expHtml = '';
+                        workExperience.forEach(exp => {
+                            if (exp.type === 'work' && !hasWork) return;
+                            if (exp.type === 'internship' && !hasIntern) return;
+                            
+                            let jobTitle = exp.jobTitle || '';
+                            if (exp.type === 'internship') jobTitle += " (Internship)";
+                            
+                            expHtml += `
+            <div class="job">
+                <div class="job-left">${escapeHTML(exp.startDate || '')} - ${exp.isCurrent ? 'Current' : escapeHTML(exp.endDate || '')}</div>
+                <div class="job-right">
+                    <div class="job-title">${escapeHTML(jobTitle)}</div>
+                    ${exp.company ? `<div class="job-company">${escapeHTML(exp.company)}${exp.location ? ', ' + escapeHTML(exp.location) : ''}</div>` : ''}
+                    ${exp.description ? `<div class="text">${exp.description}</div>` : ''}
+                </div>
+            </div>`;
+                        });
+                        
+                        if (expHtml) {
+                            htmlStr += `
+        <div class="section">
+            <div class="section-title">Work History</div>
+            ${expHtml}
+        </div>`;
+                        }
+                    }
+                }
+
+                if (education && education.length > 0) {
+                    htmlStr += `
+        <div class="section">
+            <div class="section-title">Education</div>`;
+                    education.forEach(edu => {
+                        const eduTitleRaw = formatEducationTitle(edu.degree, edu.fieldOfStudy);
+                        const eduTitleOutput = eduTitleRaw ? `<strong>${eduTitleRaw}</strong><br>` : '';
+                        const instLocStr = [edu.institution, edu.location].filter(Boolean).map(escapeHTML).join(', ');
+                        const scoreStr = edu.score ? escapeHTML(edu.score) : '';
+                        
+                        htmlStr += `
+            <div class="edu">
+                <div class="edu-left">${escapeHTML(edu.graduationDate || '')}</div>
+                <div class="edu-right">
+                    ${eduTitleOutput}
+                    ${instLocStr}${instLocStr && scoreStr ? ' - ' : ''}${scoreStr}
+                </div>
+            </div>`;
+                    });
+                    htmlStr += `
+        </div>`;
+                }
+                
+                if (projects && projects.length > 0) {
+                    htmlStr += `
+        <div class="section">
+            <div class="section-title">Projects</div>`;
+                    projects.forEach(p => {
+                        htmlStr += `
+            <div class="job">
+                <div class="job-left">${p.link ? `<a href="${escapeHTML(p.link)}" style="color:#666; text-decoration:none;">Link</a>` : ''}</div>
+                <div class="job-right">
+                    <div class="job-title">${escapeHTML(p.name)}</div>
+                    ${p.desc ? `<div class="text">${p.desc}</div>` : ''}
+                </div>
+            </div>`;
+                    });
+                    htmlStr += `
+        </div>`;
+                }
+
+                if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
+                    htmlStr += `
+        <div class="section">
+            <div class="section-title">Certifications</div>
+            <div class="text">${additionalInfo.certifications}</div>
+        </div>`;
+                }
+
+                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                    htmlStr += `
+        <div class="section">
+            <div class="section-title">Languages</div>
+            <div class="skills">
+                ${additionalInfo.languages.map(l => `<div class="skill">${escapeHTML(l)}</div>`).join('')}
+            </div>
+        </div>`;
+                }
+
+                if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
+                    htmlStr += `
+        <div class="section">
+            <div class="section-title">Hobbies</div>
+            <div class="text">${additionalInfo.hobbies}</div>
+        </div>`;
+                }
+
+                if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
+                    htmlStr += `
+        <div class="section">
+            <div class="section-title">Personal Details</div>
+            <div class="text" style="display:flex; flex-wrap:wrap; gap:15px;">
+                ${additionalInfo.nationality ? `<div><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</div>` : ''}
+                ${additionalInfo.maritalStatus ? `<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>` : ''}
+                ${additionalInfo.visaStatus ? `<div><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>` : ''}
+                ${additionalInfo.dob ? `<div><strong>Date of Birth:</strong> ${escapeHTML(additionalInfo.dob)}</div>` : ''}
+            </div>
+        </div>`;
+                }
+
+                htmlStr += `
+    </div>
+</div>`;
             }
             return htmlStr;
         };

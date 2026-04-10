@@ -3922,7 +3922,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `);
                 }
 
-                htmlStr += contactItems.join('<div class="dot"></div>');
+                htmlStr += contactItems.join('');
 
                 htmlStr += `
                             </div>

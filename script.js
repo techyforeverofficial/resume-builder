@@ -4309,41 +4309,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
             } else if (data.template === '17') {
+                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',').filter(Boolean) : []);
+                const expType = resumeData.experienceType || 'work';
+
                 htmlStr += `<div class="resume">
     <div class="header">
-        <div class="name">${escapeHTML(contact.fullName || '')}</div>
+        <div class="name">${escapeHTML(data.fullName || '')}</div>
     </div>
     <div class="content">
         <div class="top-info">
-            ${contact.phone || contact.email || contact.address || contact.linkedIn ? `<div><span>Contact</span></div>` : ''}
-            ${contact.address ? `<div><span>Address</span> ${escapeHTML(contact.address)}</div>` : ''}
-            ${contact.phone ? `<div><span>Phone</span> ${escapeHTML(contact.phone)}</div>` : ''}
-            ${contact.email ? `<div><span>Email</span> ${escapeHTML(contact.email)}</div>` : ''}
-            ${contact.linkedIn ? `<div><span>LinkedIn</span> ${escapeHTML(contact.linkedIn)}</div>` : ''}
+            ${data.phone || data.email || data.address || data.linkedIn ? `<div><span>Contact</span></div>` : ''}
+            ${data.address ? `<div><span>Address</span> ${escapeHTML(data.address)}</div>` : ''}
+            ${data.phone ? `<div><span>Phone</span> ${escapeHTML(data.phone)}</div>` : ''}
+            ${data.email ? `<div><span>Email</span> ${escapeHTML(data.email)}</div>` : ''}
+            ${data.linkedIn ? `<div><span>LinkedIn</span> ${escapeHTML(data.linkedIn)}</div>` : ''}
         </div>`;
 
-                if (contact.summary && contact.summary.trim() !== '' && contact.summary !== '<br>') {
+                if (data.summary && data.summary.trim() !== '' && data.summary !== '<br>') {
                     htmlStr += `
-        <div class="text">${contact.summary}</div>`;
+        <div class="text">${data.summary}</div>`;
                 }
 
-                if (skills && skills.length > 0) {
+                if (skillsList && skillsList.length > 0) {
                     htmlStr += `
         <div class="section">
             <div class="section-title">Skills</div>
             <div class="skills">
-                ${skills.map(s => `<div class="skill">${escapeHTML(s)}</div>`).join('')}
+                ${skillsList.map(s => `<div class="skill">${escapeHTML(s.trim())}</div>`).join('')}
             </div>
         </div>`;
                 }
 
-                if (workExperience && workExperience.length > 0) {
-                    const hasWork = data.experienceType === 'work' || data.experienceType === 'both';
-                    const hasIntern = data.experienceType === 'internship' || data.experienceType === 'both';
+                if (experiences && experiences.length > 0) {
+                    const hasWork = expType === 'work' || expType === 'both';
+                    const hasIntern = expType === 'internship' || expType === 'both';
                     
-                    if (data.experienceType !== 'fresher') {
+                    if (expType !== 'fresher') {
                         let expHtml = '';
-                        workExperience.forEach(exp => {
+                        experiences.forEach(exp => {
                             if (exp.type === 'work' && !hasWork) return;
                             if (exp.type === 'internship' && !hasIntern) return;
                             

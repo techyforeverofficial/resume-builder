@@ -3868,11 +3868,23 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="contact">
                 `;
 
+                const getContactIcon16 = (type) => {
+                    const color = "#123a6b";
+                    switch(type) {
+                        case 'phone': return `<svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${color};"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>`;
+                        case 'location': return `<svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${color};"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
+                        case 'website': return `<svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${color};"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`;
+                        case 'email': return `<svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${color};"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`;
+                        case 'linkedin': return `<svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${color};"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>`;
+                        default: return "";
+                    }
+                };
+
                 let contactItems = [];
                 if (data.phone) {
                     contactItems.push(`
                         <div class="contact-item">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M6.6,10.8C8.4,14.4 11.6,17.6"/></svg>
+                            ${getContactIcon16('phone')}
                             ${escapeHTML(data.phone)}
                         </div>
                     `);
@@ -3880,7 +3892,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.city || data.country) {
                     contactItems.push(`
                         <div class="contact-item">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 9"/></svg>
+                            ${getContactIcon16('location')}
                             ${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}
                         </div>
                     `);
@@ -3888,7 +3900,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.website) {
                     contactItems.push(`
                         <div class="contact-item">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5"/></svg>
+                            ${getContactIcon16('website')}
                             ${escapeHTML(additionalInfo.website)}
                         </div>
                     `);
@@ -3896,7 +3908,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.linkedin) {
                     contactItems.push(`
                         <div class="contact-item">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                            ${getContactIcon16('linkedin')}
                             ${escapeHTML(additionalInfo.linkedin)}
                         </div>
                     `);
@@ -3904,7 +3916,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.email) {
                     contactItems.push(`
                         <div class="contact-item">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4"/></svg>
+                            ${getContactIcon16('email')}
                             ${escapeHTML(data.email)}
                         </div>
                     `);
@@ -3995,24 +4007,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
-                const langsList = additionalInfo.languages || [];
-                const combinedSkillsLangs = [...skillsList, ...langsList];
 
-                if (combinedSkillsLangs.length > 0) {
+                if (skillsList.length > 0) {
                     htmlStr += `
                         <!-- SKILLS -->
-                        <div class="section-bar">SKILLS & LANGUAGES</div>
+                        <div class="section-bar">SKILLS</div>
                         <div class="skills">
                     `;
                     
-                    const colLength = Math.ceil(combinedSkillsLangs.length / 3);
+                    const colLength = Math.ceil(skillsList.length / 3);
                     
                     for (let c = 0; c < 3; c++) {
-                        htmlStr += `<ul>`;
+                        htmlStr += `<ul style="margin: 0; padding-left: 18px;">`;
                         for (let r = 0; r < colLength; r++) {
                             const index = c * colLength + r;
-                            if (index < combinedSkillsLangs.length) {
-                                htmlStr += `<li>${escapeHTML(combinedSkillsLangs[index].trim())}</li>`;
+                            if (index < skillsList.length) {
+                                htmlStr += `<li class="text" style="margin-bottom: 4px;">${escapeHTML(skillsList[index].trim())}</li>`;
                             }
                         }
                         htmlStr += `</ul>`;
@@ -4061,6 +4071,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="section-bar">HOBBIES</div>
                         <div class="text" style="margin-bottom:10px;">${additionalInfo.hobbies}</div>
                     `;
+                }
+
+                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                    rightBottomHtml += `
+                        <div class="section-bar">LANGUAGES</div>
+                        <ul style="margin: 0; padding-left: 18px; margin-bottom: 10px;">
+                    `;
+                    for (let l of additionalInfo.languages) {
+                        rightBottomHtml += `<li class="text" style="margin-bottom: 4px;">${escapeHTML(l.trim())}</li>`;
+                    }
+                    rightBottomHtml += `</ul>`;
                 }
 
                 let pdText = [];

@@ -4238,14 +4238,17 @@ document.addEventListener('DOMContentLoaded', () => {
                             else degreeStr = edu.degree || edu.fieldOfStudy || '';
                         }
 
-                        const schoolStr = [edu.schoolName, edu.schoolLocation].filter(Boolean).join(' - ');
+                        const rightLines = [
+                            `<strong>${degreeStr}</strong>`,
+                            edu.schoolName ? escapeHTML(edu.schoolName) : null,
+                            edu.schoolLocation ? escapeHTML(edu.schoolLocation) : null
+                        ].filter(Boolean).join('<br>');
 
                         htmlStr += `
                                 <div class="edu">
                                     <div class="edu-left">${escapeHTML(dateStr)}</div>
                                     <div class="edu-right">
-                                        <strong>${degreeStr}</strong><br>
-                                        ${escapeHTML(schoolStr)}
+                                        ${rightLines}
                                     </div>
                                 </div>
                         `;
@@ -4386,8 +4389,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             else degreeStr = edu.degree || edu.fieldOfStudy || '';
                         }
 
+                        const eduLines = [
+                            `<strong>${degreeStr}</strong>`,
+                            edu.schoolName ? escapeHTML(edu.schoolName) : null,
+                            edu.schoolLocation ? escapeHTML(edu.schoolLocation) : null,
+                            dateStr ? escapeHTML(dateStr) : null
+                        ].filter(Boolean).join('<br>');
+
                         htmlStr += `
-                                    <p><strong>${escapeHTML(edu.schoolName || '')}</strong><br>${escapeHTML(degreeStr)}<br>${escapeHTML(dateStr)}</p>
+                                    <p>${eduLines}</p>
                         `;
                     });
                     htmlStr += `

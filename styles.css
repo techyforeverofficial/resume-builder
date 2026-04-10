@@ -4221,8 +4221,8 @@ textarea {
 }
 
 .resume-document.template-18 .header {
-    padding: 30px 40px 20px;
-    border-top: 8px solid #6e8a8b;
+    padding: 22px 40px 20px;
+    border-top: 16px solid #6e8a8b;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;

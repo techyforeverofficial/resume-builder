@@ -4238,12 +4238,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             else degreeStr = edu.degree || edu.fieldOfStudy || '';
                         }
 
-                        const schoolSub = [edu.schoolName || edu.institutionName, edu.schoolLocation || edu.location].filter(Boolean).join(', ');
+                        const schoolLine = [
+                            edu.schoolName || edu.institutionName,
+                            edu.location || edu.city
+                        ].filter(Boolean).join(', ');
 
                         htmlStr += `
                                 <div class="edu-item" style="margin-bottom: 12px;">
                                     <div class="edu-title" style="font-size: 11.5px; font-weight: bold; color: #444;">${escapeHTML(degreeStr)}</div>
-                                    ${schoolSub ? `<div class="edu-sub">${escapeHTML(schoolSub)}</div>` : ''}
+                                    ${schoolLine ? `<div class="edu-sub">${escapeHTML(schoolLine)}</div>` : ''}
                                     ${dateStr ? `<div class="edu-date">${escapeHTML(dateStr)}</div>` : ''}
                                 </div>
                         `;
@@ -4384,12 +4387,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             else degreeStr = edu.degree || edu.fieldOfStudy || '';
                         }
 
-                        const schoolSub = [edu.schoolName || edu.institutionName, edu.schoolLocation || edu.location].filter(Boolean).join(', ');
+                        const schoolLine = [
+                            edu.schoolName || edu.institutionName,
+                            edu.location || edu.city
+                        ].filter(Boolean).join(', ');
 
                         htmlStr += `
                                     <div class="edu-item" style="margin-bottom: 12px;">
                                         <div class="edu-title" style="font-size: 11.5px; font-weight: bold; color: #444;">${escapeHTML(degreeStr)}</div>
-                                        ${schoolSub ? `<div class="edu-sub">${escapeHTML(schoolSub)}</div>` : ''}
+                                        ${schoolLine ? `<div class="edu-sub">${escapeHTML(schoolLine)}</div>` : ''}
                                         ${dateStr ? `<div class="edu-date">${escapeHTML(dateStr)}</div>` : ''}
                                     </div>
                         `;

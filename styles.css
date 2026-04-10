@@ -4297,7 +4297,6 @@ textarea {
 
 .resume-document.template-18 .timeline {
     position: relative;
-    padding-left: 30px;
 }
 
 .resume-document.template-18 .timeline:before {
@@ -4308,10 +4307,12 @@ textarea {
     bottom: 0;
     width: 1px;
     background: #aaa;
+    transform: translateX(-50%);
 }
 
 .resume-document.template-18 .job {
     position: relative;
+    padding-left: 30px;
     margin-bottom: 20px;
 }
 
@@ -4319,7 +4320,7 @@ textarea {
     content: "";
     position: absolute;
     left: 12px;
-    top: 0.7em;
+    top: 8px;
     width: 8px;
     height: 8px;
     background: #6e8a8b;

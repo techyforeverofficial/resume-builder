@@ -277,7 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: "13", name: "Template 13" },
         { id: "14", name: "Template 14" },
         { id: "15", name: "Template 15" },
-        { id: "16", name: "Template 16" }
+        { id: "16", name: "Template 16" },
+        { id: "17", name: "Template 17" }
     ];
 
     const basePath = "templates/";
@@ -4144,6 +4145,117 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 htmlStr += `
                     </div>
+                    </div>
+                `;
+            } else if (data.template === '17') {
+                htmlStr += `
+                    <div class="resume">
+                        <div class="header">
+                            <div class="name">${escapeHTML(data.fullName || "Your Name")}</div>
+                        </div>
+                        <div class="content">
+                            <div class="top-info">
+                `;
+                
+                if (data.phone || data.email || data.location) {
+                    htmlStr += `<div><span>Contact</span></div>`;
+                }
+                if (data.location) {
+                    htmlStr += `<div><span>Address</span> ${escapeHTML(data.location)}</div>`;
+                }
+                if (data.phone) {
+                    htmlStr += `<div><span>Phone</span> ${escapeHTML(data.phone)}</div>`;
+                }
+                if (data.email) {
+                    htmlStr += `<div><span>Email</span> ${escapeHTML(data.email)}</div>`;
+                }
+                
+                htmlStr += `
+                            </div>
+                `;
+                
+                if (resumeData.summary) {
+                    htmlStr += `
+                            <div class="text">
+                                ${resumeData.summary}
+                            </div>
+                    `;
+                }
+
+                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
+                if (skillsList.length > 0) {
+                    htmlStr += `
+                            <div class="section">
+                                <div class="section-title">Skills</div>
+                                <div class="skills">
+                                    ${skillsList.map(s => `<div class="skill">${escapeHTML(s.trim())}</div>`).join('')}
+                                </div>
+                            </div>
+                    `;
+                }
+
+                if (experiences && experiences.length > 0) {
+                    htmlStr += `
+                            <div class="section">
+                                <div class="section-title">Work History</div>
+                    `;
+                    experiences.forEach(exp => {
+                        const startStr = exp.startMonth && exp.startYear ? `${exp.startYear}-${exp.startMonth.padStart(2, '0')}` : exp.startYear || '';
+                        const endStr = exp.current ? 'Current' : (exp.endMonth && exp.endYear ? `${exp.endYear}-${exp.endMonth.padStart(2, '0')}` : exp.endYear || '');
+                        const dateStr = startStr || endStr ? `${startStr} - ${endStr}` : '';
+                        const companyStr = [exp.company, exp.location].filter(Boolean).join(', ');
+
+                        htmlStr += `
+                                <div class="job">
+                                    <div class="job-left">${escapeHTML(dateStr)}</div>
+                                    <div class="job-right">
+                                        <div class="job-title">${escapeHTML(exp.title || exp.role || '')}</div>
+                                        <div class="job-company">${escapeHTML(companyStr)}</div>
+                                        ${exp.description ? `<ul><li>${exp.description}</li></ul>` : ''}
+                                    </div>
+                                </div>
+                        `;
+                    });
+                    htmlStr += `
+                            </div>
+                    `;
+                }
+
+                if (education && education.length > 0) {
+                    htmlStr += `
+                            <div class="section">
+                                <div class="section-title">Education</div>
+                    `;
+                    education.forEach(edu => {
+                        const dateStr = edu.endMonth && edu.endYear ? `${edu.endMonth} ${edu.endYear}` : edu.endYear || '';
+                        
+                        let degreeStr = '';
+                        if (typeof window.formatEducationTitle === 'function') {
+                            degreeStr = window.formatEducationTitle(edu.degree, edu.fieldOfStudy);
+                        } else {
+                            if (edu.degree && edu.fieldOfStudy) degreeStr = `${edu.degree} in ${edu.fieldOfStudy}`;
+                            else degreeStr = edu.degree || edu.fieldOfStudy || '';
+                        }
+
+                        const schoolStr = [edu.schoolName, edu.schoolLocation].filter(Boolean).join(' - ');
+
+                        htmlStr += `
+                                <div class="edu">
+                                    <div class="edu-left">${escapeHTML(dateStr)}</div>
+                                    <div class="edu-right">
+                                        <strong>${degreeStr}</strong><br>
+                                        ${escapeHTML(schoolStr)}
+                                    </div>
+                                </div>
+                        `;
+                    });
+                    htmlStr += `
+                            </div>
+                    `;
+                }
+
+                htmlStr += `
+                        </div>
                     </div>
                 `;
             } else {

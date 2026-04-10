@@ -4399,3 +4399,224 @@ textarea {
 .resume-document.template-18 .project-item {
     font-size: 11.5px;
 }
+
+/* --- TEMPLATE 19 STYLES --- */
+.resume-document.template-19 {
+    width: 816px;
+    height: 1050px;
+    margin: auto;
+    font-family: 'Calibri', 'Arial', sans-serif;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.resume-document.template-19 * {
+    box-sizing: border-box;
+}
+
+.resume-document.template-19 .resume-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    overflow: hidden;
+}
+
+.resume-document.template-19 .header {
+    display: flex;
+    align-items: stretch;
+    min-height: 88px;
+    border-bottom: 3px solid #5bb8c1;
+}
+
+.resume-document.template-19 .header-logo {
+    width: 78px;
+    background: #5bb8c1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.resume-document.template-19 .header-logo span {
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Georgia', serif;
+    line-height: 1;
+}
+
+.resume-document.template-19 .header-name-area {
+    padding: 18px 24px 14px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 4px solid #5bb8c1;
+}
+
+.resume-document.template-19 .header-name {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c2c2c;
+    letter-spacing: 0.3px;
+    line-height: 1.1;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .contact-bar {
+    background: #5bb8c1;
+    display: flex;
+    align-items: center;
+    padding: 7px 20px;
+    gap: 0;
+    flex-wrap: wrap;
+}
+
+.resume-document.template-19 .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.4);
+    font-size: 11px;
+    color: #fff;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .contact-item:first-child {
+    padding-left: 0;
+}
+
+.resume-document.template-19 .contact-item:last-child {
+    border-right: none;
+}
+
+.resume-document.template-19 .body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.resume-document.template-19 .sidebar {
+    width: 185px;
+    background: #f0f8f9;
+    padding: 22px 18px 22px 20px;
+    flex-shrink: 0;
+    border-right: 1px solid #d8eef0;
+}
+
+.resume-document.template-19 .sidebar-section-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #3a9baa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .sidebar ul {
+    list-style: disc;
+    padding-left: 14px;
+    margin: 0;
+}
+
+.resume-document.template-19 .sidebar ul li {
+    font-size: 11.5px;
+    color: #333;
+    margin-bottom: 6px;
+    line-height: 1.4;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .main {
+    flex: 1;
+    padding: 22px 28px 22px 28px;
+    overflow: hidden;
+}
+
+.resume-document.template-19 .section {
+    margin-bottom: 20px;
+}
+
+.resume-document.template-19 .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3a9baa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #3a9baa;
+    padding-bottom: 3px;
+    margin-bottom: 10px;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .section-body {
+    font-size: 11.5px;
+    color: #333;
+    line-height: 1.65;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .main ul {
+    list-style: disc;
+    padding-left: 16px;
+    margin-top: 4px;
+}
+
+.resume-document.template-19 .main ul li {
+    font-size: 11.5px;
+    color: #333;
+    margin-bottom: 4px;
+    line-height: 1.55;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .job {
+    margin-bottom: 14px;
+}
+
+.resume-document.template-19 .job-date {
+    font-size: 11px;
+    color: #555;
+    margin-bottom: 2px;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .job-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #222;
+    font-family: 'Calibri', 'Arial', sans-serif;
+    margin-bottom: 1px;
+}
+
+.resume-document.template-19 .job-company {
+    font-size: 11.5px;
+    color: #555;
+    margin-bottom: 5px;
+    font-family: 'Calibri', 'Arial', sans-serif;
+    font-style: italic;
+}
+
+.resume-document.template-19 .edu-date {
+    font-size: 11px;
+    color: #555;
+    margin-bottom: 2px;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.resume-document.template-19 .edu-degree {
+    font-size: 12px;
+    font-weight: 700;
+    color: #222;
+    font-family: 'Calibri', 'Arial', sans-serif;
+    margin-bottom: 2px;
+}
+
+.resume-document.template-19 .edu-school {
+    font-size: 11.5px;
+    color: #333;
+    font-family: 'Calibri', 'Arial', sans-serif;
+}

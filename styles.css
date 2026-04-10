@@ -4812,9 +4812,9 @@ textarea {
     color: #222;
 }
 
-.resume-document.template-20 .job-bullets {
-    list-style: none;
-    padding: 0;
+.resume-document.template-20 .job-bullets ul {
+    list-style: disc;
+    padding-left: 18px;
     margin: 0;
 }
 
@@ -4823,18 +4823,7 @@ textarea {
     color: #333;
     font-family: 'Arial', sans-serif;
     line-height: 1.55;
-    padding-left: 12px;
-    position: relative;
     margin-bottom: 3px;
-}
-
-.resume-document.template-20 .job-bullets li::before {
-    content: '\2022';
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: #333;
-    font-size: 14px;
 }
 
 .resume-document.template-20 .edu-degree {

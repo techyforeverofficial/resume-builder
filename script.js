@@ -4202,7 +4202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         for (let i = 0; i < workExpArray.length; i++) {
                             const exp = workExpArray[i];
                             if (!exp.company.trim()) continue;
-                            const durationText = exp.current ? \`NOW–\${escapeHTML(exp.startYear)}\` : \`\${escapeHTML(exp.endYear)}–\${escapeHTML(exp.startYear)}\`;
+                            const durationText = exp.current ? `NOW–${escapeHTML(exp.startYear)}` : `${escapeHTML(exp.endYear)}–${escapeHTML(exp.startYear)}`;
                             htmlStr += `
                                 <div class="job">
                                     <div class="job-left">${durationText}</div>
@@ -4225,7 +4225,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         for (let i = 0; i < internExpArray.length; i++) {
                             const exp = internExpArray[i];
                             if (!exp.company.trim()) continue;
-                            const durationText = exp.current ? \`NOW–\${escapeHTML(exp.startYear)}\` : \`\${escapeHTML(exp.endYear)}–\${escapeHTML(exp.startYear)}\`;
+                            const durationText = exp.current ? `NOW–${escapeHTML(exp.startYear)}` : `${escapeHTML(exp.endYear)}–${escapeHTML(exp.startYear)}`;
                             htmlStr += `
                                 <div class="job">
                                     <div class="job-left">${durationText}</div>
@@ -4250,7 +4250,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     for (let i = 0; i < education.length; i++) {
                         const edu = education[i];
                         if (!edu.school.trim()) continue;
-                        let durationStr = \`\${escapeHTML(edu.gradMonth || '')} \${escapeHTML(edu.gradYear || '')}\`.trim();
+                        let durationStr = `${escapeHTML(edu.gradMonth || '')} ${escapeHTML(edu.gradYear || '')}`.trim();
                         htmlStr += `
                                 <div class="edu">
                                     <div class="edu-left">${durationStr}</div>

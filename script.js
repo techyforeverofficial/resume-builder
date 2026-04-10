@@ -789,18 +789,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Refresh sidebar and visibility only if we are initialized past setup
-        if (currentStepIndex > 0) {
-            // Need to fix currentStepIndex if it was on a step that just hid (like Step 4 becoming hidden)
-            let currStepLog = visibleSteps[currentStepIndex];
-            if (!currStepLog) {
-                // we were on step 4, and it hid, so fallback to step 3
-                currStepLog = 3;
-                currentStepIndex = visibleSteps.indexOf(3);
+        const isFormActive = views.form && views.form.classList.contains('active');
+        if (isFormActive) {
+            if (currentStepIndex > 0) {
+                // Need to fix currentStepIndex if it was on a step that just hid (like Step 4 becoming hidden)
+                let currStepLog = visibleSteps[currentStepIndex];
+                if (!currStepLog) {
+                    // we were on step 4, and it hid, so fallback to step 3
+                    currStepLog = 3;
+                    currentStepIndex = visibleSteps.indexOf(3);
+                }
+                showStepByIndex(currentStepIndex, true);
+            } else {
+                 // Init load
+                 showStepByIndex(0, true);
             }
-            showStepByIndex(currentStepIndex);
-        } else {
-             // Init load
-             showStepByIndex(0);
         }
     };
 
@@ -5061,19 +5064,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Parse URL on Initial Load
     const params = new URLSearchParams(window.location.search);
     const page = params.get("page");
+    const step = params.get("step");
+    
+    console.log("Initial Load Page:", page);
 
-    if (!page || page === "home") {
+    if (!page) {
+        // Default → HOME
         navigateTo("home", true);
         history.replaceState({ page: "home", step: null }, "", "/");
     } else {
-        let step = params.get("step");
         navigateTo(page, true);
 
-        if (page === 'form' && step !== null) {
-            step = Number(step);
-            if (!isNaN(step) && step >= 0) {
-                showStepByIndex(step, true);
-            }
+        if (page === "form") {
+            const stepIndex = step ? Number(step) : 0;
+            showStepByIndex(stepIndex, true);
         }
     }
 

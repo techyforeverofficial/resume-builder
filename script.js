@@ -1,4 +1,4 @@
-﻿import { auth, db } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
@@ -277,8 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: "13", name: "Template 13" },
         { id: "14", name: "Template 14" },
         { id: "15", name: "Template 15" },
-        { id: "16", name: "Template 16" },
-        { id: "17", name: "Template 17" }
+        { id: "16", name: "Template 16" }
     ];
 
     const basePath = "templates/";
@@ -3178,7 +3177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                         for (let i = 0; i < workExpArray.length; i++) {
                             const exp = workExpArray[i];
-                            let durationStr = `${exp.startYear}â€“${exp.current ? 'NOW' : exp.endYear}`;
+                            let durationStr = `${exp.startYear}–${exp.current ? 'NOW' : exp.endYear}`;
                             htmlStr += `
                                     <div class="job">
                                         <div class="job-date">${escapeHTML(durationStr)}</div>
@@ -3198,7 +3197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                         for (let i = 0; i < internExpArray.length; i++) {
                             const exp = internExpArray[i];
-                            let durationStr = `${exp.startYear}â€“${exp.current ? 'NOW' : exp.endYear}`;
+                            let durationStr = `${exp.startYear}–${exp.current ? 'NOW' : exp.endYear}`;
                             htmlStr += `
                                     <div class="job">
                                         <div class="job-date">${escapeHTML(durationStr)}</div>
@@ -3313,11 +3312,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                         for (let i = 0; i < workExpArray.length; i++) {
                             const exp = workExpArray[i];
-                            let durationStr = `${exp.startYear}â€“${exp.current ? 'NOW' : exp.endYear}`;
+                            let durationStr = `${exp.startYear}–${exp.current ? 'NOW' : exp.endYear}`;
                             htmlStr += `
                                 <div class="job">
                                     <div class="job-header">
-                                        <div>${escapeHTML(exp.company ? `${exp.company} â€“ ` : '')}${escapeHTML(exp.role)}</div>
+                                        <div>${escapeHTML(exp.company ? `${exp.company} – ` : '')}${escapeHTML(exp.role)}</div>
                                         <div class="date">${escapeHTML(durationStr)}</div>
                                     </div>
                                     ${exp.description ? `<div class="job-desc">${exp.description}</div>` : ''}
@@ -3336,11 +3335,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                         for (let i = 0; i < internExpArray.length; i++) {
                             const exp = internExpArray[i];
-                            let durationStr = `${exp.startYear}â€“${exp.current ? 'NOW' : exp.endYear}`;
+                            let durationStr = `${exp.startYear}–${exp.current ? 'NOW' : exp.endYear}`;
                             htmlStr += `
                                 <div class="job">
                                     <div class="job-header">
-                                        <div>${escapeHTML(exp.company ? `${exp.company} â€“ ` : '')}${escapeHTML(exp.role)}</div>
+                                        <div>${escapeHTML(exp.company ? `${exp.company} – ` : '')}${escapeHTML(exp.role)}</div>
                                         <div class="date">${escapeHTML(durationStr)}</div>
                                     </div>
                                     ${exp.description ? `<div class="job-desc">${exp.description}</div>` : ''}
@@ -3531,7 +3530,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                         for (let i = 0; i < workExpArray.length; i++) {
                             const exp = workExpArray[i];
-                            const durationText = exp.current ? `NOWâ€“${escapeHTML(exp.startYear)}` : `${escapeHTML(exp.endYear)}â€“${escapeHTML(exp.startYear)}`;
+                            const durationText = exp.current ? `NOW–${escapeHTML(exp.startYear)}` : `${escapeHTML(exp.endYear)}–${escapeHTML(exp.startYear)}`;
                             htmlStr += `
                             <div class="work-entry">
                                 <div class="work-date">${durationText}</div>
@@ -3553,7 +3552,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                         for (let i = 0; i < internExpArray.length; i++) {
                             const exp = internExpArray[i];
-                            const durationText = exp.current ? `NOWâ€“${escapeHTML(exp.startYear)}` : `${escapeHTML(exp.endYear)}â€“${escapeHTML(exp.startYear)}`;
+                            const durationText = exp.current ? `NOW–${escapeHTML(exp.startYear)}` : `${escapeHTML(exp.endYear)}–${escapeHTML(exp.startYear)}`;
                             htmlStr += `
                             <div class="work-entry">
                                 <div class="work-date">${durationText}</div>
@@ -3579,7 +3578,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     for (let i = 0; i < skillsList.length; i++) {
                         htmlStr += `
                                 <div class="skill-item">
-                                    <span class="skill-bullet">â€¢</span>
+                                    <span class="skill-bullet">•</span>
                                     <span class="skill-name">${escapeHTML(skillsList[i].trim())}</span>
                                     <div class="skill-bar-wrap"></div>
                                 </div>
@@ -3636,7 +3635,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     for (let i = 0; i < education.length; i++) {
                         const edu = education[i];
-                        let durationStr = `${escapeHTML(edu.startYear)} â€“ ${escapeHTML(edu.gradYear)}`;
+                        let durationStr = `${escapeHTML(edu.startYear)} – ${escapeHTML(edu.gradYear)}`;
                         htmlStr += `
                         <div class="edu-entry">
                             <div class="edu-university">${escapeHTML(edu.school)}</div>
@@ -3695,7 +3694,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <ul class="lang-list">
                     `;
                     for (let i = 0; i < additionalInfo.languages.length; i++) {
-                        htmlStr += `<li><span class="lang-bullet">â€¢</span> ${escapeHTML(additionalInfo.languages[i].trim())}</li>`;
+                        htmlStr += `<li><span class="lang-bullet">•</span> ${escapeHTML(additionalInfo.languages[i].trim())}</li>`;
                     }
                     htmlStr += `
                             </ul>
@@ -3994,7 +3993,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             htmlStr += `
                             <div class="job">
                                 <div class="job-header">
-                                    <div>${escapeHTML(exp.company)} â€“ ${escapeHTML(exp.role)}</div>
+                                    <div>${escapeHTML(exp.company)} – ${escapeHTML(exp.role)}</div>
                                     <div>${durationText}</div>
                                 </div>
                                 ${exp.description ? `<div class="text" style="margin-top: 5px;">${exp.description}</div>` : ''}
@@ -4014,7 +4013,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             htmlStr += `
                             <div class="job">
                                 <div class="job-header">
-                                    <div>${escapeHTML(exp.company)} â€“ ${escapeHTML(exp.role)}</div>
+                                    <div>${escapeHTML(exp.company)} – ${escapeHTML(exp.role)}</div>
                                     <div>${durationText}</div>
                                 </div>
                                 ${exp.description ? `<div class="text" style="margin-top: 5px;">${exp.description}</div>` : ''}
@@ -4033,7 +4032,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     for (let i = 0; i < education.length; i++) {
                         const edu = education[i];
                         if (!edu.school.trim()) continue;
-                        const durationStr = `${escapeHTML(edu.startYear || '')}â€“${escapeHTML(edu.gradYear || '')}`;
+                        const durationStr = `${escapeHTML(edu.startYear || '')}–${escapeHTML(edu.gradYear || '')}`;
                         htmlStr += `
                         <div class="edu-item">
                             <div>
@@ -4307,195 +4306,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>`;
                 }
-            } else if (data.template === '17') {
-                const nameStr = data.fullName || "Your Name";
-                const titleStr = data.title || "Professional Title";
-                
-                htmlStr += `
-                    <div class="header-box">
-                        <div class="header-name">${escapeHTML(nameStr)}</div>
-                        ${titleStr ? `<div class="header-role">${escapeHTML(titleStr)}</div>` : ''}
-                    </div>
-                `;
-
-                // CONTACT
-                let contactParts = [];
-                if (data.city || data.country) {
-                    let loc = [data.city, data.country].filter(Boolean).join(', ');
-                    contactParts.push(`<span class="contact-text">Address &nbsp;${escapeHTML(loc)}</span>`);
-                }
-                if (data.phone) {
-                    contactParts.push(`<span class="contact-text">Phone &nbsp;${escapeHTML(data.phone)}</span>`);
-                }
-                if (data.email) {
-                    contactParts.push(`<span class="contact-text">E-mail &nbsp;${escapeHTML(data.email)}</span>`);
-                }
-                if (additionalInfo.linkedin) {
-                    contactParts.push(`<span class="contact-text">LinkedIn &nbsp;${escapeHTML(additionalInfo.linkedin)}</span>`);
-                }
-                if (additionalInfo.website) {
-                    contactParts.push(`<span class="contact-text">Website &nbsp;${escapeHTML(additionalInfo.website)}</span>`);
-                }
-
-                if (contactParts.length > 0) {
-                    htmlStr += `
-                    <div class="contact-bar">
-                        <div class="contact-inner">
-                            <span class="contact-label">Contact</span>
-                            <span class="contact-divider"></span>
-                            ${contactParts.join('<span class="contact-divider"></span>')}
-                        </div>
-                    </div>`;
-                }
-
-                htmlStr += `
-                <div class="body-content">
-                `;
-
-                if (data.summary && data.summary.trim() !== '') {
-                    htmlStr += `
-                    <div class="summary-text">
-                        ${data.summary}
-                    </div>`;
-                }
-
-                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
-                if (skillsList.length > 0) {
-                    htmlStr += `
-                    <div class="section-block">
-                        <div class="section-title">Skills</div>
-                        <div class="skills-container">
-                    `;
-                    skillsList.forEach(skill => {
-                        if (skill.trim()) {
-                            htmlStr += `<span class="skill-pill">${escapeHTML(skill.trim())}</span>`;
-                        }
-                    });
-                    htmlStr += `
-                        </div>
-                    </div>`;
-                }
-
-                if (workExperience.length > 0) {
-                    htmlStr += `
-                    <div class="section-block">
-                        <div class="section-title">Work History</div>
-                    `;
-                    workExperience.forEach(exp => {
-                        let durationStr = "";
-                        if (exp.startMonth && exp.startYear) {
-                            durationStr += exp.startYear;
-                        }
-                        if (exp.currentJob) {
-                            durationStr = exp.startYear ? exp.startYear + " - Current" : "Current";
-                        } else if (exp.endMonth && exp.endYear) {
-                            durationStr = (exp.startYear ? exp.startYear + " - " : "") + exp.endYear;
-                        }
-                        let locStr = exp.location ? (exp.remote ? ` (Remote)` : exp.location) : (exp.remote ? `Remote` : "");
-                        htmlStr += `
-                        <div class="item-block">
-                            <div class="item-header">
-                                <div>
-                                    <div class="item-title">${escapeHTML(exp.role)}</div>
-                                    <div class="item-subtitle">${escapeHTML(exp.company)}${locStr ? ', ' + escapeHTML(locStr) : ''}</div>
-                                </div>
-                                <div class="item-date">${escapeHTML(durationStr)}</div>
-                            </div>
-                            ${exp.desc && exp.desc !== '<br>' ? `<div class="item-desc">${exp.desc}</div>` : ''}
-                        </div>`;
-                    });
-                    htmlStr += `</div>`;
-                }
-
-                if (education.length > 0) {
-                    htmlStr += `
-                    <div class="section-block">
-                        <div class="section-title">Education</div>
-                    `;
-                    education.forEach(edu => {
-                        htmlStr += `
-                        <div class="item-block">
-                            <div class="item-header">
-                                <div>
-                                    <div class="item-title">${window.formatEducationTitle(edu.degree, edu.fieldOfStudy)}</div>
-                                    <div class="item-subtitle">${escapeHTML(edu.school)}</div>
-                                </div>
-                                <div class="item-date">${escapeHTML(edu.gradMonth + ' ' + edu.gradYear)}</div>
-                            </div>
-                            ${edu.coursework && edu.coursework.trim() ? `<div class="item-desc" style="margin-top:4px;"><ul style="margin:0;padding:0;"><li><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\n/g, '<br>')}</li></ul></div>` : ''}
-                        </div>`;
-                    });
-                    htmlStr += `</div>`;
-                }
-
-                if (projects.length > 0) {
-                    htmlStr += `
-                    <div class="section-block">
-                        <div class="section-title">Projects</div>
-                    `;
-                    projects.forEach(proj => {
-                        htmlStr += `
-                        <div class="item-block">
-                            <div class="item-header">
-                                <div>
-                                    <div class="item-title">${escapeHTML(proj.name)}</div>
-                                </div>
-                                ${proj.link ? `<div class="item-date"><a href="${escapeHTML(proj.link)}" style="color:inherit;text-decoration:none;">${escapeHTML(proj.link)}</a></div>` : ''}
-                            </div>
-                            ${proj.desc && proj.desc !== '<br>' ? `<div class="item-desc">${proj.desc}</div>` : ''}
-                        </div>`;
-                    });
-                    htmlStr += `</div>`;
-                }
-
-                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
-                    htmlStr += `
-                    <div class="section-block">
-                        <div class="section-title">Languages</div>
-                        <div class="skills-container">
-                    `;
-                    additionalInfo.languages.forEach(lang => {
-                        htmlStr += `<span class="skill-pill">${escapeHTML(lang)}</span>`;
-                    });
-                    htmlStr += `
-                        </div>
-                    </div>`;
-                }
-                
-                if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
-                    htmlStr += `
-                    <div class="section-block">
-                        <div class="section-title">Certifications</div>
-                        <div class="item-desc" style="margin-left:0;">${additionalInfo.certifications}</div>
-                    </div>`;
-                }
-                
-                if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
-                    htmlStr += `
-                    <div class="section-block">
-                        <div class="section-title">Hobbies</div>
-                        <div class="item-desc" style="margin-left:0;">${additionalInfo.hobbies}</div>
-                    </div>`;
-                }
-
-                if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.gender || additionalInfo.religion || additionalInfo.drivingLicence) {
-                    htmlStr += `
-                    <div class="section-block">
-                        <div class="section-title">Personal Details</div>
-                        <div style="font-family:'Arial',sans-serif;font-size:11.5px;color:#333;line-height:1.65; display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            ${additionalInfo.nationality ? `<div><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</div>` : ''}
-                            ${additionalInfo.maritalStatus ? `<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>` : ''}
-                            ${additionalInfo.visaStatus ? `<div><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>` : ''}
-                            ${additionalInfo.dob ? `<div><strong>Date of Birth:</strong> ${escapeHTML(additionalInfo.dob)}</div>` : ''}
-                            ${additionalInfo.gender ? `<div><strong>Gender:</strong> ${escapeHTML(additionalInfo.gender)}</div>` : ''}
-                            ${additionalInfo.religion ? `<div><strong>Religion:</strong> ${escapeHTML(additionalInfo.religion)}</div>` : ''}
-                            ${additionalInfo.drivingLicence ? `<div><strong>Driving Licence:</strong> ${escapeHTML(additionalInfo.drivingLicence)}</div>` : ''}
-                        </div>
-                    </div>`;
-                }
-
-                htmlStr += `</div>`;
-
 
             }
             return htmlStr;
@@ -5126,12 +4936,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userSnap.exists()) {
                 const data = userSnap.data();
                 
-                let lastPaymentAmt = data.lastPaymentAmount ? `â‚¹${data.lastPaymentAmount}` : 'Not available';
+                let lastPaymentAmt = data.lastPaymentAmount ? `₹${data.lastPaymentAmount}` : 'Not available';
                 let lastPaymentDate = data.lastPaymentDate ? new Date(data.lastPaymentDate).toLocaleDateString() : 'Not available';
                 
                 let isMonthly = !!data.premium;
                 let planDisplay = 'Free Plan';
-                let priceDisplay = 'â‚¹0/month';
+                let priceDisplay = '₹0/month';
                 
                 let statusBadge = '<span class="sub-badge sub-inactive">Inactive</span>';
                 let expiryDateStr = 'Not available';
@@ -5144,7 +4954,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (isMonthly) {
                     planDisplay = 'Monthly Plan';
-                    priceDisplay = 'â‚¹19/month';
+                    priceDisplay = '₹19/month';
                     if (isExpired) {
                         statusBadge = '<span class="sub-badge sub-expired">Expired</span>';
                         expiryDateStr = new Date(expiresAt).toLocaleDateString();
@@ -5163,7 +4973,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else if (data.singleDownload) {
                     planDisplay = 'Single Download';
-                    priceDisplay = 'â‚¹2/download';
+                    priceDisplay = '₹2/download';
                     statusBadge = '<span class="sub-badge sub-active">Available</span>';
                 }
 
@@ -5274,7 +5084,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Initial Load Page:", page);
 
     if (!page) {
-        // Default â†’ HOME
+        // Default → HOME
         navigateTo("home", true);
         history.replaceState({ page: "home", step: null }, "", "/");
     } else {
@@ -5287,8 +5097,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
-
-
 
 
 

@@ -4404,7 +4404,7 @@ textarea {
 .resume-document.template-19 {
     width: 816px;
     height: 1050px;
-    margin: auto;
+    margin: 10px auto;
     font-family: 'Calibri', 'Arial', sans-serif;
     background: #fff;
     box-sizing: border-box;
@@ -4456,7 +4456,7 @@ textarea {
 }
 
 .resume-document.template-19 .header-name {
-    font-size: 32px;
+    font-size: 38px;
     font-weight: 700;
     color: #2c2c2c;
     letter-spacing: 0.3px;
@@ -4479,7 +4479,7 @@ textarea {
     gap: 6px;
     padding: 0 20px;
     border-right: 1px solid rgba(255, 255, 255, 0.4);
-    font-size: 11px;
+    font-size: 12px;
     color: #fff;
     font-family: 'Calibri', 'Arial', sans-serif;
 }
@@ -4507,7 +4507,7 @@ textarea {
 }
 
 .resume-document.template-19 .sidebar-section-title {
-    font-size: 11.5px;
+    font-size: 12.5px;
     font-weight: 700;
     color: #3a9baa;
     text-transform: uppercase;
@@ -4523,7 +4523,7 @@ textarea {
 }
 
 .resume-document.template-19 .sidebar ul li {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: #333;
     margin-bottom: 6px;
     line-height: 1.4;
@@ -4541,7 +4541,7 @@ textarea {
 }
 
 .resume-document.template-19 .section-title {
-    font-size: 13px;
+    font-size: 14.5px;
     font-weight: 700;
     color: #3a9baa;
     text-transform: uppercase;
@@ -4553,7 +4553,7 @@ textarea {
 }
 
 .resume-document.template-19 .section-body {
-    font-size: 11.5px;
+    font-size: 13px;
     color: #333;
     line-height: 1.65;
     font-family: 'Calibri', 'Arial', sans-serif;
@@ -4566,7 +4566,7 @@ textarea {
 }
 
 .resume-document.template-19 .main ul li {
-    font-size: 11.5px;
+    font-size: 13px;
     color: #333;
     margin-bottom: 4px;
     line-height: 1.55;
@@ -4578,14 +4578,14 @@ textarea {
 }
 
 .resume-document.template-19 .job-date {
-    font-size: 11px;
+    font-size: 12px;
     color: #555;
     margin-bottom: 2px;
     font-family: 'Calibri', 'Arial', sans-serif;
 }
 
 .resume-document.template-19 .job-title {
-    font-size: 12px;
+    font-size: 13.5px;
     font-weight: 700;
     color: #222;
     font-family: 'Calibri', 'Arial', sans-serif;
@@ -4593,7 +4593,7 @@ textarea {
 }
 
 .resume-document.template-19 .job-company {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: #555;
     margin-bottom: 5px;
     font-family: 'Calibri', 'Arial', sans-serif;
@@ -4601,14 +4601,14 @@ textarea {
 }
 
 .resume-document.template-19 .edu-date {
-    font-size: 11px;
+    font-size: 12px;
     color: #555;
     margin-bottom: 2px;
     font-family: 'Calibri', 'Arial', sans-serif;
 }
 
 .resume-document.template-19 .edu-degree {
-    font-size: 12px;
+    font-size: 13.5px;
     font-weight: 700;
     color: #222;
     font-family: 'Calibri', 'Arial', sans-serif;
@@ -4616,7 +4616,7 @@ textarea {
 }
 
 .resume-document.template-19 .edu-school {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: #333;
     font-family: 'Calibri', 'Arial', sans-serif;
 }

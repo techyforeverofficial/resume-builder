@@ -4629,7 +4629,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
                     htmlStr += `
                           <div class="sidebar-section-title">HOBBIES</div>
-                          <div style="font-size:11.5px;color:#333;font-family:'Calibri','Arial',sans-serif;">${additionalInfo.hobbies}</div>
+                          <div style="font-size:12.5px;color:#333;font-family:'Calibri','Arial',sans-serif;">${additionalInfo.hobbies}</div>
                           <div style="height: 20px;"></div>
                     `;
                 }
@@ -4637,7 +4637,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
                     htmlStr += `
                           <div class="sidebar-section-title">CERTIFICATIONS</div>
-                          <div style="font-size:11.5px;color:#333;font-family:'Calibri','Arial',sans-serif;">${additionalInfo.certifications}</div>
+                          <div style="font-size:12.5px;color:#333;font-family:'Calibri','Arial',sans-serif;">${additionalInfo.certifications}</div>
                           <div style="height: 20px;"></div>
                     `;
                 }
@@ -4645,7 +4645,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
                     htmlStr += `
                           <div class="sidebar-section-title">PERSONAL DETAILS</div>
-                          <div style="font-size:11.5px;color:#333;font-family:'Calibri','Arial',sans-serif;display:flex;flex-direction:column;gap:4px;">
+                          <div style="font-size:12.5px;color:#333;font-family:'Calibri','Arial',sans-serif;display:flex;flex-direction:column;gap:4px;">
                     `;
                     if (additionalInfo.nationality) htmlStr += `<div><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</div>`;
                     if (additionalInfo.maritalStatus) htmlStr += `<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>`;
@@ -4731,8 +4731,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `
                             <div class="job">
                                 <div class="job-title">${escapeHTML(p.name)}</div>
-                                ${p.link ? `<div style="font-size:11px;margin-bottom:4px;"><a href="${escapeHTML(p.link)}" style="color:inherit;text-decoration:none;">${escapeHTML(p.link)}</a></div>` : ''}
-                                ${p.desc ? `<div style="font-size:11.5px;color:#333;font-family:'Calibri','Arial',sans-serif;line-height:1.55;margin-top:4px;">${p.desc}</div>` : ''}
+                                ${p.link ? `<div style="font-size:12px;margin-bottom:4px;"><a href="${escapeHTML(p.link)}" style="color:inherit;text-decoration:none;">${escapeHTML(p.link)}</a></div>` : ''}
+                                ${p.desc ? `<div style="font-size:13px;color:#333;font-family:'Calibri','Arial',sans-serif;line-height:1.55;margin-top:4px;">${p.desc}</div>` : ''}
                             </div>
                         `;
                     }
@@ -4754,7 +4754,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="edu-date">${durationStr}</div>
                                 <div class="edu-degree">${window.formatEducationTitle(edu.degree, edu.fieldOfStudy)}</div>
                                 <div class="edu-school"><strong>${escapeHTML(edu.school)}</strong>${edu.location ? `, ${escapeHTML(edu.location)}` : ''}</div>
-                                ${edu.coursework && edu.coursework.trim() ? `<div style="font-size:11px;margin-top:2px;"><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\\n/g, '<br>')}</div>` : ''}
+                                ${edu.coursework && edu.coursework.trim() ? `<div style="font-size:12px;margin-top:2px;"><strong>Coursework:</strong> ${escapeHTML(edu.coursework).replace(/\\n/g, '<br>')}</div>` : ''}
                             </div>
                         `;
                     }

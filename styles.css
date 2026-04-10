@@ -4226,6 +4226,11 @@ textarea {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 20px;
+}
+
+.resume-document.template-18 .header>div:first-child {
+    flex: 1;
 }
 
 .resume-document.template-18 .name {
@@ -4242,6 +4247,9 @@ textarea {
 
 .resume-document.template-18 .contact {
     font-size: 12px;
+    text-align: right;
+    max-width: 40%;
+    flex-shrink: 0;
 }
 
 .resume-document.template-18 .contact-item {

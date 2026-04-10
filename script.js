@@ -4155,25 +4155,26 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="name">${escapeHTML(data.fullName || "Your Name")}</div>
                         </div>
                         <div class="content">
-                            <div class="top-info">
                 `;
                 
                 if (data.phone || data.email || data.location) {
-                    htmlStr += `<div><span>Contact</span></div>`;
-                }
-                if (data.location) {
-                    htmlStr += `<div><span>Address</span> ${escapeHTML(data.location)}</div>`;
-                }
-                if (data.phone) {
-                    htmlStr += `<div><span>Phone</span> ${escapeHTML(data.phone)}</div>`;
-                }
-                if (data.email) {
-                    htmlStr += `<div><span>Email</span> ${escapeHTML(data.email)}</div>`;
-                }
-                
-                htmlStr += `
+                    htmlStr += `
+                            <div class="top-info">
+                                <div><span>Contact</span></div>
+                    `;
+                    if (data.location) {
+                        htmlStr += `<div><span>Address</span> ${escapeHTML(data.location)}</div>`;
+                    }
+                    if (data.phone) {
+                        htmlStr += `<div><span>Phone</span> ${escapeHTML(data.phone)}</div>`;
+                    }
+                    if (data.email) {
+                        htmlStr += `<div><span>Email</span> ${escapeHTML(data.email)}</div>`;
+                    }
+                    htmlStr += `
                             </div>
-                `;
+                    `;
+                }
                 
                 if (resumeData.summary) {
                     htmlStr += `
@@ -4228,7 +4229,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="section-title">Education</div>
                     `;
                     education.forEach(edu => {
-                        const dateStr = edu.endMonth && edu.endYear ? `${edu.endMonth} ${edu.endYear}` : edu.endYear || '';
+                        const startStr = edu.startYear ? `${edu.startYear}-` + (edu.startMonth ? edu.startMonth.padStart(2, '0') : '') : '';
+                        const endStr = edu.endYear ? `${edu.endYear}-` + (edu.endMonth ? edu.endMonth.padStart(2, '0') : '') : '';
+                        const dateStr = startStr || endStr ? `${startStr} - ${endStr}`.replace(/ - $/, '').replace(/^ - /, '') : '';
                         
                         let degreeStr = '';
                         if (typeof window.formatEducationTitle === 'function') {
@@ -4244,10 +4247,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         ].filter(Boolean).join(', ');
 
                         htmlStr += `
-                                <div class="edu-item" style="margin-bottom: 12px;">
-                                    <div class="edu-title" style="font-size: 11.5px; font-weight: bold; color: #444;">${escapeHTML(degreeStr)}</div>
-                                    ${schoolLine ? `<div class="edu-sub">${escapeHTML(schoolLine)}</div>` : ''}
-                                    ${dateStr ? `<div class="edu-date">${escapeHTML(dateStr)}</div>` : ''}
+                                <div class="edu">
+                                    <div class="edu-left">${escapeHTML(dateStr)}</div>
+                                    <div class="edu-right">
+                                        <strong>${escapeHTML(degreeStr)}</strong>${schoolLine ? `<br>\n                                        ${escapeHTML(schoolLine)}` : ''}
+                                    </div>
                                 </div>
                         `;
                     });
@@ -4387,15 +4391,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             else degreeStr = edu.degree || edu.fieldOfStudy || '';
                         }
 
-                        const schoolLine = [
-                            edu.schoolName || edu.institutionName,
-                            edu.location || edu.city
-                        ].filter(Boolean).join(', ');
+                        const schoolSub = [edu.schoolName || edu.institutionName, edu.schoolLocation || edu.location].filter(Boolean).join(', ');
 
                         htmlStr += `
                                     <div class="edu-item" style="margin-bottom: 12px;">
                                         <div class="edu-title" style="font-size: 11.5px; font-weight: bold; color: #444;">${escapeHTML(degreeStr)}</div>
-                                        ${schoolLine ? `<div class="edu-sub">${escapeHTML(schoolLine)}</div>` : ''}
+                                        ${schoolSub ? `<div class="edu-sub">${escapeHTML(schoolSub)}</div>` : ''}
                                         ${dateStr ? `<div class="edu-date">${escapeHTML(dateStr)}</div>` : ''}
                                     </div>
                         `;

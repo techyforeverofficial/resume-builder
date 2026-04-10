@@ -4208,3 +4208,185 @@ textarea {
     font-size: 11.5px;
     flex: 1;
 }
+
+/* --- TEMPLATE 18 STYLES --- */
+.resume-document.template-18 {
+    width: 816px;
+    height: 1050px;
+    margin: auto;
+    background: #ffffff;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    color: #444;
+}
+
+.resume-document.template-18 .header {
+    padding: 30px 40px 20px;
+    border-top: 8px solid #6e8a8b;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.resume-document.template-18 .name {
+    font-size: 34px;
+    font-weight: 600;
+    color: #444;
+}
+
+.resume-document.template-18 .role {
+    font-size: 16px;
+    margin-top: 5px;
+    color: #666;
+}
+
+.resume-document.template-18 .contact {
+    font-size: 12px;
+}
+
+.resume-document.template-18 .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.resume-document.template-18 .icon {
+    width: 14px;
+    height: 14px;
+    fill: #6e8a8b;
+}
+
+.resume-document.template-18 .divider {
+    height: 1px;
+    background: #ccc;
+}
+
+.resume-document.template-18 .main {
+    display: grid;
+    grid-template-columns: 60% 40%;
+}
+
+.resume-document.template-18 .left {
+    padding: 25px 30px 20px 40px;
+}
+
+.resume-document.template-18 .right {
+    padding: 25px 40px 20px 30px;
+    border-left: 1px solid #ccc;
+}
+
+.resume-document.template-18 .section {
+    margin-bottom: 20px;
+}
+
+.resume-document.template-18 .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.resume-document.template-18 .text {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #444;
+}
+
+.resume-document.template-18 .timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.resume-document.template-18 .timeline:before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #aaa;
+}
+
+.resume-document.template-18 .job {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.resume-document.template-18 .job:before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 0.7em;
+    width: 8px;
+    height: 8px;
+    background: #6e8a8b;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.resume-document.template-18 .job-date {
+    font-size: 11px;
+    color: #666;
+}
+
+.resume-document.template-18 .job-title {
+    font-weight: 600;
+    margin-top: 2px;
+    font-size: 12px;
+}
+
+.resume-document.template-18 .job-company {
+    font-size: 11.5px;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+.resume-document.template-18 ul {
+    margin: 4px 0 0 16px;
+    padding-left: 0;
+}
+
+.resume-document.template-18 li {
+    font-size: 11px;
+    margin-bottom: 2px;
+    line-height: 1.5;
+}
+
+.resume-document.template-18 .right h4 {
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+    margin-top: 0;
+    text-transform: uppercase;
+}
+
+.resume-document.template-18 .right p {
+    font-size: 11.5px;
+    margin-bottom: 8px;
+    margin-top: 0;
+    line-height: 1.5;
+}
+
+.resume-document.template-18 .right ul {
+    margin-left: 16px;
+    padding-left: 0;
+}
+
+.resume-document.template-18 .right li {
+    font-size: 11.5px;
+    margin-bottom: 4px;
+}
+
+.resume-document.template-18 .projects {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.resume-document.template-18 .project-item {
+    font-size: 11.5px;
+}

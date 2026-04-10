@@ -4238,18 +4238,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             else degreeStr = edu.degree || edu.fieldOfStudy || '';
                         }
 
-                        const rightLines = [
-                            `<strong>${degreeStr}</strong>`,
-                            edu.schoolName ? escapeHTML(edu.schoolName) : null,
-                            edu.schoolLocation ? escapeHTML(edu.schoolLocation) : null
-                        ].filter(Boolean).join('<br>');
+                        const schoolSub = [edu.schoolName || edu.institutionName, edu.schoolLocation || edu.location].filter(Boolean).join(', ');
 
                         htmlStr += `
-                                <div class="edu">
-                                    <div class="edu-left">${escapeHTML(dateStr)}</div>
-                                    <div class="edu-right">
-                                        ${rightLines}
-                                    </div>
+                                <div class="edu-item" style="margin-bottom: 12px;">
+                                    <div class="edu-title" style="font-size: 11.5px; font-weight: bold; color: #444;">${escapeHTML(degreeStr)}</div>
+                                    ${schoolSub ? `<div class="edu-sub">${escapeHTML(schoolSub)}</div>` : ''}
+                                    ${dateStr ? `<div class="edu-date">${escapeHTML(dateStr)}</div>` : ''}
                                 </div>
                         `;
                     });
@@ -4389,15 +4384,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             else degreeStr = edu.degree || edu.fieldOfStudy || '';
                         }
 
-                        const eduLines = [
-                            `<strong>${degreeStr}</strong>`,
-                            edu.schoolName ? escapeHTML(edu.schoolName) : null,
-                            edu.schoolLocation ? escapeHTML(edu.schoolLocation) : null,
-                            dateStr ? escapeHTML(dateStr) : null
-                        ].filter(Boolean).join('<br>');
+                        const schoolSub = [edu.schoolName || edu.institutionName, edu.schoolLocation || edu.location].filter(Boolean).join(', ');
 
                         htmlStr += `
-                                    <p>${eduLines}</p>
+                                    <div class="edu-item" style="margin-bottom: 12px;">
+                                        <div class="edu-title" style="font-size: 11.5px; font-weight: bold; color: #444;">${escapeHTML(degreeStr)}</div>
+                                        ${schoolSub ? `<div class="edu-sub">${escapeHTML(schoolSub)}</div>` : ''}
+                                        ${dateStr ? `<div class="edu-date">${escapeHTML(dateStr)}</div>` : ''}
+                                    </div>
                         `;
                     });
                     htmlStr += `

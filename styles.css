@@ -5053,3 +5053,46 @@ textarea {
 .page {
     page-break-after: always;
 }
+
+/* --- TEMPLATE 21 FULL BLEED FIXES --- */
+
+/* 1. Remove Global Body Margin for Template 21 */
+body:has(.template-21) {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 2. Fix Resume Container */
+.resume-document.template-21 {
+    margin: 0 !important;
+    width: 816px !important;
+    height: 1050px !important;
+    max-height: 1050px !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: hidden !important;
+}
+
+/* 3. Remove Wrapper Padding (Keep preview centered) */
+.resume-wrapper:has(.template-21),
+.preview-container:has(.template-21) {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+}
+
+/* 4. PDF Rendering Fix */
+@media print {
+    @page {
+        margin: 0 !important;
+    }
+    body:has(.template-21) {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .resume-document.template-21 {
+        margin: 0 !important;
+    }
+}

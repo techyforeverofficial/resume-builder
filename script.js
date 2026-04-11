@@ -5210,10 +5210,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const staging = document.createElement('div');
         staging.className = `resume-document template-${templateName}`;
         staging.style.position = 'absolute';
-        staging.style.visibility = 'hidden';
-        staging.style.left = '-9999px';
+        staging.style.top = '-99999px';
+        staging.style.left = '-99999px';
         staging.style.width = '816px';
         staging.style.height = 'auto'; // allow unrestricted expansion
+        staging.style.visibility = 'hidden';
+        staging.style.pointerEvents = 'none';
         staging.innerHTML = htmlStr;
         document.body.appendChild(staging);
         
@@ -5259,8 +5261,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const pages = [];
         const stagingContainer = document.createElement('div');
         stagingContainer.style.position = 'absolute';
+        stagingContainer.style.top = '-99999px';
+        stagingContainer.style.left = '-99999px';
+        stagingContainer.style.width = '816px';
+        stagingContainer.style.height = 'auto';
         stagingContainer.style.visibility = 'hidden';
-        stagingContainer.style.left = '-9999px';
+        stagingContainer.style.pointerEvents = 'none';
         document.body.appendChild(stagingContainer);
         
         // Step 6 - New Page Structure
@@ -5307,13 +5313,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (cIdx > 0) console.log("New page created:", cIdx + 1);
             }
             
-            let previousHeight = pages[cIdx].wrapper.scrollHeight;
             pages[cIdx].targets[sec.target].appendChild(sec.el);
             
-            let currentHeight = pages[cIdx].wrapper.scrollHeight;
-            let sectionHeight = currentHeight - previousHeight;
+            // Force Layout Before Measuring
+            stagingContainer.getBoundingClientRect();
+            
+            let currentHeight = pages[cIdx].wrapper.getBoundingClientRect().height;
+            let sectionHeight = sec.el.getBoundingClientRect().height;
             let remaining = 1030 - currentHeight; // using 1030 threshold per prompt
             
+            console.log("Section:", sec.el.className || sec.el.tagName, "Measured height:", sectionHeight);
             console.log("Adding section to page:", cIdx + 1, "Section height:", sectionHeight, "Remaining:", remaining);
             
             if (currentHeight > 1030) {

@@ -5298,18 +5298,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // margin set to 0 strictly to avoid pagination overflow on full-bleed 8.5x11 templates
         const opt = {
             margin: 0,
-            filename: 'my_resume.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
+            filename: 'resume.pdf',
+            image: { type: 'jpeg', quality: 1 },
             html2canvas: {
-                scale: 2, // Ensure good quality 
+                scale: 2,
                 useCORS: true,
-                windowWidth: 816, // Match exact width for 8.5in letter size
-                scrollY: 0,
-                scrollX: 0,
-                x: 0,
-                y: 0
+                scrollY: 0
             },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            jsPDF: { unit: 'px', format: [816, 1050], orientation: 'portrait' }
         };
 
         // 5. Generate and download

@@ -5235,29 +5235,66 @@ document.addEventListener('DOMContentLoaded', () => {
             return singleDiv.outerHTML;
         }
         
-        // Step 3 - Only Split When Genuinely Needed (Collect section blocks natively)
-        let columns = Array.from(staging.querySelectorAll('.left-column, .right-column, .left, .right'));
-        if (columns.length === 0) {
-            columns = [staging.querySelector('.resume-wrapper') || staging];
+        // Step 1, 2, 3 & 4 - Universal Section Detection & Layout Type
+        const leftSelectors = '.left, .left-column, .sidebar, .col-left';
+        const rightSelectors = '.right, .right-column, .main, .col-right';
+        
+        let colNodes = [];
+        const hasLeftColumn = staging.querySelector(leftSelectors);
+        const hasRightColumn = staging.querySelector(rightSelectors);
+        
+        if (hasLeftColumn && hasRightColumn) {
+            colNodes = [hasLeftColumn, hasRightColumn];
+        } else if (hasLeftColumn) {
+            colNodes = [hasLeftColumn];
+        } else if (hasRightColumn) {
+            colNodes = [hasRightColumn];
+        } else {
+            colNodes = [staging.querySelector('.resume-wrapper') || staging];
+        }
+        
+        // Step 5 - Universal Header Detection
+        const headerSelectors = '.header, .cv-header, .resume-header, .top, .name-section, .profile-section';
+        const origHeader = staging.querySelector(headerSelectors);
+        
+        let sections = [];
+        const sectionSelectors = [
+            '.cv-section', '.section', '.block', '.job', '.right-section', 
+            '.left-section', '.edu-item', '.project', '.lang-item', 
+            '.resume-section', '.content-block'
+        ];
+        const sectionSelectorStr = sectionSelectors.join(', ');
+        
+        // Extract native top-level components mapping exact nested wrappers
+        colNodes.forEach((col, index) => {
+             let firstMatch = col.querySelector(sectionSelectorStr);
+             let container = firstMatch ? firstMatch.parentElement : col;
+             if (!container || container.tagName === 'BODY') container = col;
+             
+             container.setAttribute('data-target-id', `target-${index}`);
+             let foundChild = false;
+             
+             Array.from(container.children).forEach(child => {
+                 if (child === origHeader || child.contains(origHeader)) return;
+                 sections.push({ el: child, target: `target-${index}` });
+                 foundChild = true;
+             });
+             
+             // Step 6 - Fallback if container misses actual sections completely
+             if (!foundChild) {
+                 Array.from(col.children).forEach(child => {
+                     if (child === origHeader || child.contains(origHeader)) return;
+                     sections.push({ el: child, target: `target-${index}` });
+                 });
+             }
+        });
+        
+        if (sections.length === 0) {
+            console.log("No sections detected for template:", templateName);
         }
         
         const emptyTemplate = staging.cloneNode(true);
-        const emptyColumns = Array.from(emptyTemplate.querySelectorAll('.left-column, .right-column, .left, .right'));
-        if (emptyColumns.length === 0) {
-            const eWrapper = emptyTemplate.querySelector('.resume-wrapper') || emptyTemplate;
-            eWrapper.innerHTML = '';
-        } else {
-            emptyColumns.forEach(c => c.innerHTML = '');
-        }
-        
-        let sections = [];
-        columns.forEach(col => {
-            const targetClass = emptyColumns.length > 0 ? col.className : 'main';
-            // Extract parent level containers only
-            Array.from(col.children).forEach(child => {
-                sections.push({ el: child, target: targetClass });
-            });
-        });
+        Array.from(emptyTemplate.querySelectorAll('[data-target-id]')).forEach(c => c.innerHTML = '');
         
         const pages = [];
         const stagingContainer = document.createElement('div');
@@ -5287,12 +5324,12 @@ document.addEventListener('DOMContentLoaded', () => {
             stagingContainer.appendChild(pageDiv);
             
             let targets = {};
-            if (emptyColumns.length > 0) {
-                Array.from(pageDiv.querySelectorAll('.left-column, .right-column, .left, .right')).forEach(c => {
-                    targets[c.className] = c;
-                });
-            } else {
-                targets['main'] = pageDiv.querySelector('.resume-wrapper') || pageDiv;
+            Array.from(pageDiv.querySelectorAll('[data-target-id]')).forEach(c => {
+                targets[c.getAttribute('data-target-id')] = c;
+            });
+            
+            if (Object.keys(targets).length === 0) {
+                targets['target-0'] = pageDiv.querySelector('.resume-wrapper') || pageDiv;
             }
             
             // Step 1 - Fix Initial Remaining Height

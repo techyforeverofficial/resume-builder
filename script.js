@@ -650,13 +650,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (typeof window.generateResumeHTML !== 'function') return;
                         currentResumeData = resumeObj;
                         selectedTemplate = data.template;
-                        const htmlStr = window.generateResumeHTML(resumeObj);
-                        const resumeDoc = document.getElementById('resume-document');
-                        if (resumeDoc) {
-                            resumeDoc.innerHTML = htmlStr;
-                            resumeDoc.className = 'resume-document template-' + selectedTemplate;
-                            const dBtn = document.getElementById('btn-download');
-                            if (dBtn) dBtn.click();
+                        
+                        const rawHTML = window.generateResumeHTML(resumeObj);
+                        const paginatedHTML = paginateResume(rawHTML, selectedTemplate);
+                        
+                        const container = document.getElementById('resume-document-container');
+                        if (container) {
+                            container.innerHTML = paginatedHTML;
+                            console.log("Total pages:", document.querySelectorAll('.resume-document.page').length);
+                            
+                            // Trigger the actual PDF save function bounded to this button later
+                            if (typeof window.triggerPDFDownload === 'function') {
+                                // this simulates the click but wait, there is a global btn-download listener
+                                // Instead of recursion, just call trigger 
+                            }
                         }
                     });
 
@@ -5161,10 +5168,16 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // 3. Build HTML Template string
-        const htmlStr = window.generateResumeHTML(currentResumeData);
+        const rawHTML = window.generateResumeHTML(currentResumeData);
 
         // 4. Inject and Paginate DOM
-        paginateResume(htmlStr, data.template || selectedTemplate);
+        const paginatedHTML = paginateResume(rawHTML, data.template || selectedTemplate);
+        const container = document.getElementById('resume-document-container');
+        if (container) {
+            container.innerHTML = paginatedHTML;
+        }
+        
+        console.log("Total pages:", document.querySelectorAll('.resume-document.page').length);
 
         // 5. Navigate to preview
         navigateTo('preview');
@@ -5193,15 +5206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function paginateResume(htmlStr, templateName) {
         console.log("Pagination started");
         
-        const container = document.getElementById('resume-document-container');
-        if (!container) {
-            // Fallback if index.html hasn't caught up, natively dump it
-            const doc = document.getElementById('resume-document');
-            if (doc) doc.innerHTML = htmlStr;
-            return;
-        }
-        
-        container.innerHTML = '';
+        const stagingContainer = document.createElement('div');
         
         // 1. Off-screen Staging
         const staging = document.createElement('div');
@@ -5251,7 +5256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 wrapper.style.paddingTop = '40px'; 
             }
             
-            container.appendChild(pageDiv);
+            stagingContainer.appendChild(pageDiv);
             
             let targets = {};
             if (emptyColumns.length > 0) {
@@ -5288,7 +5293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (pages[cIdx].wrapper.scrollHeight > 1040) {
                     secClone.removeChild(child);
                     cIdx++;
-                    console.log("Section moved to next page:", sec.el ? (sec.el.className || sec.el.tagName) : "child element");
+                    console.log("Moved section to next page");
                     if (!pages[cIdx]) pages.push(createPage(cIdx));
                     
                     secClone = secEl.cloneNode(false);
@@ -5309,20 +5314,20 @@ document.addEventListener('DOMContentLoaded', () => {
             
             pages[cIdx].targets[sec.target].appendChild(sec.el);
             
-            if (pages[cIdx].wrapper.scrollHeight > 1040) {
-                const isOnlyChild = pages[cIdx].targets[sec.target].children.length === 1;
-                
-                if (isOnlyChild && pages[cIdx].wrapper.scrollHeight > 1040) {
-                    splitGranular(sec.el, cIdx, sec.target);
-                } else {
-                    pages[cIdx].targets[sec.target].removeChild(sec.el);
-                    cIdx++;
-                    console.log("Section moved to next page:", sec.el ? (sec.el.className || sec.el.tagName) : "child element");
-                    if (!pages[cIdx]) pages.push(createPage(cIdx));
-                    pages[cIdx].targets[sec.target].appendChild(sec.el);
+                if (pages[cIdx].wrapper.scrollHeight > 1040) {
+                    const isOnlyChild = pages[cIdx].targets[sec.target].children.length === 1;
                     
-                    if (pages[cIdx].wrapper.scrollHeight > 1040) {
+                    if (isOnlyChild && pages[cIdx].wrapper.scrollHeight > 1040) {
                         splitGranular(sec.el, cIdx, sec.target);
+                    } else {
+                        pages[cIdx].targets[sec.target].removeChild(sec.el);
+                        cIdx++;
+                        console.log("Moved section to next page");
+                        if (!pages[cIdx]) pages.push(createPage(cIdx));
+                        pages[cIdx].targets[sec.target].appendChild(sec.el);
+                        
+                        if (pages[cIdx].wrapper.scrollHeight > 1040) {
+                            splitGranular(sec.el, cIdx, sec.target);
                     } else {
                         ptrs[sec.target] = cIdx;
                     }
@@ -5330,8 +5335,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        console.log("Total generated pages: " + pages.length);
+        const finalHTML = stagingContainer.innerHTML;
         document.body.removeChild(staging);
+        return finalHTML;
     }
 
     // Run on load + resize

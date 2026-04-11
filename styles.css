@@ -2690,6 +2690,29 @@ textarea {
     gap: 50px;
 }
 
+.resume-document.template-7 .sections-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 40px;
+    align-items: start;
+    grid-auto-flow: row;
+}
+
+.resume-document.template-7 .section {
+    break-inside: avoid;
+}
+
+.resume-document.template-7 .education-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 40px;
+}
+
+.resume-document.template-7 .education-item {
+    break-inside: avoid;
+    margin-top: 0;
+}
+
 /* EDUCATION */
 .resume-document.template-7 .edu-block {
     margin-bottom: 15px;

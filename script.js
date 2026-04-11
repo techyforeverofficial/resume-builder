@@ -1847,37 +1847,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                if (projects.length > 0) {
-                    htmlStr += `
-                        <div class="section">
-                            <div class="section-title">PROJECTS</div>
-                            <div class="section-line"></div>
-                    `;
-                    for (let i = 0; i < projects.length; i++) {
-                        const p = projects[i];
-                        htmlStr += `
-                            <div class="job">
-                                <div class="job-title">${escapeHTML(p.name)}</div>
-                                ${p.link ? `<div class="job-sub"><a href="${escapeHTML(p.link)}" style="color:inherit; text-decoration:none;">${escapeHTML(p.link)}</a></div>` : ''}
-                                ${p.desc ? `<div class="job-desc">${p.desc}</div>` : ''}
-                            </div>
-                        `;
-                    }
-                    htmlStr += `</div>`;
-                }
-
                 if (education.length > 0) {
                     htmlStr += `
                         <div class="section">
                             <div class="section-title">EDUCATION</div>
                             <div class="section-line"></div>
-                            <div class="grid-2">
+                            <div class="education-list">
                     `;
                     for (let i = 0; i < education.length; i++) {
                         const edu = education[i];
                         if (!edu.school.trim()) continue;
                         htmlStr += `
-                            <div>
+                            <div class="education-item">
                                 <div class="edu-block">
                                     <div class="edu-title">${window.formatEducationTitle(edu.degree, edu.fieldOfStudy)}</div>
                                     <div class="edu-sub">${escapeHTML(edu.school)}, ${escapeHTML(edu.location)}</div>
@@ -1893,7 +1874,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                htmlStr += `<div class="grid-2">`;
+                htmlStr += `<div class="sections-container">`;
 
                 const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
                 if (skillsList.length > 0) {
@@ -1918,20 +1899,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
-                    htmlStr += `
-                        <div class="section">
-                            <div class="section-title">CERTIFICATIONS</div>
-                            <div class="section-line"></div>
-                            <div class="summary">${additionalInfo.certifications}</div>
-                        </div>
-                    `;
-                }
-
-                htmlStr += `</div>`;
-
-                htmlStr += `<div class="grid-2">`;
-
                 if (additionalInfo.languages && additionalInfo.languages.length > 0) {
                     htmlStr += `
                         <div class="section">
@@ -1948,17 +1915,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
+                if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
                     htmlStr += `
                         <div class="section">
-                            <div class="section-title">HOBBIES</div>
+                            <div class="section-title">CERTIFICATIONS</div>
                             <div class="section-line"></div>
-                            <div class="summary">${additionalInfo.hobbies}</div>
+                            <div class="summary">${additionalInfo.certifications}</div>
                         </div>
                     `;
                 }
-
-                htmlStr += `</div>`;
 
                 if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
                     htmlStr += `
@@ -1977,7 +1942,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                htmlStr += `</div>`;
+                if (projects.length > 0) {
+                    htmlStr += `
+                        <div class="section">
+                            <div class="section-title">PROJECTS</div>
+                            <div class="section-line"></div>
+                    `;
+                    for (let i = 0; i < projects.length; i++) {
+                        const p = projects[i];
+                        htmlStr += `
+                            <div class="job">
+                                <div class="job-title">${escapeHTML(p.name)}</div>
+                                ${p.link ? `<div class="job-sub"><a href="${escapeHTML(p.link)}" style="color:inherit; text-decoration:none;">${escapeHTML(p.link)}</a></div>` : ''}
+                                ${p.desc ? `<div class="job-desc">${p.desc}</div>` : ''}
+                            </div>
+                        `;
+                    }
+                    htmlStr += `</div>`;
+                }
+
+                if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
+                    htmlStr += `
+                        <div class="section">
+                            <div class="section-title">HOBBIES</div>
+                            <div class="section-line"></div>
+                            <div class="summary">${additionalInfo.hobbies}</div>
+                        </div>
+                    `;
+                }
+
+                htmlStr += `
+                    </div> 
+                    </div> 
+                `;
             } else if (data.template === '8') {
                 const nameStr = data.fullName || "";
                 let init1 = "", init2 = "";

@@ -5191,6 +5191,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Multi-Page Pagination Engine ---
     function paginateResume(htmlStr, templateName) {
+        console.log("Pagination started");
+        
         const container = document.getElementById('resume-document-container');
         if (!container) {
             // Fallback if index.html hasn't caught up, natively dump it
@@ -5232,6 +5234,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const pages = [];
         
         function createPage(pageIndex) {
+            console.log("New page created");
+            
             const pageDiv = emptyTemplate.cloneNode(true);
             pageDiv.style.visibility = 'visible';
             pageDiv.style.position = 'relative';
@@ -5284,6 +5288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (pages[cIdx].wrapper.scrollHeight > 1040) {
                     secClone.removeChild(child);
                     cIdx++;
+                    console.log("Section moved to next page:", sec.el ? (sec.el.className || sec.el.tagName) : "child element");
                     if (!pages[cIdx]) pages.push(createPage(cIdx));
                     
                     secClone = secEl.cloneNode(false);
@@ -5312,6 +5317,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     pages[cIdx].targets[sec.target].removeChild(sec.el);
                     cIdx++;
+                    console.log("Section moved to next page:", sec.el ? (sec.el.className || sec.el.tagName) : "child element");
                     if (!pages[cIdx]) pages.push(createPage(cIdx));
                     pages[cIdx].targets[sec.target].appendChild(sec.el);
                     
@@ -5324,6 +5330,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
+        console.log("Total generated pages: " + pages.length);
         document.body.removeChild(staging);
     }
 

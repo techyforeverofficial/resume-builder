@@ -5173,21 +5173,29 @@ document.addEventListener('DOMContentLoaded', () => {
         navigateTo('preview');
 
         // 6. Adjust scale dynamically for mobile
-        setTimeout(adjustMobileScale, 50);
+        setTimeout(scaleResume, 50);
     });
 
     // --- Dynamic Mobile Scale Logic ---
-    function adjustMobileScale() {
-        // Disabled by user request: scaling is now handled purely in CSS
-        // via .resume-scale-container and .resume-preview-wrapper
+    function scaleResume() {
+        const resume = document.querySelector('.resume-document');
+        const container = document.querySelector('.preview-wrapper');
+
+        if (!resume || !container) return;
+
+        const containerWidth = container.offsetWidth;
+        // Apply Math.min(1, ...) to ensure Desktop remains entirely unaffected as originally required
+        const scale = Math.min(1, containerWidth / 816);
+
+        const scaleContainer = document.querySelector('.scale-container');
+        if (scaleContainer) {
+            scaleContainer.style.transform = `scale(${scale})`;
+        }
     }
 
-    // Bind resize dynamically
-    window.addEventListener('resize', () => {
-        if (views.preview && views.preview.classList.contains('active')) {
-            adjustMobileScale();
-        }
-    });
+    // Run on load + resize
+    window.addEventListener('load', scaleResume);
+    window.addEventListener('resize', scaleResume);
 
     // --- PDF Download Logic ---
     // Instead of downloading directly, check premium status first

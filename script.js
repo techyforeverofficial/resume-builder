@@ -1930,12 +1930,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="section">
                             <div class="section-title">PERSONAL DETAILS</div>
                             <div class="section-line"></div>
-                            <div class="grid-2">
+                            <div class="personal-details">
                     `;
-                    if (additionalInfo.nationality) htmlStr += `<div style="font-size:14px;"><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</div>`;
-                    if (additionalInfo.maritalStatus) htmlStr += `<div style="font-size:14px;"><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>`;
-                    if (additionalInfo.visaStatus) htmlStr += `<div style="font-size:14px;"><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>`;
-                    if (additionalInfo.dob) htmlStr += `<div style="font-size:14px;"><strong>Date of Birth:</strong> ${escapeHTML(additionalInfo.dob)}</div>`;
+                    if (additionalInfo.nationality) htmlStr += `<div><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</div>`;
+                    if (additionalInfo.maritalStatus) htmlStr += `<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>`;
+                    if (additionalInfo.visaStatus) htmlStr += `<div><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>`;
+                    if (additionalInfo.dob) htmlStr += `<div><strong>Date of Birth:</strong> ${escapeHTML(additionalInfo.dob)}</div>`;
                     htmlStr += `
                             </div>
                         </div>

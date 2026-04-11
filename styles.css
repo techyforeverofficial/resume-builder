@@ -2713,6 +2713,24 @@ textarea {
     margin-top: 0;
 }
 
+/* PERSONAL DETAILS */
+.resume-document.template-7 .personal-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 30px;
+    align-items: start;
+}
+
+.resume-document.template-7 .personal-details div {
+    white-space: nowrap;
+    margin: 0;
+    font-size: 14px;
+}
+
+.resume-document.template-7 .personal-details div:last-child:nth-child(odd) {
+    grid-column: span 2;
+}
+
 /* EDUCATION */
 .resume-document.template-7 .edu-block {
     margin-bottom: 15px;

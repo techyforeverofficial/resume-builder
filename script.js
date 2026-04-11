@@ -5287,29 +5287,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let ptrs = {};
         
-        function splitGranular(secEl, cIdx, targetKey) {
-            pages[cIdx].targets[targetKey].removeChild(secEl);
-            
-            let secClone = secEl.cloneNode(false);
-            pages[cIdx].targets[targetKey].appendChild(secClone);
-            
-            const children = Array.from(secEl.children);
-            for (const child of children) {
-                secClone.appendChild(child);
-                if (pages[cIdx].wrapper.scrollHeight > 1040) {
-                    secClone.removeChild(child);
-                    cIdx++;
-                    console.log("Moved section to next page, total pages now:", pages.length + 1);
-                    if (!pages[cIdx]) pages.push(createPage(cIdx));
-                    
-                    secClone = secEl.cloneNode(false);
-                    pages[cIdx].targets[targetKey].appendChild(secClone);
-                    secClone.appendChild(child);
-                    ptrs[targetKey] = cIdx;
-                }
-            }
-        }
-        
         // Populate layout fully synchronized
         for (let i = 0; i < sections.length; i++) {
             const sec = sections[i];
@@ -5320,23 +5297,26 @@ document.addEventListener('DOMContentLoaded', () => {
             
             pages[cIdx].targets[sec.target].appendChild(sec.el);
             
-                if (pages[cIdx].wrapper.scrollHeight > 1040) {
-                    const isOnlyChild = pages[cIdx].targets[sec.target].children.length === 1;
+            // Step 4: Measure height of ENTIRE parent block
+            let currentHeight = pages[cIdx].wrapper.scrollHeight;
+            console.log("Section block:", sec.el.className || sec.el.tagName, "Height:", currentHeight);
+            
+            if (currentHeight > 1040) {
+                const isOnlyChild = pages[cIdx].targets[sec.target].children.length === 1;
+                
+                if (isOnlyChild) {
+                    // Step 5: Minimum Content Per Page. It's the ONLY child but STILL > 1040
+                    // Keep on current page. "Never move partial block" guarantees we let it stretch.
+                } else {
+                    // Remove from current page, move entire block
+                    pages[cIdx].targets[sec.target].removeChild(sec.el);
+                    cIdx++;
                     
-                    if (isOnlyChild && pages[cIdx].wrapper.scrollHeight > 1040) {
-                        splitGranular(sec.el, cIdx, sec.target);
-                    } else {
-                        pages[cIdx].targets[sec.target].removeChild(sec.el);
-                        cIdx++;
-                        console.log("Moved section to next page, total pages now:", pages.length + 1);
-                        if (!pages[cIdx]) pages.push(createPage(cIdx));
-                        pages[cIdx].targets[sec.target].appendChild(sec.el);
-                        
-                        if (pages[cIdx].wrapper.scrollHeight > 1040) {
-                            splitGranular(sec.el, cIdx, sec.target);
-                    } else {
-                        ptrs[sec.target] = cIdx;
-                    }
+                    if (!pages[cIdx]) pages.push(createPage(cIdx));
+                    pages[cIdx].targets[sec.target].appendChild(sec.el);
+                    ptrs[sec.target] = cIdx;
+                    
+                    console.log("Moved section to next page, total pages now:", pages.length);
                 }
             }
         }

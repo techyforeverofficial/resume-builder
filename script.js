@@ -5207,6 +5207,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Pagination started");
         
         const stagingContainer = document.createElement('div');
+        stagingContainer.style.position = 'absolute';
+        stagingContainer.style.visibility = 'hidden';
+        stagingContainer.style.left = '-9999px';
+        document.body.appendChild(stagingContainer);
         
         // 1. Off-screen Staging
         const staging = document.createElement('div');
@@ -5266,7 +5270,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 targets['main'] = pageDiv.querySelector('.resume-wrapper') || pageDiv;
             }
-            return { wrapper: pageDiv, targets: targets };
+            // push to pages array natively
+            const pageObj = { wrapper: pageDiv, targets: targets };
+            return pageObj;
         }
         
         // Collect native sequential sections
@@ -5293,7 +5299,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (pages[cIdx].wrapper.scrollHeight > 1040) {
                     secClone.removeChild(child);
                     cIdx++;
-                    console.log("Moved section to next page");
+                    console.log("Moved section to next page, total pages now:", pages.length + 1);
                     if (!pages[cIdx]) pages.push(createPage(cIdx));
                     
                     secClone = secEl.cloneNode(false);
@@ -5322,7 +5328,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         pages[cIdx].targets[sec.target].removeChild(sec.el);
                         cIdx++;
-                        console.log("Moved section to next page");
+                        console.log("Moved section to next page, total pages now:", pages.length + 1);
                         if (!pages[cIdx]) pages.push(createPage(cIdx));
                         pages[cIdx].targets[sec.target].appendChild(sec.el);
                         
@@ -5334,9 +5340,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        
-        const finalHTML = stagingContainer.innerHTML;
+        const finalHTML = pages.map(page => page.wrapper.outerHTML).join("");
         document.body.removeChild(staging);
+        if (document.body.contains(stagingContainer)) {
+            document.body.removeChild(stagingContainer);
+        }
         return finalHTML;
     }
 

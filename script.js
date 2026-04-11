@@ -650,21 +650,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (typeof window.generateResumeHTML !== 'function') return;
                         currentResumeData = resumeObj;
                         selectedTemplate = data.template;
-
-                        const rawHTML = window.generateResumeHTML(resumeObj);
-                        const paginatedHTML = paginateResume(rawHTML, selectedTemplate);
-
-                        const container = document.getElementById('resume-document-container');
-                        if (container) {
-                            container.innerHTML = paginatedHTML;
-                            console.log("Container children:", container.children.length);
-                            console.log("Container HTML preview:", container.innerHTML.substring(0, 200));
-
-                            // Trigger the actual PDF save function bounded to this button later
-                            if (typeof window.triggerPDFDownload === 'function') {
-                                // this simulates the click but wait, there is a global btn-download listener
-                                // Instead of recursion, just call trigger 
-                            }
+                        const htmlStr = window.generateResumeHTML(resumeObj);
+                        const resumeDoc = document.getElementById('resume-document');
+                        if (resumeDoc) {
+                            resumeDoc.innerHTML = htmlStr;
+                            resumeDoc.className = 'resume-document template-' + selectedTemplate;
+                            const dBtn = document.getElementById('btn-download');
+                            if (dBtn) dBtn.click();
                         }
                     });
 
@@ -5169,16 +5161,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // 3. Build HTML Template string
-        const rawHTML = window.generateResumeHTML(currentResumeData);
+        const htmlStr = window.generateResumeHTML(currentResumeData);
 
-        // 4. Inject and Paginate DOM
-        const paginatedHTML = paginateResume(rawHTML, data.template || selectedTemplate);
-        const container = document.getElementById('resume-document-container');
-        if (container) {
-            container.innerHTML = paginatedHTML;
-        }
+        // 4. Inject into DOM
+        resumeDoc.innerHTML = htmlStr;
 
-        console.log("Pages in DOM:", document.querySelectorAll('.resume-document.page').length);
+        // Apply selected template class
+        resumeDoc.className = 'resume-document template-' + data.template;
 
         // 5. Navigate to preview
         navigateTo('preview');
@@ -5189,12 +5178,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Dynamic Mobile Scale Logic ---
     function scaleResume() {
+        const resume = document.querySelector('.resume-document');
         const container = document.querySelector('.preview-wrapper');
-        const resumeDocs = document.querySelectorAll('.resume-document.page');
 
-        if (!container || resumeDocs.length === 0) return;
+        if (!resume || !container) return;
 
         const containerWidth = container.offsetWidth;
+        // Apply Math.min(1, ...) to ensure Desktop remains entirely unaffected as originally required
         const scale = Math.min(1, containerWidth / 816);
 
         const scaleContainer = document.querySelector('.scale-container');
@@ -5202,228 +5192,6 @@ document.addEventListener('DOMContentLoaded', () => {
             scaleContainer.style.transform = `scale(${scale})`;
         }
     }
-
-    // --- Multi-Page Pagination Engine (Complete Rewrite) ---
-    function paginateResume(htmlStr, templateName) {
-        console.log("Pagination started");
-
-        const PAGE_WIDTH = 816;
-        const PAGE_HEIGHT = 1050;
-        const SAFE_HEIGHT = 1030;
-
-        // Known two-column template IDs
-        const twoColumnTemplates = ['5', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', 'professional'];
-        const isTwoColumn = twoColumnTemplates.includes(String(templateName));
-
-        // Step 1 — Render full resume into hidden staging div
-        const staging = document.createElement('div');
-        staging.className = `resume-document template-${templateName}`;
-        staging.style.cssText = [
-            'position:absolute',
-            'top:-99999px',
-            'left:-99999px',
-            `width:${PAGE_WIDTH}px`,
-            'height:auto',
-            'min-height:0',
-            'visibility:hidden',
-            'pointer-events:none',
-            'overflow:visible',
-        ].join(';');
-        staging.innerHTML = htmlStr;
-        document.body.appendChild(staging);
-        staging.getBoundingClientRect();
-
-        const totalHeight = staging.scrollHeight;
-        console.log("Total content height:", totalHeight);
-        console.log("Pagination needed:", totalHeight > PAGE_HEIGHT);
-        console.log("Two column layout:", isTwoColumn);
-
-        // Single page — fits without pagination
-        if (totalHeight <= PAGE_HEIGHT) {
-            document.body.removeChild(staging);
-            const single = document.createElement('div');
-            single.className = `resume-document page template-${templateName}`;
-            single.innerHTML = htmlStr;
-            console.log("Pages in DOM: 1");
-            return single.outerHTML;
-        }
-
-        // --- TWO COLUMN TEMPLATES ---
-        // Use scroll-offset clipping — safest for complex side-by-side layouts
-        if (isTwoColumn) {
-            // Find section boundaries to snap page breaks cleanly
-            const sectionEls = staging.querySelectorAll([
-                '.cv-section', '.section', '.block', '.job',
-                '.right-section', '.left-section', '.edu-item',
-                '.project', '.lang-item', '.resume-section',
-                '.content-block', '.sidebar-section', '.main-section',
-                '.prof-section', '.item'
-            ].join(', '));
-
-            const stagingRect = staging.getBoundingClientRect();
-            let breakPoints = [0];
-
-            sectionEls.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                const topRelative = rect.top - stagingRect.top;
-                if (topRelative > 0) breakPoints.push(Math.floor(topRelative));
-            });
-
-            breakPoints = [...new Set(breakPoints)].sort((a, b) => a - b);
-
-            document.body.removeChild(staging);
-
-            // Find optimal page break points snapped to section boundaries
-            const pageOffsets = [0];
-            let currentOffset = 0;
-
-            while (currentOffset + SAFE_HEIGHT < totalHeight) {
-                const targetBreak = currentOffset + SAFE_HEIGHT;
-                let bestBreak = targetBreak;
-
-                for (let i = breakPoints.length - 1; i >= 0; i--) {
-                    if (breakPoints[i] <= targetBreak && breakPoints[i] > currentOffset + 200) {
-                        bestBreak = breakPoints[i];
-                        break;
-                    }
-                }
-
-                pageOffsets.push(bestBreak);
-                currentOffset = bestBreak;
-            }
-
-            console.log("Total pages generated:", pageOffsets.length);
-
-            const pageHTMLParts = pageOffsets.map((offset, i) => {
-                const pageWrapper = document.createElement('div');
-                pageWrapper.className = `resume-document page template-${templateName}`;
-                pageWrapper.style.cssText = [
-                    `width:${PAGE_WIDTH}px`,
-                    `height:${PAGE_HEIGHT}px`,
-                    'overflow:hidden',
-                    'position:relative',
-                    'background:white',
-                    'box-sizing:border-box',
-                    'flex-shrink:0',
-                    'min-height:0',
-                ].join(';');
-
-                const inner = document.createElement('div');
-                inner.className = `resume-document template-${templateName}`;
-                inner.style.cssText = [
-                    `width:${PAGE_WIDTH}px`,
-                    'height:auto',
-                    'min-height:0',
-                    `margin-top:-${offset}px`,
-                    'position:relative',
-                    'box-shadow:none',
-                    'border-radius:0',
-                ].join(';');
-                inner.innerHTML = htmlStr;
-
-                pageWrapper.appendChild(inner);
-                console.log("Page", i + 1, "offset:", offset);
-                return pageWrapper.outerHTML;
-            });
-
-            console.log("Pages in DOM:", pageHTMLParts.length);
-            return pageHTMLParts.join('');
-        }
-
-        // --- SINGLE COLUMN TEMPLATES ---
-        // Find header
-        const headerEl = staging.querySelector([
-            '.cv-header', '.header', '.resume-header',
-            '.top-header', '.name-section'
-        ].join(', '));
-
-        const headerHTML = headerEl ? headerEl.outerHTML : '';
-        let headerHeight = 0;
-        if (headerEl) {
-            staging.getBoundingClientRect();
-            headerHeight = headerEl.getBoundingClientRect().height;
-        }
-
-        // Find content container
-        const contentWrapper = staging.querySelector([
-            '.resume-wrapper', '.content', '.resume-body', '.cv-body'
-        ].join(', ')) || staging;
-
-        // Collect top level section blocks excluding header
-        const pageableBlocks = [];
-        Array.from(contentWrapper.children).forEach(child => {
-            if (headerEl && (child === headerEl || child.contains(headerEl) || headerEl.contains(child))) return;
-            pageableBlocks.push(child);
-        });
-
-        if (pageableBlocks.length === 0) {
-            Array.from(staging.children).forEach(child => {
-                if (headerEl && (child === headerEl || child.contains(headerEl) || headerEl.contains(child))) return;
-                pageableBlocks.push(child);
-            });
-        }
-
-        // Measure each block
-        const blockData = pageableBlocks.map(el => {
-            staging.getBoundingClientRect();
-            const h = el.getBoundingClientRect().height;
-            console.log("Block:", el.className || el.tagName, "Height:", h);
-            return { html: el.outerHTML, height: h };
-        });
-
-        document.body.removeChild(staging);
-
-        // Distribute blocks across pages
-        const pages = [];
-        let currentPageBlocks = [];
-        let remaining = SAFE_HEIGHT - headerHeight;
-        console.log("After header, remaining:", remaining);
-
-        blockData.forEach(({ html, height }) => {
-            if (height <= remaining) {
-                currentPageBlocks.push(html);
-                remaining -= height;
-                console.log("Block added, remaining:", remaining);
-            } else {
-                pages.push(currentPageBlocks);
-                currentPageBlocks = [html];
-                remaining = SAFE_HEIGHT - height;
-                console.log("New page created, total:", pages.length + 1, "remaining:", remaining);
-            }
-        });
-        if (currentPageBlocks.length > 0) pages.push(currentPageBlocks);
-
-        console.log("Total pages generated:", pages.length);
-
-        const finalPages = pages.map((blocks, pageIndex) => {
-            const pageDiv = document.createElement('div');
-            pageDiv.className = `resume-document page template-${templateName}`;
-            pageDiv.style.cssText = [
-                `width:${PAGE_WIDTH}px`,
-                `height:${PAGE_HEIGHT}px`,
-                'overflow:hidden',
-                'position:relative',
-                'background:white',
-                'box-sizing:border-box',
-                'flex-shrink:0',
-                'min-height:0',
-            ].join(';');
-
-            let html = '';
-            if (pageIndex === 0) {
-                html += headerHTML;
-            } else {
-                html += `<div style="height:20px;"></div>`;
-            }
-            html += blocks.join('');
-            pageDiv.innerHTML = html;
-            return pageDiv.outerHTML;
-        });
-
-        console.log("Pages in DOM:", finalPages.length);
-        return finalPages.join('');
-    }
-
 
     // Run on load + resize
     window.addEventListener('load', scaleResume);
@@ -5495,7 +5263,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // This function will be called after successful payment (future integration)
     window.triggerPDFDownload = function () {
-        const originalElement = document.getElementById('resume-document-container') || document.getElementById('resume-document');
+        const originalElement = document.getElementById('resume-document');
         const isMobile = window.innerWidth <= 768;
 
         // 1. Create a dedicated PDF container to isolate from mobile CSS
@@ -5511,20 +5279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clone = originalElement.cloneNode(true);
 
         // 2. Remove mobile CSS influence & apply fixed layout
-        // For multi-page, we need to iterate descendants to disable internal transforms and box-shadows dynamically created for previews
         clone.style.transform = 'none';
-        clone.style.margin = '0';
-        clone.style.padding = '0';
-
-        const pages = clone.querySelectorAll('.resume-document.page');
-        if (pages.length > 0) {
-            pages.forEach(p => {
-                p.style.transform = 'none';
-                p.style.boxShadow = 'none';
-                p.style.margin = '0';
-                p.style.pageBreakAfter = 'always';
-            });
-        }
         // (padding overrides removed so native template paddings are preserved to stop text bleeding)
 
         // 3. Image Fix: maintain aspect ratio without stretching

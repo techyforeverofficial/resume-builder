@@ -5202,17 +5202,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Multi-Page Pagination Engine ---
+    // --- Multi-Page Pagination Engine (Complete Rewrite) ---
     function paginateResume(htmlStr, templateName) {
         console.log("Pagination started");
         
-        const stagingContainer = document.createElement('div');
-        stagingContainer.style.position = 'absolute';
-        stagingContainer.style.visibility = 'hidden';
-        stagingContainer.style.left = '-9999px';
-        document.body.appendChild(stagingContainer);
-        
-        // 1. Off-screen Staging
+        // Step 1 - Render First Into Hidden Container
         const staging = document.createElement('div');
         staging.className = `resume-document template-${templateName}`;
         staging.style.position = 'absolute';
@@ -5223,14 +5217,27 @@ document.addEventListener('DOMContentLoaded', () => {
         staging.innerHTML = htmlStr;
         document.body.appendChild(staging);
         
-        // 2. Identify layout flow structure
-        let columns = Array.from(staging.querySelectorAll('.left-column, .right-column, .left, .right'));
-        if (columns.length === 0) {
-            const wrapper = staging.querySelector('.resume-wrapper') || staging;
-            columns = [wrapper];
+        // Step 2 - Measure Real Content Height
+        const scrollHeight = staging.scrollHeight;
+        console.log("Total content height:", scrollHeight);
+        
+        const isPaginationNeeded = scrollHeight > 1050;
+        console.log("Pagination needed:", isPaginationNeeded);
+        
+        if (!isPaginationNeeded) {
+            document.body.removeChild(staging);
+            const singleDiv = document.createElement('div');
+            singleDiv.className = `resume-document page template-${templateName}`;
+            singleDiv.innerHTML = htmlStr;
+            return singleDiv.outerHTML;
         }
         
-        // 3. Skeleton Extraction
+        // Step 3 - Only Split When Genuinely Needed (Collect section blocks natively)
+        let columns = Array.from(staging.querySelectorAll('.left-column, .right-column, .left, .right'));
+        if (columns.length === 0) {
+            columns = [staging.querySelector('.resume-wrapper') || staging];
+        }
+        
         const emptyTemplate = staging.cloneNode(true);
         const emptyColumns = Array.from(emptyTemplate.querySelectorAll('.left-column, .right-column, .left, .right'));
         if (emptyColumns.length === 0) {
@@ -5240,24 +5247,36 @@ document.addEventListener('DOMContentLoaded', () => {
             emptyColumns.forEach(c => c.innerHTML = '');
         }
         
-        const pages = [];
+        let sections = [];
+        columns.forEach(col => {
+            const targetClass = emptyColumns.length > 0 ? col.className : 'main';
+            // Extract parent level containers only
+            Array.from(col.children).forEach(child => {
+                sections.push({ el: child, target: targetClass });
+            });
+        });
         
+        const pages = [];
+        const stagingContainer = document.createElement('div');
+        stagingContainer.style.position = 'absolute';
+        stagingContainer.style.visibility = 'hidden';
+        stagingContainer.style.left = '-9999px';
+        document.body.appendChild(stagingContainer);
+        
+        // Step 6 - New Page Structure
         function createPage(pageIndex) {
-            console.log("New page created");
-            
             const pageDiv = emptyTemplate.cloneNode(true);
             pageDiv.style.visibility = 'visible';
             pageDiv.style.position = 'relative';
             pageDiv.style.left = '0';
-            pageDiv.className = `resume-document template-${templateName}`;
+            pageDiv.className = `resume-document template-${templateName}`; // height auto initially
             
-            // Header Logic: Page 1 gets header, Page 2+ gets padding buffer
             const headerSelectors = '.header, .cv-header, header, .profile-section';
             const hdr = pageDiv.querySelector(headerSelectors);
             if (pageIndex > 0) {
                 if (hdr) hdr.style.display = 'none';
                 const wrapper = pageDiv.querySelector('.resume-wrapper') || pageDiv;
-                wrapper.style.paddingTop = '40px'; 
+                if (wrapper) wrapper.style.paddingTop = '20px'; 
             }
             
             stagingContainer.appendChild(pageDiv);
@@ -5270,57 +5289,45 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 targets['main'] = pageDiv.querySelector('.resume-wrapper') || pageDiv;
             }
-            // push to pages array natively
+            
             const pageObj = { wrapper: pageDiv, targets: targets };
             return pageObj;
         }
         
-        // Collect native sequential sections
-        let sections = [];
-        columns.forEach(col => {
-            const targetClass = emptyColumns.length > 0 ? col.className : 'main';
-            const children = Array.from(col.children);
-            children.forEach(child => {
-                sections.push({ el: child, target: targetClass });
-            });
-        });
-        
         let ptrs = {};
         
-        // Populate layout fully synchronized
+        // Step 4 & 5 - Fill Pages Correctly + Two Column
         for (let i = 0; i < sections.length; i++) {
             const sec = sections[i];
             if (ptrs[sec.target] === undefined) ptrs[sec.target] = 0;
             
             let cIdx = ptrs[sec.target];
-            if (!pages[cIdx]) pages.push(createPage(cIdx));
+            if (!pages[cIdx]) {
+                pages.push(createPage(cIdx));
+                if (cIdx > 0) console.log("New page created:", cIdx + 1);
+            }
             
             let previousHeight = pages[cIdx].wrapper.scrollHeight;
             pages[cIdx].targets[sec.target].appendChild(sec.el);
             
             let currentHeight = pages[cIdx].wrapper.scrollHeight;
             let sectionHeight = currentHeight - previousHeight;
-            let remainingHeight = 1040 - currentHeight;
-            let fits = currentHeight <= 1040;
+            let remaining = 1030 - currentHeight; // using 1030 threshold per prompt
             
-            console.log("Remaining space on current page:", remainingHeight);
-            console.log("Section height:", sectionHeight);
-            console.log("Section fits:", fits);
+            console.log("Adding section to page:", cIdx + 1, "Section height:", sectionHeight, "Remaining:", remaining);
             
-            if (!fits) {
+            if (currentHeight > 1030) {
                 const isOnlyChild = pages[cIdx].targets[sec.target].children.length === 1;
                 
                 if (isOnlyChild) {
-                    // Step 5: Minimum Content Per Page. It's the ONLY child but STILL > 1040
-                    // Keep on current page. "Never move partial block" guarantees we let it stretch.
+                    // Do nothing - fits rule "Never move partial block" if it completely overflows natively
                 } else {
-                    // Remove from current page, move entire block
                     pages[cIdx].targets[sec.target].removeChild(sec.el);
                     cIdx++;
                     
                     if (!pages[cIdx]) {
                         pages.push(createPage(cIdx));
-                        console.log("New page created, total pages:", pages.length);
+                        console.log("New page created:", cIdx + 1);
                     }
                     pages[cIdx].targets[sec.target].appendChild(sec.el);
                     ptrs[sec.target] = cIdx;
@@ -5328,14 +5335,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
+        console.log("Total pages generated:", pages.length);
+        
+        // Step 7 - Final Output
         const finalHTML = pages.map(page => {
-            page.wrapper.classList.add('page');
+            page.wrapper.classList.add('page'); // Enforces final css including `page-break-after: always`
             return page.wrapper.outerHTML;
         }).join("");
+        
         document.body.removeChild(staging);
         if (document.body.contains(stagingContainer)) {
             document.body.removeChild(stagingContainer);
         }
+        
         return finalHTML;
     }
 

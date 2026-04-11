@@ -5296,7 +5296,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 targets['main'] = pageDiv.querySelector('.resume-wrapper') || pageDiv;
             }
             
-            const pageObj = { wrapper: pageDiv, targets: targets };
+            // Step 1 - Fix Initial Remaining Height
+            const PAGE_HEIGHT = 1050;
+            const TOP_PADDING = 20;
+            let pageRemaining = PAGE_HEIGHT - TOP_PADDING;
+            
+            // Step 2 - Fix Header Subtraction
+            if (pageIndex === 0) {
+                stagingContainer.getBoundingClientRect(); // Force layout
+                const hdrObj = pageDiv.querySelector(headerSelectors);
+                if (hdrObj) {
+                    const headerHeight = hdrObj.getBoundingClientRect().height;
+                    pageRemaining = pageRemaining - headerHeight;
+                }
+                console.log("After header, remaining:", pageRemaining);
+            }
+            
+            let remainings = {};
+            Object.keys(targets).forEach(k => remainings[k] = pageRemaining);
+            
+            const pageObj = { wrapper: pageDiv, targets: targets, remaining: remainings };
             return pageObj;
         }
         
@@ -5318,28 +5337,40 @@ document.addEventListener('DOMContentLoaded', () => {
             // Force Layout Before Measuring
             stagingContainer.getBoundingClientRect();
             
-            let currentHeight = pages[cIdx].wrapper.getBoundingClientRect().height;
             let sectionHeight = sec.el.getBoundingClientRect().height;
-            let remaining = 1030 - currentHeight; // using 1030 threshold per prompt
+            let currentRemaining = pages[cIdx].remaining[sec.target];
             
             console.log("Section:", sec.el.className || sec.el.tagName, "Measured height:", sectionHeight);
-            console.log("Adding section to page:", cIdx + 1, "Section height:", sectionHeight, "Remaining:", remaining);
             
-            if (currentHeight > 1030) {
+            // Step 3 - Fix Section Addition Logic
+            if (sectionHeight <= currentRemaining) {
+                pages[cIdx].remaining[sec.target] = currentRemaining - sectionHeight;
+                console.log("Section added, remaining now:", pages[cIdx].remaining[sec.target]);
+            } else {
                 const isOnlyChild = pages[cIdx].targets[sec.target].children.length === 1;
                 
                 if (isOnlyChild) {
                     // Do nothing - fits rule "Never move partial block" if it completely overflows natively
+                    pages[cIdx].remaining[sec.target] = currentRemaining - sectionHeight;
+                    console.log("Section added natively overflowed, remaining now:", pages[cIdx].remaining[sec.target]);
                 } else {
                     pages[cIdx].targets[sec.target].removeChild(sec.el);
                     cIdx++;
                     
                     if (!pages[cIdx]) {
                         pages.push(createPage(cIdx));
-                        console.log("New page created:", cIdx + 1);
                     }
+                    
                     pages[cIdx].targets[sec.target].appendChild(sec.el);
+                    stagingContainer.getBoundingClientRect();
+                    let newSectionHeight = sec.el.getBoundingClientRect().height;
+                    
+                    // Step 4 - Fix New Page Remaining Reset
+                    pages[cIdx].remaining[sec.target] = pages[cIdx].remaining[sec.target] - newSectionHeight;
                     ptrs[sec.target] = cIdx;
+                    
+                    console.log("New page created, total pages:", pages.length);
+                    console.log("New page, remaining now:", pages[cIdx].remaining[sec.target]);
                 }
             }
         }

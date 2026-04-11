@@ -5249,7 +5249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pageDiv.style.visibility = 'visible';
             pageDiv.style.position = 'relative';
             pageDiv.style.left = '0';
-            pageDiv.className = `resume-document page template-${templateName}`;
+            pageDiv.className = `resume-document template-${templateName}`;
             
             // Header Logic: Page 1 gets header, Page 2+ gets padding buffer
             const headerSelectors = '.header, .cv-header, header, .profile-section';
@@ -5295,13 +5295,19 @@ document.addEventListener('DOMContentLoaded', () => {
             let cIdx = ptrs[sec.target];
             if (!pages[cIdx]) pages.push(createPage(cIdx));
             
+            let previousHeight = pages[cIdx].wrapper.scrollHeight;
             pages[cIdx].targets[sec.target].appendChild(sec.el);
             
-            // Step 4: Measure height of ENTIRE parent block
             let currentHeight = pages[cIdx].wrapper.scrollHeight;
-            console.log("Section block:", sec.el.className || sec.el.tagName, "Height:", currentHeight);
+            let sectionHeight = currentHeight - previousHeight;
+            let remainingHeight = 1040 - currentHeight;
+            let fits = currentHeight <= 1040;
             
-            if (currentHeight > 1040) {
+            console.log("Remaining space on current page:", remainingHeight);
+            console.log("Section height:", sectionHeight);
+            console.log("Section fits:", fits);
+            
+            if (!fits) {
                 const isOnlyChild = pages[cIdx].targets[sec.target].children.length === 1;
                 
                 if (isOnlyChild) {
@@ -5312,15 +5318,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     pages[cIdx].targets[sec.target].removeChild(sec.el);
                     cIdx++;
                     
-                    if (!pages[cIdx]) pages.push(createPage(cIdx));
+                    if (!pages[cIdx]) {
+                        pages.push(createPage(cIdx));
+                        console.log("New page created, total pages:", pages.length);
+                    }
                     pages[cIdx].targets[sec.target].appendChild(sec.el);
                     ptrs[sec.target] = cIdx;
-                    
-                    console.log("Moved section to next page, total pages now:", pages.length);
                 }
             }
         }
-        const finalHTML = pages.map(page => page.wrapper.outerHTML).join("");
+        
+        const finalHTML = pages.map(page => {
+            page.wrapper.classList.add('page');
+            return page.wrapper.outerHTML;
+        }).join("");
         document.body.removeChild(staging);
         if (document.body.contains(stagingContainer)) {
             document.body.removeChild(stagingContainer);

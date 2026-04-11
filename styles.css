@@ -83,6 +83,7 @@ body {
     color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -203,6 +204,7 @@ body {
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -216,6 +218,7 @@ body {
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid var(--card-border);
     font-size: 0.8rem;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -328,6 +331,7 @@ textarea {
     color: var(--text-primary);
     font-size: 1rem;
     font-family: 'Inter', sans-serif;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -353,6 +357,7 @@ textarea {
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid var(--card-border);
     border-radius: 8px;
+
     overflow: hidden;
     transition: all 0.3s ease;
 }
@@ -471,6 +476,7 @@ textarea {
     background: rgba(15, 23, 42, 0.6);
     border: 2px solid var(--card-border);
     border-radius: 12px;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -493,7 +499,7 @@ textarea {
     border-radius: 6px;
     margin-bottom: 1rem;
     position: relative;
-    overflow: hidden;
+
     border: 1px solid #e5e7eb;
 }
 
@@ -535,6 +541,7 @@ textarea {
     cursor: pointer;
     font-weight: 500;
     font-family: 'Inter', sans-serif;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -611,7 +618,7 @@ textarea {
     border-radius: 4px;
     font-family: 'Inter', Helvetica, Arial, sans-serif;
     /* Clean fonts */
-    overflow: hidden;
+
 }
 
 /* Force super-long emails, URLs, or unbroken text strings to naturally break, mitigating flex container overflow bleeding */
@@ -1185,6 +1192,7 @@ textarea {
     z-index: 9999;
     opacity: 0;
     visibility: hidden;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -1367,6 +1375,7 @@ textarea {
     background: rgba(15, 23, 42, 0.4);
     border: 1px solid var(--card-border);
     border-radius: 8px;
+
     overflow: hidden;
     transition: all 0.3s ease;
 }
@@ -1401,6 +1410,7 @@ textarea {
 
 .accordion-content {
     max-height: 0;
+
     overflow: hidden;
     transition: max-height 0.4s ease-in-out;
     background: rgba(0, 0, 0, 0.1);
@@ -1677,6 +1687,7 @@ textarea {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 12px;
+
     overflow: hidden;
     transition: all 0.3s ease;
     display: flex;
@@ -1691,7 +1702,7 @@ textarea {
 
 .card-preview {
     height: 200px;
-    overflow: hidden;
+
     background: #1e293b;
     border-bottom: 1px solid var(--card-border);
 }
@@ -1855,6 +1866,7 @@ textarea {
     /* left padding for icon */
     border-radius: 10px;
     font-size: 0.95rem;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -1897,10 +1909,11 @@ textarea {
     border: none;
     border-radius: 10px;
     cursor: pointer;
+    overflow: hidden;
     transition: all 0.3s ease;
     margin-top: 0.5rem;
     position: relative;
-    overflow: hidden;
+
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
@@ -1978,6 +1991,7 @@ textarea {
     position: relative;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -2060,7 +2074,7 @@ textarea {
     height: 8px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 4px;
-    overflow: hidden;
+
 }
 
 .progress-bar-fill {
@@ -2189,6 +2203,7 @@ textarea {
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -3051,7 +3066,8 @@ textarea {
 /* --- TEMPLATE 11 STYLES --- */
 .resume-document.template-11 {
     width: 816px;
-    height: 1050px;
+    min-height: 1050px;
+    height: auto;
     margin: auto;
     background: #ffffff;
     padding: 35px 45px;
@@ -3315,7 +3331,7 @@ textarea {
     margin-top: 4px;
     position: relative;
     border-radius: 2px;
-    overflow: hidden;
+
 }
 
 .resume-document.template-12 .fill {
@@ -3960,7 +3976,8 @@ textarea {
 
 .resume-document.template-16 .resume {
     width: 816px;
-    height: 1050px;
+    min-height: 1050px;
+    height: auto;
     margin: auto;
     background: #ffffff;
     padding: 30px 40px;
@@ -4086,7 +4103,8 @@ textarea {
 /* --- TEMPLATE 17 STYLES --- */
 .resume-document.template-17 {
     width: 816px;
-    height: 1050px;
+    min-height: 1050px;
+    height: auto;
     margin: auto;
     background: #ffffff;
     box-sizing: border-box;
@@ -4212,7 +4230,8 @@ textarea {
 /* --- TEMPLATE 18 STYLES --- */
 .resume-document.template-18 {
     width: 816px;
-    height: 1050px;
+    min-height: 1050px;
+    height: auto;
     margin: auto;
     background: #ffffff;
     box-sizing: border-box;
@@ -4403,7 +4422,8 @@ textarea {
 /* --- TEMPLATE 19 STYLES --- */
 .resume-document.template-19 {
     width: 816px;
-    height: 1050px;
+    min-height: 1050px;
+    height: auto;
     margin: 10px auto;
     font-family: 'Calibri', 'Arial', sans-serif;
     background: #fff;
@@ -4420,7 +4440,7 @@ textarea {
     display: flex;
     flex-direction: column;
     background: #fff;
-    overflow: hidden;
+
 }
 
 .resume-document.template-19 .header {
@@ -4495,7 +4515,7 @@ textarea {
 .resume-document.template-19 .body {
     display: flex;
     flex: 1;
-    overflow: hidden;
+
 }
 
 .resume-document.template-19 .sidebar {
@@ -4533,7 +4553,7 @@ textarea {
 .resume-document.template-19 .main {
     flex: 1;
     padding: 22px 28px 22px 28px;
-    overflow: hidden;
+
 }
 
 .resume-document.template-19 .section {
@@ -4624,10 +4644,11 @@ textarea {
 /* --- TEMPLATE 20 STYLES --- */
 .resume-document.template-20 {
     width: 816px;
-    height: 1056px;
+    min-height: 1056px;
+    height: auto;
     background: #fff;
     font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
-    overflow: hidden;
+
     margin: 30px auto;
     box-sizing: border-box;
     display: flex;
@@ -4724,7 +4745,7 @@ textarea {
     display: flex;
     flex-direction: column;
     gap: 0;
-    overflow: hidden;
+
 }
 
 .resume-document.template-20 .section {
@@ -4851,4 +4872,188 @@ textarea {
     width: 100%;
     flex-shrink: 0;
     margin-top: auto;
+}
+
+/* --- MULTI-PAGE RENDERING & OVERFLOW FIXES --- */
+/* 1 & 2. Remove fixed height & allow content expansion */
+.resume-document,
+.resume-document[class*="template-"],
+.resume,
+.resume-wrapper,
+.page,
+.body,
+.main,
+.left,
+.right {
+    min-height: 1050px !important;
+    height: auto !important;
+    overflow: visible !important;
+    max-height: none !important;
+}
+
+/* 3. Enable Page Break for PDF */
+.section {
+    page-break-inside: avoid;
+}
+
+.resume-document,
+.resume,
+.resume-wrapper,
+.page {
+    page-break-after: always;
+}
+
+/* =========================================
+   TEMPLATE 21
+   ========================================= */
+.resume-document.template-21 {
+    width: 816px;
+    margin: 0 auto;
+    background: #f0f0f0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.resume-document.template-21 .resume {
+    width: 100%;
+    min-height: 1050px;
+    margin: auto;
+    background: #ffffff;
+    display: flex;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.resume-document.template-21 .left {
+    width: 32%;
+    background: #2f3e4e;
+    color: #ffffff;
+    padding: 30px 25px;
+    box-sizing: border-box;
+}
+
+.resume-document.template-21 .profile-img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background-color: #ccc;
+    background-position: center !important;
+    background-size: cover !important;
+    margin: 0 auto 25px;
+    border: 6px solid #3f5165;
+}
+
+.resume-document.template-21 .section {
+    margin-bottom: 28px;
+    color: #ffffff;
+}
+
+.resume-document.template-21 .section h3 {
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    margin-top: 0;
+    text-transform: uppercase;
+    border-bottom: 1px solid #ffffff33;
+    padding-bottom: 6px;
+    color: #ffffff;
+}
+
+.resume-document.template-21 .section p,
+.resume-document.template-21 .section li {
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 4px 0;
+    opacity: 0.9;
+    color: #ffffff;
+}
+
+.resume-document.template-21 .section ul {
+    padding-left: 15px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.resume-document.template-21 .right {
+    width: 68%;
+    padding: 35px 40px;
+    box-sizing: border-box;
+    background: #ffffff;
+}
+
+.resume-document.template-21 .name {
+    font-size: 36px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+.resume-document.template-21 .title {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.resume-document.template-21 .right-section {
+    margin-bottom: 25px;
+}
+
+.resume-document.template-21 .right-section h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 6px;
+}
+
+.resume-document.template-21 .right-section p {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.resume-document.template-21 .job {
+    margin-bottom: 15px;
+}
+
+.resume-document.template-21 .job-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.resume-document.template-21 .job-company {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.resume-document.template-21 .job ul {
+    padding-left: 18px;
+    margin: 5px 0;
+}
+
+.resume-document.template-21 .job ul li,
+.resume-document.template-21 .job p,
+.resume-document.template-21 .job div {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 4px;
+    line-height: 1.6;
+}
+
+.resume-document.template-21 .references {
+    display: flex;
+    justify-content: space-between;
+}
+
+.resume-document.template-21 .ref {
+    width: 48%;
+}
+
+.resume-document.template-21 .ref p {
+    font-size: 12px;
+    margin: 3px 0;
 }

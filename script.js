@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let pendingPaymentPrompt = false;
 
     // --- Dynamic Education Field Validation ---
-    const validateEduDegree = function(degreeInput) {
+    const validateEduDegree = function (degreeInput) {
         if (!degreeInput) return;
         const degreeLower = degreeInput.value.toLowerCase();
         // Check for common school-level terms
@@ -34,11 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.validateEduDegree = validateEduDegree;
 
     // --- Dynamic Education Title Formatting ---
-    window.formatEducationTitle = function(degree, fieldOfStudy) {
+    window.formatEducationTitle = function (degree, fieldOfStudy) {
         if (!degree) return '';
         const degreeLower = degree.toLowerCase();
         const isSchoolLevel = ["ssc", "10", "10th", "class 10", "x", "secondary", "matric", "high school"].some(word => degreeLower.includes(word));
-        
+
         if (isSchoolLevel) {
             return escapeHTML(degree);
         } else if (fieldOfStudy && !["n/a", "none"].includes(fieldOfStudy.trim().toLowerCase())) {
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    document.addEventListener('input', function(e) {
+    document.addEventListener('input', function (e) {
         if (e.target && e.target.name === 'eduDegree[]') {
             validateEduDegree(e.target);
         }
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 document.getElementById("mySubscription").onclick = () => {
                     navigateTo('subscription');
-                    if(typeof fetchMySubscription === 'function') fetchMySubscription();
+                    if (typeof fetchMySubscription === 'function') fetchMySubscription();
                     dropdown.classList.add("hidden");
                 };
             } else {
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        
+
         let displayNumber = 1;
         for (let i = 1; i <= totalDOMSteps; i++) {
             const navItem = document.getElementById(`nav-step-${i}`);
@@ -281,7 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: "17", name: "Template 17" },
         { id: "18", name: "Template 18" },
         { id: "19", name: "Template 19" },
-        { id: "20", name: "Template 20" }
+        { id: "20", name: "Template 20" },
+        { id: "21", name: "Template 21" }
     ];
 
     const basePath = "templates/";
@@ -788,25 +789,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'work') {
             workSection.style.display = 'block';
             internSection.style.display = 'none';
-            if(fresherBanner) fresherBanner.style.display = 'none';
+            if (fresherBanner) fresherBanner.style.display = 'none';
             visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
         } else if (type === 'internship') {
             workSection.style.display = 'none';
             internSection.style.display = 'block';
-            if(fresherBanner) fresherBanner.style.display = 'none';
+            if (fresherBanner) fresherBanner.style.display = 'none';
             visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
         } else if (type === 'both') {
             workSection.style.display = 'block';
             internSection.style.display = 'block';
-            if(fresherBanner) fresherBanner.style.display = 'none';
+            if (fresherBanner) fresherBanner.style.display = 'none';
             visibleSteps = [1, 2, 3, 4, 5, 6, 7, 8];
         } else if (type === 'fresher') {
             workSection.style.display = 'none';
             internSection.style.display = 'none';
-            if(fresherBanner) fresherBanner.style.display = 'block';
+            if (fresherBanner) fresherBanner.style.display = 'block';
             visibleSteps = [1, 2, 3, 5, 6, 7, 8]; // Skip step 4 completely
         }
-        
+
         // Refresh sidebar and visibility only if we are initialized past setup
         const isFormActive = views.form && views.form.classList.contains('active');
         if (isFormActive) {
@@ -820,8 +821,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 showStepByIndex(currentStepIndex, true);
             } else {
-                 // Init load
-                 showStepByIndex(0, true);
+                // Init load
+                showStepByIndex(0, true);
             }
         }
     };
@@ -832,7 +833,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.checked) handleExperienceTypeChange(e.target.value);
         });
     });
-    
+
     // Initial run
     const selectedExp = document.querySelector('input[name="experienceType"]:checked');
     if (selectedExp) {
@@ -1103,7 +1104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 safeSet('[name="eduGradMonth[]"]', edu.gradMonth);
                 safeSet('[name="eduGradYear[]"]', edu.gradYear);
                 safeSet('[name="eduCoursework[]"]', edu.coursework);
-                
+
                 // Immediately check and hide the field of study if previously populated with a school term
                 if (window.validateEduDegree) {
                     window.validateEduDegree(currentItem.querySelector('[name="eduDegree[]"]'));
@@ -1142,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const requiredInputs = form.querySelectorAll('[required]');
         for (let input of requiredInputs) {
             if (input.closest('#step-7')) continue; // Skip validation for optional Additional Info sections
-            
+
             // Skip dynamic experience fields based on selected type
             if (experienceType === 'fresher') {
                 if (input.closest('#work-experience-section') || input.closest('#internship-experience-section')) {
@@ -1268,17 +1269,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const text = html.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, '').trim();
                 return text.length > 0;
             };
-            
+
             // Deep clone to prevent mutating global state accidentally
             const resumeData = JSON.parse(JSON.stringify(originalResumeData));
-            
+
             // Normalize dates globally across all templates
             const normalizeExperienceDates = (expList) => {
                 if (!expList) return;
                 expList.forEach(exp => {
                     let sY = parseInt(exp.startYear) || 0;
                     let eY = parseInt(exp.endYear) || 0;
-                    
+
                     if (exp.current || exp.endYear === 'NOW' || exp.endYear === 'Present' || exp.endYear === 'PRESENT') {
                         exp.current = true;
                         exp.endYear = 'Present'; // Make standard
@@ -1300,26 +1301,26 @@ document.addEventListener('DOMContentLoaded', () => {
             normalizeExperienceDates(resumeData.workExperience);
             normalizeExperienceDates(resumeData.work);
             normalizeExperienceDates(resumeData.internshipExperience);
-            
-            resumeData.projects = (resumeData.projects || []).filter(p => 
-                (p.name && p.name.trim() !== '') || 
-                (p.link && p.link.trim() !== '') || 
+
+            resumeData.projects = (resumeData.projects || []).filter(p =>
+                (p.name && p.name.trim() !== '') ||
+                (p.link && p.link.trim() !== '') ||
                 hasMeaningfulText(p.desc)
             );
-            
-            resumeData.work = (resumeData.work || []).filter(exp => 
-                (exp.company && exp.company.trim() !== '') || 
-                (exp.role && exp.role.trim() !== '') || 
+
+            resumeData.work = (resumeData.work || []).filter(exp =>
+                (exp.company && exp.company.trim() !== '') ||
+                (exp.role && exp.role.trim() !== '') ||
                 hasMeaningfulText(exp.description)
             );
             resumeData.workExperience = resumeData.work;
 
-            resumeData.internshipExperience = (resumeData.internshipExperience || []).filter(exp => 
-                (exp.company && exp.company.trim() !== '') || 
-                (exp.role && exp.role.trim() !== '') || 
+            resumeData.internshipExperience = (resumeData.internshipExperience || []).filter(exp =>
+                (exp.company && exp.company.trim() !== '') ||
+                (exp.role && exp.role.trim() !== '') ||
                 hasMeaningfulText(exp.description)
             );
-            
+
             if (resumeData.additional) {
                 if (!hasMeaningfulText(resumeData.additional.certifications)) resumeData.additional.certifications = '';
                 if (!hasMeaningfulText(resumeData.additional.hobbies)) resumeData.additional.hobbies = '';
@@ -1349,20 +1350,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     <div class="t5-container">
 `;
-                        let leftContent = '';
-                        let rightContent = '';
-                        let leftColHeight = 0;
-                        const MAX_LEFT_HEIGHT = 900; // Estimated max safe height for left column
+                let leftContent = '';
+                let rightContent = '';
+                let leftColHeight = 0;
+                const MAX_LEFT_HEIGHT = 900; // Estimated max safe height for left column
 
-                        // 1. CONTACT
-                        let contactHtml = '';
-                        if (data.phone) { contactHtml += `<div class="contact-item"><i class="fas fa-phone contact-icon"></i> <span>${escapeHTML(data.phone)}</span></div>`; leftColHeight += 28; }
-                        if (data.email) { contactHtml += `<div class="contact-item"><i class="fas fa-envelope contact-icon"></i> <span>${escapeHTML(data.email)}</span></div>`; leftColHeight += 28; }
-                        if (data.city || data.country) { contactHtml += `<div class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i> <span>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</span></div>`; leftColHeight += 28; }
-                        if (additionalInfo.website) { contactHtml += `<div class="contact-item"><i class="fas fa-globe contact-icon"></i> <span>${escapeHTML(additionalInfo.website)}</span></div>`; leftColHeight += 28; }
-                        if (additionalInfo.linkedin) { contactHtml += `<div class="contact-item"><i class="fab fa-linkedin contact-icon"></i> <span>${escapeHTML(additionalInfo.linkedin)}</span></div>`; leftColHeight += 28; }
+                // 1. CONTACT
+                let contactHtml = '';
+                if (data.phone) { contactHtml += `<div class="contact-item"><i class="fas fa-phone contact-icon"></i> <span>${escapeHTML(data.phone)}</span></div>`; leftColHeight += 28; }
+                if (data.email) { contactHtml += `<div class="contact-item"><i class="fas fa-envelope contact-icon"></i> <span>${escapeHTML(data.email)}</span></div>`; leftColHeight += 28; }
+                if (data.city || data.country) { contactHtml += `<div class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i> <span>${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</span></div>`; leftColHeight += 28; }
+                if (additionalInfo.website) { contactHtml += `<div class="contact-item"><i class="fas fa-globe contact-icon"></i> <span>${escapeHTML(additionalInfo.website)}</span></div>`; leftColHeight += 28; }
+                if (additionalInfo.linkedin) { contactHtml += `<div class="contact-item"><i class="fab fa-linkedin contact-icon"></i> <span>${escapeHTML(additionalInfo.linkedin)}</span></div>`; leftColHeight += 28; }
 
-                        leftContent += `
+                leftContent += `
                             <div class="section">
                                 <div class="section-header">
                                     <div class="icon-circle"><i class="fas fa-id-badge"></i></div>
@@ -1371,30 +1372,30 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${contactHtml}
                             </div>
                         `;
-                        leftColHeight += 60; // base header height
+                leftColHeight += 60; // base header height
 
-                        // 2. PERSONAL DETAILS (Always Left)
-                        const hasPersonal = additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.dob;
-                        if (hasPersonal) {
-                            leftContent += `
+                // 2. PERSONAL DETAILS (Always Left)
+                const hasPersonal = additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.dob;
+                if (hasPersonal) {
+                    leftContent += `
                                 <div class="section">
                                     <div class="section-header">
                                         <div class="icon-circle"><i class="fas fa-user"></i></div>
                                         <h3>PERSONAL DETAILS</h3>
                                     </div>
                             `;
-                            leftColHeight += 60;
-                            if (additionalInfo.nationality) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-flag contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</span></div>`; leftColHeight += 25; }
-                            if (additionalInfo.maritalStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-ring contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</span></div>`; leftColHeight += 25; }
-                            if (additionalInfo.visaStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-passport contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</span></div>`; leftColHeight += 25; }
-                            if (additionalInfo.dob) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-calendar-alt contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>DOB:</strong> ${escapeHTML(additionalInfo.dob)}</span></div>`; leftColHeight += 25; }
-                            leftContent += `</div>`;
-                        }
+                    leftColHeight += 60;
+                    if (additionalInfo.nationality) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-flag contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</span></div>`; leftColHeight += 25; }
+                    if (additionalInfo.maritalStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-ring contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</span></div>`; leftColHeight += 25; }
+                    if (additionalInfo.visaStatus) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-passport contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</span></div>`; leftColHeight += 25; }
+                    if (additionalInfo.dob) { leftContent += `<div class="contact-item" style="font-size:13px"><i class="fas fa-calendar-alt contact-icon" style="font-size:12px;opacity:0.5;"></i> <span><strong>DOB:</strong> ${escapeHTML(additionalInfo.dob)}</span></div>`; leftColHeight += 25; }
+                    leftContent += `</div>`;
+                }
 
-                        // 3. SKILLS
-                        const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
-                        if (skillsList.length > 0) {
-                            leftContent += `
+                // 3. SKILLS
+                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
+                if (skillsList.length > 0) {
+                    leftContent += `
                                 <div class="section">
                                     <div class="section-header">
                                         <div class="icon-circle"><i class="fas fa-tools"></i></div>
@@ -1405,12 +1406,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </ul>
                                 </div>
                             `;
-                            leftColHeight += 60 + (skillsList.length * 20);
-                        }
+                    leftColHeight += 60 + (skillsList.length * 20);
+                }
 
-                        // 4. LANGUAGES
-                        if (additionalInfo.languages && additionalInfo.languages.length > 0) {
-                            leftContent += `
+                // 4. LANGUAGES
+                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                    leftContent += `
                                 <div class="section">
                                     <div class="section-header">
                                         <div class="icon-circle"><i class="fas fa-language"></i></div>
@@ -1421,16 +1422,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </ul>
                                 </div>
                             `;
-                            leftColHeight += 60 + (additionalInfo.languages.length * 20);
-                        }
+                    leftColHeight += 60 + (additionalInfo.languages.length * 20);
+                }
 
-                        // Reserve space for HOBBIES early (Always left, placed at bottom of left content later)
-                        const hasHobbies = additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>';
-                        let hobbiesHtml = '';
-                        if (hasHobbies) {
-                            const hHeight = 60 + (additionalInfo.hobbies.length / 40) * 20;
-                            leftColHeight += hHeight; // reserve
-                            hobbiesHtml = `
+                // Reserve space for HOBBIES early (Always left, placed at bottom of left content later)
+                const hasHobbies = additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>';
+                let hobbiesHtml = '';
+                if (hasHobbies) {
+                    const hHeight = 60 + (additionalInfo.hobbies.length / 40) * 20;
+                    leftColHeight += hHeight; // reserve
+                    hobbiesHtml = `
                                 <div class="section">
                                     <div class="section-header">
                                         <div class="icon-circle"><i class="fas fa-heart"></i></div>
@@ -1439,58 +1440,58 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <div style="font-size: 13px; color: #000;">${additionalInfo.hobbies}</div>
                                 </div>
                             `;
-                        }
+                }
 
-                        // 5. PROJECTS (Prefer Left, move to Right if no space)
-                        let projectsHtmlRight = '';
-                        if (projects.length > 0) {
-                            let pHeight = 60 + (projects.length * 70);
-                            let pHtmlLeft = `
+                // 5. PROJECTS (Prefer Left, move to Right if no space)
+                let projectsHtmlRight = '';
+                if (projects.length > 0) {
+                    let pHeight = 60 + (projects.length * 70);
+                    let pHtmlLeft = `
                                     <div class="section">
                                         <div class="section-header">
                                             <div class="icon-circle"><i class="fas fa-project-diagram"></i></div>
                                             <h3>PROJECTS</h3>
                                         </div>
                             `;
-                            projects.forEach(p => {
-                                pHtmlLeft += `
+                    projects.forEach(p => {
+                        pHtmlLeft += `
                                         <div class="project" style="margin-bottom:10px;">
                                             <div class="project-title" style="font-weight:bold;font-size:13px;">${escapeHTML(p.name)}</div>
                                             <div class="project-desc" style="font-size:12px;color:#555;">${p.desc}</div>
                                         </div>
                                 `;
-                            });
-                            pHtmlLeft += `</div>`;
+                    });
+                    pHtmlLeft += `</div>`;
 
-                            if (leftColHeight + pHeight <= MAX_LEFT_HEIGHT) {
-                                leftContent += pHtmlLeft;
-                                leftColHeight += pHeight;
-                            } else {
-                                projectsHtmlRight = `
+                    if (leftColHeight + pHeight <= MAX_LEFT_HEIGHT) {
+                        leftContent += pHtmlLeft;
+                        leftColHeight += pHeight;
+                    } else {
+                        projectsHtmlRight = `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-project-diagram"></i></div>
                                             <h3>PROJECTS</h3>
                                         </div>
                                 `;
-                                projects.forEach(p => {
-                                    projectsHtmlRight += `
+                        projects.forEach(p => {
+                            projectsHtmlRight += `
                                         <div class="job" style="margin-bottom:15px;">
                                             <span class="job-title" style="font-weight:bold;color:#000;">${escapeHTML(p.name)}</span>
                                             <div class="job-role" style="font-size:13px;color:#555;margin-top:5px;">${p.desc}</div>
                                         </div>
                                     `;
-                                });
-                                projectsHtmlRight += `</div>`;
-                            }
-                        }
+                        });
+                        projectsHtmlRight += `</div>`;
+                    }
+                }
 
-                        // 6. CERTIFICATIONS (Prefer Left, move to Right if no space)
-                        let certsHtmlRight = '';
-                        const hasCerts = additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>';
-                        if (hasCerts) {
-                            let cHeight = 60 + (additionalInfo.certifications.length / 40) * 20;
-                            let cLeftHtml = `
+                // 6. CERTIFICATIONS (Prefer Left, move to Right if no space)
+                let certsHtmlRight = '';
+                const hasCerts = additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>';
+                if (hasCerts) {
+                    let cHeight = 60 + (additionalInfo.certifications.length / 40) * 20;
+                    let cLeftHtml = `
                                     <div class="section">
                                         <div class="section-header">
                                             <div class="icon-circle"><i class="fas fa-certificate"></i></div>
@@ -1499,11 +1500,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <div style="font-size: 13px; color: #000;">${additionalInfo.certifications}</div>
                                     </div>
                             `;
-                            if (leftColHeight + cHeight <= MAX_LEFT_HEIGHT) {
-                                leftContent += cLeftHtml;
-                                leftColHeight += cHeight;
-                            } else {
-                                certsHtmlRight = `
+                    if (leftColHeight + cHeight <= MAX_LEFT_HEIGHT) {
+                        leftContent += cLeftHtml;
+                        leftColHeight += cHeight;
+                    } else {
+                        certsHtmlRight = `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-certificate"></i></div>
@@ -1512,18 +1513,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <div style="font-size: 13px; color: #444; line-height: 1.6;">${additionalInfo.certifications}</div>
                                     </div>
                                 `;
-                            }
-                        }
+                    }
+                }
 
-                        // Append Hobbies at the bottom of left content if it exists
-                        if (hasHobbies) {
-                            leftContent += hobbiesHtml;
-                        }
+                // Append Hobbies at the bottom of left content if it exists
+                if (hasHobbies) {
+                    leftContent += hobbiesHtml;
+                }
 
-                        // Construct RIGHT COLUMN
-                        const summaryText = resumeData.summary || data.summary || "";
-                        if (summaryText.trim() && summaryText !== '<br>') {
-                            rightContent += `
+                // Construct RIGHT COLUMN
+                const summaryText = resumeData.summary || data.summary || "";
+                if (summaryText.trim() && summaryText !== '<br>') {
+                    rightContent += `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
@@ -1532,24 +1533,24 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <div style="font-size: 13px; line-height: 1.6; color: #444;">${summaryText}</div>
                                     </div>
                             `;
-                        }
+                }
 
-                        const workExpArray = resumeData.workExperience || resumeData.work || [];
-                        const internExpArray = resumeData.internshipExperience || [];
-                        if (resumeData.experienceType !== 'fresher') {
-                            if (workExpArray.length > 0) {
-                                rightContent += `
+                const workExpArray = resumeData.workExperience || resumeData.work || [];
+                const internExpArray = resumeData.internshipExperience || [];
+                if (resumeData.experienceType !== 'fresher') {
+                    if (workExpArray.length > 0) {
+                        rightContent += `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-briefcase"></i></div>
                                             <h3>WORK EXPERIENCE</h3>
                                         </div>
                                 `;
-                                for (let i = 0; i < workExpArray.length; i++) {
-                                    const exp = workExpArray[i];
-                                    if (!exp.company.trim()) continue;
-                                    let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
-                                    rightContent += `
+                        for (let i = 0; i < workExpArray.length; i++) {
+                            const exp = workExpArray[i];
+                            if (!exp.company.trim()) continue;
+                            let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
+                            rightContent += `
                                         <div class="job">
                                             <span class="job-title">${escapeHTML(exp.company)}</span>
                                             <span class="job-date">${escapeHTML(durationStr)}</span>
@@ -1557,23 +1558,23 @@ document.addEventListener('DOMContentLoaded', () => {
                                             ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
                                         </div>
                                     `;
-                                }
-                                rightContent += `</div>`;
-                            }
+                        }
+                        rightContent += `</div>`;
+                    }
 
-                            if (internExpArray.length > 0) {
-                                rightContent += `
+                    if (internExpArray.length > 0) {
+                        rightContent += `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-laptop-code"></i></div>
                                             <h3>INTERNSHIP EXPERIENCE</h3>
                                         </div>
                                 `;
-                                for (let i = 0; i < internExpArray.length; i++) {
-                                    const exp = internExpArray[i];
-                                    if (!exp.company.trim()) continue;
-                                    let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
-                                    rightContent += `
+                        for (let i = 0; i < internExpArray.length; i++) {
+                            const exp = internExpArray[i];
+                            if (!exp.company.trim()) continue;
+                            let durationStr = `${exp.startYear} - ${exp.current ? 'PRESENT' : exp.endYear}`;
+                            rightContent += `
                                         <div class="job">
                                             <span class="job-title">${escapeHTML(exp.company)}</span>
                                             <span class="job-date">${escapeHTML(durationStr)}</span>
@@ -1581,39 +1582,39 @@ document.addEventListener('DOMContentLoaded', () => {
                                             ${exp.description ? `<div style="margin-top: 5px; font-size: 13px;">${exp.description}</div>` : ''}
                                         </div>
                                     `;
-                                }
-                                rightContent += `</div>`;
-                            }
                         }
+                        rightContent += `</div>`;
+                    }
+                }
 
-                        if (education.length > 0) {
-                            rightContent += `
+                if (education.length > 0) {
+                    rightContent += `
                                     <div class="block">
                                         <div class="block-header">
                                             <div class="icon-circle"><i class="fas fa-graduation-cap"></i></div>
                                             <h3>EDUCATION</h3>
                                         </div>
                             `;
-                            for (let i = 0; i < education.length; i++) {
-                                const edu = education[i];
-                                if (!edu.school.trim()) continue;
-                                let durationStr = `${edu.gradYear}`;
-                                rightContent += `
+                    for (let i = 0; i < education.length; i++) {
+                        const edu = education[i];
+                        if (!edu.school.trim()) continue;
+                        let durationStr = `${edu.gradYear}`;
+                        rightContent += `
                                         <div class="job">
                                             <span class="job-title">${window.formatEducationTitle(edu.degree, edu.fieldOfStudy)}</span>
                                             <span class="job-date">${escapeHTML(durationStr)}</span>
                                             <div class="job-role">${escapeHTML(edu.school)}</div>
                                         </div>
                                 `;
-                            }
-                            rightContent += `</div>`;
-                        }
+                    }
+                    rightContent += `</div>`;
+                }
 
-                        // Add overflow blocks to right column
-                        if (certsHtmlRight) rightContent += certsHtmlRight;
-                        if (projectsHtmlRight) rightContent += projectsHtmlRight;
+                // Add overflow blocks to right column
+                if (certsHtmlRight) rightContent += certsHtmlRight;
+                if (projectsHtmlRight) rightContent += projectsHtmlRight;
 
-                        htmlStr += `
+                htmlStr += `
                             <!-- LEFT -->
                             <div class="left">
                                 ${leftContent}
@@ -1729,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (skillsList.length > 0) {
                     htmlStr += `<div class="section-title">KEY SKILLS</div>
                                 <div class="skills-grid">`;
-                    
+
                     const col1 = [], col2 = [], col3 = [];
                     skillsList.forEach((s, idx) => {
                         if (idx % 3 === 0) col1.push(s);
@@ -1776,7 +1777,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="name">${escapeHTML(data.fullName || "").toUpperCase()}</div>
                         <div class="contact">
                 `;
-                
+
                 let contactItems = [];
                 if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
                 if (data.phone) contactItems.push(escapeHTML(data.phone));
@@ -1893,7 +1894,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                htmlStr += `<div class="grid-2">`; 
+                htmlStr += `<div class="grid-2">`;
 
                 const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
                 if (skillsList.length > 0) {
@@ -1911,7 +1912,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     htmlStr += `<ul>`; col1.forEach(s => { htmlStr += `<li>${escapeHTML(s.trim())}</li>`; }); htmlStr += `</ul>`;
                     htmlStr += `<ul>`; col2.forEach(s => { htmlStr += `<li>${escapeHTML(s.trim())}</li>`; }); htmlStr += `</ul>`;
-                    
+
                     htmlStr += `
                             </div>
                         </div>
@@ -1927,8 +1928,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                 }
-                
-                htmlStr += `</div>`; 
+
+                htmlStr += `</div>`;
 
                 htmlStr += `<div class="grid-2">`;
 
@@ -1958,7 +1959,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                htmlStr += `</div>`; 
+                htmlStr += `</div>`;
 
                 if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
                     htmlStr += `
@@ -1977,7 +1978,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                htmlStr += `</div>`; 
+                htmlStr += `</div>`;
             } else if (data.template === '8') {
                 const nameStr = data.fullName || "";
                 let init1 = "", init2 = "";
@@ -2184,7 +2185,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '9') {
                 const nameStr = data.fullName || "Your Name";
                 const summaryText = resumeData.summary || data.summary || "";
-                
+
                 htmlStr += `
                     <!-- TOP -->
                     <div class="top">
@@ -2204,7 +2205,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.linkedin) {
                     htmlStr += `<div class="bold"><a href="${escapeHTML(additionalInfo.linkedin)}" style="text-decoration:none; color:inherit;">${escapeHTML(additionalInfo.linkedin)}</a></div>`;
                 }
-                
+
                 htmlStr += `
                         </div>
                     </div>
@@ -2214,7 +2215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <!-- LEFT -->
                         <div>
                 `;
-                
+
                 let leftContent = '';
                 let rightContent = '';
                 let leftColHeight = 0;
@@ -2255,7 +2256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         leftContent += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         leftContent += `
                             <div class="section">
@@ -2401,14 +2402,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '10') {
                 const nameStr = data.fullName || "Your Name";
                 const summaryText = resumeData.summary || data.summary || "";
-                
+
                 htmlStr += `
                     <!-- HEADER -->
                     <div class="header">
                         <div class="name">${escapeHTML(nameStr)}</div>
                         <div class="contact">
                 `;
-                
+
                 let contactItems = [];
                 if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
                 if (data.phone) contactItems.push(escapeHTML(data.phone));
@@ -2458,7 +2459,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <div class="divider"></div>
@@ -2534,9 +2535,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
-                
+
                 if (skillsList.length > 0 || (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') || (additionalInfo.languages && additionalInfo.languages.length > 0) || (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') || additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
-                    
+
                     htmlStr += `
                         <div class="divider"></div>
                         <!-- ADDITIONAL -->
@@ -2548,7 +2549,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (skillsList.length > 0) {
                         htmlStr += `<li><strong>Technical Skills:</strong> ${skillsList.map(s => escapeHTML(s.trim())).join(', ')}</li>`;
                     }
-                    
+
                     if (additionalInfo.languages && additionalInfo.languages.length > 0) {
                         htmlStr += `<li><strong>Languages:</strong> ${additionalInfo.languages.map(l => escapeHTML(l)).join(', ')}</li>`;
                     }
@@ -2565,7 +2566,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
                         htmlStr += `<li><strong>Hobbies:</strong> <span class="additional-block">${inlineHTML(additionalInfo.hobbies)}</span></li>`;
                     }
-                    
+
                     if (additionalInfo.awardsAndActivities && additionalInfo.awardsAndActivities.trim() !== '' && additionalInfo.awardsAndActivities !== '<br>') {
                         htmlStr += `<li><strong>Awards/Activities:</strong> <span class="additional-block">${inlineHTML(additionalInfo.awardsAndActivities)}</span></li>`;
                     }
@@ -2587,14 +2588,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '11') {
                 const nameStr = data.fullName || "Your Name";
                 const summaryText = resumeData.summary || data.summary || "";
-                
+
                 htmlStr += `
                     <!-- HEADER -->
                     <div class="name">${escapeHTML(nameStr)}</div>
                     ${data.title ? `<div class="role">${escapeHTML(data.title)}</div>` : ''}
                     <div class="contact">
                 `;
-                
+
                 let contactItems = [];
                 if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
                 if (data.phone) contactItems.push(escapeHTML(data.phone));
@@ -2629,10 +2630,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (idx % 3 === 1) col2.push(s);
                         else col3.push(s);
                     });
-                    
-                    if(col1.length > 0) htmlStr += `<div>${col1.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
-                    if(col2.length > 0) htmlStr += `<div>${col2.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
-                    if(col3.length > 0) htmlStr += `<div>${col3.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
+
+                    if (col1.length > 0) htmlStr += `<div>${col1.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
+                    if (col2.length > 0) htmlStr += `<div>${col2.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
+                    if (col3.length > 0) htmlStr += `<div>${col3.map(s => escapeHTML(s.trim())).join('<br>')}</div>`;
 
                     htmlStr += `
                         </div>
@@ -2665,7 +2666,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <!-- INTERNSHIP EXPERIENCE -->
@@ -2736,14 +2737,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if ((additionalInfo.certifications && additionalInfo.certifications !== '') || (additionalInfo.languages && additionalInfo.languages.length > 0) || (additionalInfo.hobbies && additionalInfo.hobbies !== '') || additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.awardsAndActivities) {
-                    
+
                     htmlStr += `
                         <!-- ADDITIONAL -->
                         <div class="section">
                             <div class="section-title">ADDITIONAL INFORMATION</div>
                             <ul class="additional">
                     `;
-                    
+
                     if (additionalInfo.languages && additionalInfo.languages.length > 0) {
                         htmlStr += `<li><strong>Languages:</strong> ${additionalInfo.languages.map(l => escapeHTML(l)).join(', ')}</li>`;
                     }
@@ -2760,7 +2761,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (additionalInfo.hobbies && additionalInfo.hobbies !== '') {
                         htmlStr += `<li><strong>Hobbies:</strong> <span class="additional-block">${inlineHTML(additionalInfo.hobbies)}</span></li>`;
                     }
-                    
+
                     if (additionalInfo.awardsAndActivities && additionalInfo.awardsAndActivities !== '') {
                         htmlStr += `<li><strong>Awards/Activities:</strong> <span class="additional-block">${inlineHTML(additionalInfo.awardsAndActivities)}</span></li>`;
                     }
@@ -2782,7 +2783,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '12') {
                 const nameStr = data.fullName || "Your Name";
                 const titleStr = data.title || "";
-                
+
                 htmlStr += `
                     <!-- HEADER -->
                     <div class="header">
@@ -2793,21 +2794,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         <div class="header-right">
                 `;
-                
+
                 let contactItems = [];
                 if (data.phone) contactItems.push(escapeHTML(data.phone));
                 if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
                 if (additionalInfo.website) contactItems.push(escapeHTML(additionalInfo.website));
                 if (data.email) contactItems.push(escapeHTML(data.email));
                 if (additionalInfo.linkedin) contactItems.push(escapeHTML(additionalInfo.linkedin));
-                
+
                 htmlStr += contactItems.join('<br>') + `
                         </div>
                     </div>
                 `;
 
                 const summaryText = resumeData.summary || data.summary || "";
-                
+
                 htmlStr += `
                     <!-- CONTENT -->
                     <div class="content">
@@ -2850,7 +2851,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <!-- INTERNSHIP EXPERIENCE -->
@@ -2971,11 +2972,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     htmlStr += `<div></div>`;
                 }
-                
+
                 htmlStr += `</div>`; // .bottom-grid
 
                 if ((additionalInfo.certifications && additionalInfo.certifications !== '') || (additionalInfo.hobbies && additionalInfo.hobbies !== '') || additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus || additionalInfo.awardsAndActivities) {
-                    
+
                     htmlStr += `
                         <div class="divider"></div>
                         <!-- ADDITIONAL -->
@@ -2984,7 +2985,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="section-line"></div>
                             <ul class="text" style="list-style-type: disc; margin: 10px 0 0 18px; padding: 0;">
                     `;
-                    
+
                     const inlineHTML = (html) => {
                         if (!html) return '';
                         return html.replace(/<\/p>|<\/li>|<br\s*\/?>/gi, ', ').replace(/<[^>]+>/g, '').replace(/,\s*,/g, ', ').replace(/,\s*$/, '').replace(/^,\s*/, '').trim();
@@ -2997,7 +2998,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (additionalInfo.hobbies && additionalInfo.hobbies !== '') {
                         htmlStr += `<li style="margin-bottom:6px;"><strong>Hobbies:</strong> ${inlineHTML(additionalInfo.hobbies)}</li>`;
                     }
-                    
+
                     if (additionalInfo.awardsAndActivities && additionalInfo.awardsAndActivities !== '') {
                         htmlStr += `<li style="margin-bottom:6px;"><strong>Awards/Activities:</strong> ${inlineHTML(additionalInfo.awardsAndActivities)}</li>`;
                     }
@@ -3023,7 +3024,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '13') {
                 const nameStr = data.fullName || "Your Name";
                 const titleStr = data.title || "";
-                
+
                 htmlStr += `
                     <div class="top-strip"></div>
                     <!-- HEADER -->
@@ -3035,14 +3036,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         <div class="contact">
                 `;
-                
+
                 let contactItems = [];
                 if (data.phone) contactItems.push(escapeHTML(data.phone));
                 if (data.city || data.country) contactItems.push(escapeHTML([data.city, data.country].filter(Boolean).join(', ')));
                 if (additionalInfo.website) contactItems.push(escapeHTML(additionalInfo.website));
                 if (data.email) contactItems.push(escapeHTML(data.email));
                 if (additionalInfo.linkedin) contactItems.push(escapeHTML(additionalInfo.linkedin));
-                
+
                 htmlStr += contactItems.join('<br>') + `
                         </div>
                     </div>
@@ -3050,7 +3051,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 const summaryText = resumeData.summary || data.summary || "";
-                
+
                 htmlStr += `
                     <!-- ABOUT -->
                     <div class="content">
@@ -3142,7 +3143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (additionalInfo.hobbies && additionalInfo.hobbies !== '') {
                         addInfoText.push(`<strong>Hobbies:</strong> ${inlineHTML(additionalInfo.hobbies)}`);
                     }
-                    
+
                     if (additionalInfo.awardsAndActivities && additionalInfo.awardsAndActivities !== '') {
                         addInfoText.push(`<strong>Awards:</strong> ${inlineHTML(additionalInfo.awardsAndActivities)}`);
                     }
@@ -3192,7 +3193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                                 <div class="divider"></div>
@@ -3246,7 +3247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '14') {
                 const nameStr = data.fullName || "Your Name";
                 const titleStr = data.title || "";
-                
+
                 htmlStr += `
                     <!-- HEADER -->
                     <div class="header">
@@ -3260,17 +3261,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     <!-- CONTACT -->
                     <div class="contact">
                 `;
-                
+
                 const getContactIcon = (type) => {
                     const color = "#8b1e3f";
                     const size = "14";
-                    switch(type) {
+                    switch (type) {
                         case 'phone': return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>`;
                         case 'location': return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
                         case 'website': return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`;
                         case 'email': return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`;
                         case 'linkedin': return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>`;
-                        default: return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`; 
+                        default: return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
                     }
                 };
                 let contactItems = [];
@@ -3282,7 +3283,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pushContact('website', additionalInfo.website);
                 pushContact('email', data.email);
                 pushContact('linkedin', additionalInfo.linkedin);
-                
+
                 htmlStr += contactItems.join('') + `
                     </div>
                 `;
@@ -3329,7 +3330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <!-- INTERNSHIP -->
@@ -3494,7 +3495,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '15') {
                 const nameStr = data.fullName || "Your Name";
                 const titleStr = data.title || "";
-                
+
                 htmlStr += `
                     <!-- HEADER -->
                     <div class="header">
@@ -3548,7 +3549,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `<div class="col-divider"></div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <!-- Internship Experience -->
@@ -3602,13 +3603,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const getContactIcon15 = (type) => {
                     const color = "#fff";
-                    switch(type) {
+                    switch (type) {
                         case 'phone': return `<svg width="8" height="8" viewBox="0 0 24 24" fill="${color}"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>`;
                         case 'location': return `<svg width="8" height="8" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
                         case 'website': return `<svg width="8" height="8" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`;
                         case 'email': return `<svg width="8" height="8" viewBox="0 0 24 24" fill="${color}"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`;
                         case 'linkedin': return `<svg width="8" height="8" viewBox="0 0 24 24" fill="${color}"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>`;
-                        default: return `<svg width="8" height="8" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`; 
+                        default: return `<svg width="8" height="8" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
                     }
                 };
 
@@ -3623,7 +3624,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.website) htmlStr += `<li><div class="contact-icon">${getContactIcon15('website')}</div>${escapeHTML(additionalInfo.website)}</li>`;
                 if (data.email) htmlStr += `<li><div class="contact-icon">${getContactIcon15('email')}</div>${escapeHTML(data.email)}</li>`;
                 if (additionalInfo.linkedin) htmlStr += `<li><div class="contact-icon">${getContactIcon15('linkedin')}</div>${escapeHTML(additionalInfo.linkedin)}</li>`;
-                
+
                 htmlStr += `
                             </ul>
                         </div>
@@ -3757,10 +3758,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             
                 `;
-                
+
                 const workExpArray = resumeData.workExperience || resumeData.work || [];
                 const internExpArray = resumeData.internshipExperience || [];
-                
+
                 if (resumeData.experienceType !== 'fresher') {
                     if (workExpArray.length > 0) {
                         htmlStr += `
@@ -3785,7 +3786,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <div class="prof-section">
@@ -3810,7 +3811,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         htmlStr += `</div>`;
                     }
                 }
-                
+
                 htmlStr += `
                             <div class="prof-section">
                                 <div class="prof-section-title">Education</div>
@@ -3900,7 +3901,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '16') {
                 const nameStr = data.fullName || "Your Name";
                 const titleStr = data.title || "";
-                
+
                 htmlStr += `
                     <div class="resume">
                         <!-- HEADER -->
@@ -3913,7 +3914,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const getContactIcon16 = (type) => {
                     const color = "#123a6b";
-                    switch(type) {
+                    switch (type) {
                         case 'phone': return `<svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${color};"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>`;
                         case 'location': return `<svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${color};"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
                         case 'website': return `<svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${color};"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`;
@@ -4057,9 +4058,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="section-bar">SKILLS</div>
                         <div class="skills">
                     `;
-                    
+
                     const colLength = Math.ceil(skillsList.length / 3);
-                    
+
                     for (let c = 0; c < 3; c++) {
                         htmlStr += `<ul style="margin: 0; padding-left: 18px;">`;
                         for (let r = 0; r < colLength; r++) {
@@ -4101,7 +4102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Right Bottom Grid
                 let rightBottomHtml = ``;
-                
+
                 if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
                     rightBottomHtml += `
                         <div class="section-bar">CERTIFICATIONS</div>
@@ -4132,7 +4133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (additionalInfo.maritalStatus) pdText.push(`Marital Status: ${escapeHTML(additionalInfo.maritalStatus)}`);
                 if (additionalInfo.visaStatus) pdText.push(`Visa Status: ${escapeHTML(additionalInfo.visaStatus)}`);
                 if (additionalInfo.dob) pdText.push(`DOB: ${escapeHTML(additionalInfo.dob)}`);
-                
+
                 if (pdText.length > 0) {
                     rightBottomHtml += `
                         <div class="section-bar">PERSONAL DETAILS</div>
@@ -4160,14 +4161,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="content">
                             <div class="top-info">
                 `;
-                
+
                 if (data.phone) htmlStr += `<div><span>Phone</span> ${escapeHTML(data.phone)}</div>`;
                 if (data.email) htmlStr += `<div><span>Email</span> ${escapeHTML(data.email)}</div>`;
                 const loc17 = [data.city, data.country].filter(Boolean).join(', ');
                 if (loc17) htmlStr += `<div><span>Address</span> ${escapeHTML(loc17)}</div>`;
                 if (additionalInfo.linkedin) htmlStr += `<div><span>LinkedIn</span> ${escapeHTML(additionalInfo.linkedin)}</div>`;
                 if (additionalInfo.website) htmlStr += `<div><span>Website</span> ${escapeHTML(additionalInfo.website)}</div>`;
-                
+
                 htmlStr += `
                             </div>
                 `;
@@ -4219,7 +4220,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <div class="section">
@@ -4298,7 +4299,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                     `;
                 }
-                
+
                 if (additionalInfo.languages && additionalInfo.languages.length > 0) {
                     htmlStr += `
                             <div class="section">
@@ -4329,7 +4330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (additionalInfo.maritalStatus) htmlStr += `<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>`;
                     if (additionalInfo.visaStatus) htmlStr += `<div><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>`;
                     if (additionalInfo.dob) htmlStr += `<div><strong>DOB:</strong> ${escapeHTML(additionalInfo.dob)}</div>`;
-                    
+
                     htmlStr += `
                                 </div>
                             </div>
@@ -4353,7 +4354,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             <div class="contact">
                 `;
-                
+
                 if (data.phone) {
                     htmlStr += `
                                 <div class="contact-item" style="display: inline-flex; align-items: center; gap: 6px;">
@@ -4384,7 +4385,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     ${escapeHTML(web18)}
                                 </div>`;
                 }
-                
+
                 htmlStr += `
                             </div>
                         </div>
@@ -4483,7 +4484,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                     `;
                 }
-                
+
                 htmlStr += `
                             </div> <!-- END LEFT -->
 
@@ -4544,7 +4545,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                     `;
                 }
-                
+
                 if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
                     htmlStr += `
                                 <div class="section">
@@ -4553,7 +4554,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                     `;
                 }
-                
+
                 if (additionalInfo.dob || additionalInfo.nationality || additionalInfo.maritalStatus || additionalInfo.visaStatus) {
                     htmlStr += `
                                 <div class="section">
@@ -4564,7 +4565,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (additionalInfo.maritalStatus) htmlStr += `<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>`;
                     if (additionalInfo.visaStatus) htmlStr += `<div><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>`;
                     if (additionalInfo.dob) htmlStr += `<div><strong>DOB:</strong> ${escapeHTML(additionalInfo.dob)}</div>`;
-                    
+
                     htmlStr += `
                                     </div>
                                 </div>
@@ -4626,7 +4627,7 @@ document.addEventListener('DOMContentLoaded', () => {
                           <div style="height: 20px;"></div>
                     `;
                 }
-                
+
                 if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
                     htmlStr += `
                           <div class="sidebar-section-title">HOBBIES</div>
@@ -4770,7 +4771,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.template === '20') {
                 const nameStr = data.fullName || "Your Name";
                 const initials = nameStr.split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase() || "SP";
-                
+
                 htmlStr += `
 <div class="page">
   <!-- TOP ACCENT BAR -->
@@ -4787,7 +4788,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <!-- CONTACT BAR -->
   <div class="contact-bar">
                 `;
-                
+
                 const loc20 = [data.city, data.country].filter(Boolean).join(', ');
                 if (loc20) {
                     htmlStr += `
@@ -4812,7 +4813,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <span>${escapeHTML(data.email)}</span>
     </div>`;
                 }
-                
+
                 const web20 = additionalInfo.website || additionalInfo.linkedin;
                 if (web20) {
                     htmlStr += `
@@ -4995,6 +4996,142 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </div><!-- /page -->
                 `;
+            } else if (data.template === '21') {
+                const nameStr = data.fullName || "Your Name";
+                const profileImgUrl = data.profilePhoto || "https://via.placeholder.com/150";
+                
+                htmlStr += `
+<div class="resume">
+  <!-- LEFT SIDE -->
+  <div class="left">
+    <div class="profile-img" style="background: url('${profileImgUrl}') center/cover;"></div>
+`;
+                // Contact info
+                if (data.phone || data.email || data.city || data.country) {
+                    htmlStr += `
+    <div class="section">
+      <h3>Contact</h3>
+      ${data.phone ? `<p>📞 ${escapeHTML(data.phone)}</p>` : ''}
+      ${data.email ? `<p>📧 ${escapeHTML(data.email)}</p>` : ''}
+      ${[data.city, data.country].filter(Boolean).length > 0 ? `<p>📍 ${escapeHTML([data.city, data.country].filter(Boolean).join(', '))}</p>` : ''}
+    </div>
+                    `;
+                }
+
+                // Education
+                const eduArray = resumeData.education || [];
+                if (eduArray.length > 0) {
+                    htmlStr += `
+    <div class="section">
+      <h3>Education</h3>
+`;
+                    eduArray.forEach(edu => {
+                        const degStr = window.formatEducationTitle ? window.formatEducationTitle(edu.degree, edu.fieldOfStudy) : escapeHTML(edu.degree + (edu.fieldOfStudy ? ' in ' + edu.fieldOfStudy : ''));
+                        const durStr = `${escapeHTML(edu.startYear)} - ${edu.current ? 'Present' : escapeHTML(edu.endYear)}`;
+                        htmlStr += `
+      <p><strong>${degStr}</strong><br>${escapeHTML(edu.school)}<br>${durStr}</p>
+                        `;
+                    });
+                    htmlStr += `
+    </div>
+                    `;
+                }
+
+                // Skills
+                const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
+                if (skillsList.length > 0) {
+                    htmlStr += `
+    <div class="section">
+      <h3>Skills</h3>
+      <ul>
+        ${skillsList.map(s => `<li>${escapeHTML(s.trim())}</li>`).join('')}
+      </ul>
+    </div>
+                    `;
+                }
+
+                // Languages
+                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                    htmlStr += `
+    <div class="section">
+      <h3>Language</h3>
+      ${additionalInfo.languages.map(l => `<p>${escapeHTML(l.trim())}</p>`).join('')}
+    </div>
+                    `;
+                }
+
+                htmlStr += `
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="right">
+    <div class="name">${escapeHTML(nameStr)}</div>
+    <div class="title">${escapeHTML(data.title || "")}</div>
+`;
+
+                // About Me
+                const summ = resumeData.summary || data.summary;
+                if (summ) {
+                    htmlStr += `
+    <div class="right-section">
+      <h3>About Me</h3>
+      <p>${summ}</p>
+    </div>
+                    `;
+                }
+
+                // Work / Internship
+                const workExpArray = resumeData.workExperience || resumeData.work || [];
+                const internExpArray = resumeData.internshipExperience || [];
+                
+                if (resumeData.experienceType !== 'fresher') {
+                    if (workExpArray.length > 0) {
+                        htmlStr += `
+    <div class="right-section">
+      <h3>Work Experience</h3>
+`;
+                        workExpArray.forEach(exp => {
+                            if (!exp.company.trim()) return;
+                            let durationStr = `${exp.startMonth} ${exp.startYear} – ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
+                            htmlStr += `
+      <div class="job">
+        <div class="job-title">${escapeHTML(durationStr)}</div>
+        <div class="job-company">${escapeHTML(exp.company)}<br>${escapeHTML(exp.role)}</div>
+        <div>${exp.description}</div>
+      </div>
+                            `;
+                        });
+                        htmlStr += `
+    </div>
+                        `;
+                    }
+                    if (internExpArray.length > 0) {
+                        htmlStr += `
+    <div class="right-section">
+      <h3>Internship Experience</h3>
+`;
+                        internExpArray.forEach(exp => {
+                            if (!exp.company.trim()) return;
+                            let durationStr = `${exp.startMonth} ${exp.startYear} – ${exp.current ? 'Present' : exp.endMonth + ' ' + exp.endYear}`;
+                            htmlStr += `
+      <div class="job">
+        <div class="job-title">${escapeHTML(durationStr)}</div>
+        <div class="job-company">${escapeHTML(exp.company)}<br>${escapeHTML(exp.role)}</div>
+        <div>${exp.description}</div>
+      </div>
+                            `;
+                        });
+                        htmlStr += `
+    </div>
+                        `;
+                    }
+                }
+
+                // Close Right Side and Resume
+                htmlStr += `
+  </div>
+</div>
+                `;
             } else {
                 // Original logic for Classic, Creative
                 htmlStr += `
@@ -5024,10 +5161,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 `;
-                
+
                 const workExpArray = resumeData.workExperience || resumeData.work || [];
                 const internExpArray = resumeData.internshipExperience || [];
-                
+
                 if (resumeData.experienceType !== 'fresher') {
                     if (workExpArray.length > 0) {
                         htmlStr += `
@@ -5052,7 +5189,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</div>`;
                     }
-                    
+
                     if (internExpArray.length > 0) {
                         htmlStr += `
                             <div class="cv-section">
@@ -5388,9 +5525,9 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.style.zIndex = '9999';
         toast.style.fontWeight = '500';
         toast.style.transition = 'opacity 0.3s ease';
-        
+
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
@@ -5553,7 +5690,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    window.setAuthMode = function(mode) {
+    window.setAuthMode = function (mode) {
         if (!authModal) return;
         isSignUpMode = (mode === 'signup');
         if (isSignUpMode) {
@@ -5598,7 +5735,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 authForm.reset();
-                
+
                 // Immediately close the modal and show success feedback
                 if (authModal) authModal.classList.remove('active');
                 showToast(isSignUpMode ? "Account created successfully!" : "Logged in successfully!");
@@ -5767,11 +5904,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- SUBSCRIPTION DATA LOGIC ---
-    window.fetchMySubscription = async function() {
+    window.fetchMySubscription = async function () {
         const subContainer = document.getElementById('sub-details-container');
         if (!subContainer) return;
         const user = auth.currentUser;
-        
+
         if (!user) {
             subContainer.innerHTML = '<p style="color: var(--text-secondary);">Please log in to view subscription details.</p>';
             return;
@@ -5784,14 +5921,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (userSnap.exists()) {
                 const data = userSnap.data();
-                
+
                 let lastPaymentAmt = data.lastPaymentAmount ? `₹${data.lastPaymentAmount}` : 'Not available';
                 let lastPaymentDate = data.lastPaymentDate ? new Date(data.lastPaymentDate).toLocaleDateString() : 'Not available';
-                
+
                 let isMonthly = !!data.premium;
                 let planDisplay = 'Free Plan';
                 let priceDisplay = '₹0/month';
-                
+
                 let statusBadge = '<span class="sub-badge sub-inactive">Inactive</span>';
                 let expiryDateStr = 'Not available';
                 let daysRemainingStr = 'Not available';
@@ -5814,7 +5951,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         statusBadge = '<span class="sub-badge sub-active">Active</span>';
                         expiryDateStr = new Date(expiresAt).toLocaleDateString();
                         let diffTime = Math.abs(expiresAt - Date.now());
-                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                         daysRemainingStr = `${diffDays} days remaining`;
                         // Assume 30 days total for progress
                         progressPercentage = Math.min((diffDays / 30) * 100, 100);
@@ -5897,7 +6034,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Show/Hide Password Toggle ---
     const togglePasswordBtn = document.getElementById('toggle-auth-password');
     const authPasswordField = document.getElementById('auth-password');
-    
+
     if (togglePasswordBtn && authPasswordField) {
         togglePasswordBtn.addEventListener('click', () => {
             const currentType = authPasswordField.getAttribute('type');
@@ -5917,9 +6054,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('popstate', (e) => {
         if (!e.state) return;
         const { page, step } = e.state;
-        
+
         navigateTo(page, true);
-        
+
         if (page === 'form' && step !== null && step !== undefined) {
             showStepByIndex(step, true);
         }
@@ -5929,7 +6066,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const page = params.get("page");
     const step = params.get("step");
-    
+
     console.log("Initial Load Page:", page);
 
     if (!page) {

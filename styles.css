@@ -4755,6 +4755,10 @@ textarea {
     margin-bottom: 16px;
 }
 
+.resume-document.template-20 .section:last-child {
+    margin-bottom: 0;
+}
+
 .resume-document.template-20 .section-title {
     font-size: 15px;
     font-weight: 900;
@@ -4890,7 +4894,7 @@ textarea {
 .right {
     min-height: 1050px !important;
     height: auto !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     max-height: none !important;
 }
 
@@ -4903,7 +4907,7 @@ textarea {
 .resume,
 .resume-wrapper,
 .page {
-    page-break-after: always;
+    page-break-after: auto;
 }
 
 /* --- Responsive Scaling Fix per User Instructions --- */
@@ -4930,5 +4934,5 @@ body, html {
 
 .resume-document {
   width: 816px;
-  height: 1050px;
+  min-height: 1050px;
 }

@@ -531,9 +531,12 @@
             <div class="preview-container">
                 <div class="preview-wrapper">
                     <div class="scale-container">
-                        <!-- The actual ATS friendly resume container -->
-                        <div id="resume-document" class="resume-document">
-                            <!-- Content will be injected here by script.js -->
+                        <!-- The paginated container wrapping multi-page blocks -->
+                        <div id="resume-document-container">
+                            <!-- JS injects isolated <div class="resume-document page"> elements here! -->
+                            <div id="resume-document" class="resume-document page">
+                                <!-- Base container populated natively by JS if pagination is off -->
+                            </div>
                         </div>
                     </div>
                 </div>

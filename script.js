@@ -657,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const container = document.getElementById('resume-document-container');
                         if (container) {
                             container.innerHTML = paginatedHTML;
-                            console.log("Total pages:", document.querySelectorAll('.resume-document.page').length);
+                            console.log("Pages in DOM:", document.querySelectorAll('.resume-document.page').length);
                             
                             // Trigger the actual PDF save function bounded to this button later
                             if (typeof window.triggerPDFDownload === 'function') {
@@ -5177,7 +5177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = paginatedHTML;
         }
         
-        console.log("Total pages:", document.querySelectorAll('.resume-document.page').length);
+        console.log("Pages in DOM:", document.querySelectorAll('.resume-document.page').length);
 
         // 5. Navigate to preview
         navigateTo('preview');

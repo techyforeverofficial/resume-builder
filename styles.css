@@ -4932,20 +4932,21 @@ body, html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  gap: 20px;
 }
 
+/* 1. FORCE PAGE DIMENSIONS (CRITICAL) */
 .resume-document.page {
-  width: 816px;
-  height: 1050px;
+  width: 816px !important;
+  height: 1050px !important;
+  background: white;
+  overflow: hidden !important;
   position: relative;
-  overflow: hidden; /* strictly enforce page bounds */
+  margin: 0 auto 20px auto; /* spacing between pages */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Margin between pages in preview */
-@media screen {
-  .resume-document.page + .resume-document.page {
-    margin-top: 2rem;
-    box-shadow: 0 -10px 15px -5px rgba(0, 0, 0, 0.1), 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-  }
+/* 2. PREVENT CONTENT FROM EXPANDING PAGE */
+.resume-document.page * {
+  box-sizing: border-box;
 }

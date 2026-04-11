@@ -4083,10 +4083,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     htmlStr += `<div class="section-container">`;
                     htmlStr += `
                         <div class="section-bar">LANGUAGES</div>
-                        <ul style="margin: 0; padding-left: 18px; margin-bottom: 10px;">
+                        <ul class="languages" style="margin: 0; padding-left: 18px; margin-bottom: 10px;">
                     `;
                     for (let l of additionalInfo.languages) {
-                        htmlStr += `<li class="text" style="margin-bottom: 4px;">${escapeHTML(l.trim())}</li>`;
+                        htmlStr += `<li class="text">${escapeHTML(l.trim())}</li>`;
                     }
                     htmlStr += `</ul></div>`;
                 }
@@ -4103,16 +4103,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 4. Personal Details
                 let pdText = [];
-                if (additionalInfo.nationality) pdText.push(`Nationality: ${escapeHTML(additionalInfo.nationality)}`);
-                if (additionalInfo.maritalStatus) pdText.push(`Marital Status: ${escapeHTML(additionalInfo.maritalStatus)}`);
-                if (additionalInfo.visaStatus) pdText.push(`Visa Status: ${escapeHTML(additionalInfo.visaStatus)}`);
-                if (additionalInfo.dob) pdText.push(`DOB: ${escapeHTML(additionalInfo.dob)}`);
+                if (additionalInfo.nationality) pdText.push(`<div><strong>Nationality:</strong> ${escapeHTML(additionalInfo.nationality)}</div>`);
+                if (additionalInfo.maritalStatus) pdText.push(`<div><strong>Marital Status:</strong> ${escapeHTML(additionalInfo.maritalStatus)}</div>`);
+                if (additionalInfo.visaStatus) pdText.push(`<div><strong>Visa Status:</strong> ${escapeHTML(additionalInfo.visaStatus)}</div>`);
+                if (additionalInfo.dob) pdText.push(`<div><strong>DOB:</strong> ${escapeHTML(additionalInfo.dob)}</div>`);
 
                 if (pdText.length > 0) {
                     htmlStr += `<div class="section-container">`;
                     htmlStr += `
                         <div class="section-bar">PERSONAL DETAILS</div>
-                        <div class="text">${pdText.join('<br>')}</div>
+                        <div class="personal-details text" style="margin-bottom:10px;">
+                            ${pdText.join('\n')}
+                        </div>
                     `;
                     htmlStr += `</div>`;
                 }

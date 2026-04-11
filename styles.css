@@ -4110,6 +4110,32 @@ textarea {
     page-break-inside: avoid;
 }
 
+/* LANGUAGES */
+.resume-document.template-16 .languages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+}
+
+.resume-document.template-16 .languages li {
+    list-style: disc;
+}
+
+/* PERSONAL DETAILS */
+.resume-document.template-16 .personal-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+}
+
+.resume-document.template-16 .personal-details div {
+    font-size: 13px;
+}
+
+.resume-document.template-16 .personal-details li {
+    list-style: none;
+}
+
 /* --- TEMPLATE 17 STYLES --- */
 .resume-document.template-17 {
     width: 816px;

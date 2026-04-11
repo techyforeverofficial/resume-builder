@@ -599,6 +599,8 @@ textarea {
     display: flex;
     justify-content: center;
     padding: 2rem 0;
+    overflow-x: hidden;
+    max-width: 100vw;
 }
 
 /* ATS-Friendly Resume Styling */

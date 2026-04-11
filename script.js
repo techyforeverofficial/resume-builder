@@ -5183,14 +5183,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!wrapper || !docElement) return;
 
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth < 950) {
             // Reset to measure original
             docElement.style.transform = 'none';
             wrapper.style.height = 'auto';
 
             const screenWidth = window.innerWidth;
             // Subtract 32px to allow a tiny visual margin on mobile screens
-            const scale = (screenWidth - 32) / 816;
+            const scale = Math.min(1, (screenWidth - 32) / 816);
 
             docElement.style.transform = `scale(${scale})`;
             docElement.style.transformOrigin = 'top center';
@@ -5203,8 +5203,10 @@ document.addEventListener('DOMContentLoaded', () => {
             wrapper.style.justifyContent = 'center';
             wrapper.style.padding = '16px 0'; // Only vertical padding, flex handles horizontal
             wrapper.style.boxSizing = 'border-box';
-            wrapper.style.overflow = 'hidden';
+            wrapper.style.overflowX = 'hidden';
+            wrapper.style.overflowY = 'hidden';
             wrapper.style.width = '100%';
+            wrapper.style.maxWidth = '100vw';
             wrapper.style.height = `${(originalHeight * scale) + 32}px`;
         } else {
             // Desktop fallback & scaling

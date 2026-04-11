@@ -657,7 +657,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const container = document.getElementById('resume-document-container');
                         if (container) {
                             container.innerHTML = paginatedHTML;
-                            console.log("Pages in DOM:", document.querySelectorAll('.resume-document.page').length);
+                            console.log("Container children:", container.children.length);
+                            console.log("Container HTML preview:", container.innerHTML.substring(0, 200));
                             
                             // Trigger the actual PDF save function bounded to this button later
                             if (typeof window.triggerPDFDownload === 'function') {
@@ -5272,9 +5273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Step 6 - New Page Structure
         function createPage(pageIndex) {
             const pageDiv = emptyTemplate.cloneNode(true);
-            pageDiv.style.visibility = 'visible';
-            pageDiv.style.position = 'relative';
-            pageDiv.style.left = '0';
+            pageDiv.removeAttribute('style');
             pageDiv.className = `resume-document template-${templateName}`; // height auto initially
             
             const headerSelectors = '.header, .cv-header, header, .profile-section';

@@ -650,16 +650,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (typeof window.generateResumeHTML !== 'function') return;
                         currentResumeData = resumeObj;
                         selectedTemplate = data.template;
-                        
+
                         const rawHTML = window.generateResumeHTML(resumeObj);
                         const paginatedHTML = paginateResume(rawHTML, selectedTemplate);
-                        
+
                         const container = document.getElementById('resume-document-container');
                         if (container) {
                             container.innerHTML = paginatedHTML;
                             console.log("Container children:", container.children.length);
                             console.log("Container HTML preview:", container.innerHTML.substring(0, 200));
-                            
+
                             // Trigger the actual PDF save function bounded to this button later
                             if (typeof window.triggerPDFDownload === 'function') {
                                 // this simulates the click but wait, there is a global btn-download listener
@@ -5177,7 +5177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (container) {
             container.innerHTML = paginatedHTML;
         }
-        
+
         console.log("Pages in DOM:", document.querySelectorAll('.resume-document.page').length);
 
         // 5. Navigate to preview
@@ -5191,7 +5191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function scaleResume() {
         const container = document.querySelector('.preview-wrapper');
         const resumeDocs = document.querySelectorAll('.resume-document.page');
-        
+
         if (!container || resumeDocs.length === 0) return;
 
         const containerWidth = container.offsetWidth;
@@ -5206,226 +5206,224 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Multi-Page Pagination Engine (Complete Rewrite) ---
     function paginateResume(htmlStr, templateName) {
         console.log("Pagination started");
-        
-        // Step 1 - Render First Into Hidden Container
+
+        const PAGE_WIDTH = 816;
+        const PAGE_HEIGHT = 1050;
+        const SAFE_HEIGHT = 1030;
+
+        // Known two-column template IDs
+        const twoColumnTemplates = ['5', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', 'professional'];
+        const isTwoColumn = twoColumnTemplates.includes(String(templateName));
+
+        // Step 1 — Render full resume into hidden staging div
         const staging = document.createElement('div');
         staging.className = `resume-document template-${templateName}`;
-        staging.style.position = 'absolute';
-        staging.style.top = '-99999px';
-        staging.style.left = '-99999px';
-        staging.style.width = '816px';
-        staging.style.height = 'auto'; // allow unrestricted expansion
-        staging.style.visibility = 'hidden';
-        staging.style.pointerEvents = 'none';
+        staging.style.cssText = [
+            'position:absolute',
+            'top:-99999px',
+            'left:-99999px',
+            `width:${PAGE_WIDTH}px`,
+            'height:auto',
+            'min-height:0',
+            'visibility:hidden',
+            'pointer-events:none',
+            'overflow:visible',
+        ].join(';');
         staging.innerHTML = htmlStr;
         document.body.appendChild(staging);
-        
-        // Step 2 - Measure Real Content Height
-        const scrollHeight = staging.scrollHeight;
-        console.log("Total content height:", scrollHeight);
-        
-        const isPaginationNeeded = scrollHeight > 1050;
-        console.log("Pagination needed:", isPaginationNeeded);
-        
-        if (!isPaginationNeeded) {
+        staging.getBoundingClientRect();
+
+        const totalHeight = staging.scrollHeight;
+        console.log("Total content height:", totalHeight);
+        console.log("Pagination needed:", totalHeight > PAGE_HEIGHT);
+        console.log("Two column layout:", isTwoColumn);
+
+        // Single page — fits without pagination
+        if (totalHeight <= PAGE_HEIGHT) {
             document.body.removeChild(staging);
-            const singleDiv = document.createElement('div');
-            singleDiv.className = `resume-document page template-${templateName}`;
-            singleDiv.innerHTML = htmlStr;
-            return singleDiv.outerHTML;
+            const single = document.createElement('div');
+            single.className = `resume-document page template-${templateName}`;
+            single.innerHTML = htmlStr;
+            console.log("Pages in DOM: 1");
+            return single.outerHTML;
         }
-        
-        // Step 1, 2, 3 & 4 - Universal Section Detection & Layout Type
-        const leftSelectors = '.left, .left-column, .sidebar, .col-left';
-        const rightSelectors = '.right, .right-column, .main, .col-right';
-        
-        let colNodes = [];
-        const hasLeftColumn = staging.querySelector(leftSelectors);
-        const hasRightColumn = staging.querySelector(rightSelectors);
-        
-        if (hasLeftColumn && hasRightColumn) {
-            colNodes = [hasLeftColumn, hasRightColumn];
-        } else if (hasLeftColumn) {
-            colNodes = [hasLeftColumn];
-        } else if (hasRightColumn) {
-            colNodes = [hasRightColumn];
-        } else {
-            colNodes = [staging.querySelector('.resume-wrapper') || staging];
-        }
-        
-        // Step 5 - Universal Header Detection
-        const headerSelectors = '.header, .cv-header, .resume-header, .top, .name-section, .profile-section';
-        const origHeader = staging.querySelector(headerSelectors);
-        
-        let sections = [];
-        const sectionSelectors = [
-            '.cv-section', '.section', '.block', '.job', '.right-section', 
-            '.left-section', '.edu-item', '.project', '.lang-item', 
-            '.resume-section', '.content-block'
-        ];
-        const sectionSelectorStr = sectionSelectors.join(', ');
-        
-        // Extract native top-level components mapping exact nested wrappers
-        colNodes.forEach((col, index) => {
-             let firstMatch = col.querySelector(sectionSelectorStr);
-             let container = firstMatch ? firstMatch.parentElement : col;
-             if (!container || container.tagName === 'BODY') container = col;
-             
-             container.setAttribute('data-target-id', `target-${index}`);
-             let foundChild = false;
-             
-             Array.from(container.children).forEach(child => {
-                 if (child === origHeader || child.contains(origHeader)) return;
-                 sections.push({ el: child, target: `target-${index}` });
-                 foundChild = true;
-             });
-             
-             // Step 6 - Fallback if container misses actual sections completely
-             if (!foundChild) {
-                 Array.from(col.children).forEach(child => {
-                     if (child === origHeader || child.contains(origHeader)) return;
-                     sections.push({ el: child, target: `target-${index}` });
-                 });
-             }
-        });
-        
-        if (sections.length === 0) {
-            console.log("No sections detected for template:", templateName);
-        }
-        
-        const emptyTemplate = staging.cloneNode(true);
-        Array.from(emptyTemplate.querySelectorAll('[data-target-id]')).forEach(c => c.innerHTML = '');
-        
-        const pages = [];
-        const stagingContainer = document.createElement('div');
-        stagingContainer.style.position = 'absolute';
-        stagingContainer.style.top = '-99999px';
-        stagingContainer.style.left = '-99999px';
-        stagingContainer.style.width = '816px';
-        stagingContainer.style.height = 'auto';
-        stagingContainer.style.visibility = 'hidden';
-        stagingContainer.style.pointerEvents = 'none';
-        document.body.appendChild(stagingContainer);
-        
-        // Step 6 - New Page Structure
-        function createPage(pageIndex) {
-            const pageDiv = emptyTemplate.cloneNode(true);
-            pageDiv.removeAttribute('style');
-            pageDiv.className = `resume-document template-${templateName}`; // height auto initially
-            
-            const headerSelectors = '.header, .cv-header, header, .profile-section';
-            const hdr = pageDiv.querySelector(headerSelectors);
-            if (pageIndex > 0) {
-                if (hdr) hdr.style.display = 'none';
-                const wrapper = pageDiv.querySelector('.resume-wrapper') || pageDiv;
-                if (wrapper) wrapper.style.paddingTop = '20px'; 
-            }
-            
-            stagingContainer.appendChild(pageDiv);
-            
-            let targets = {};
-            Array.from(pageDiv.querySelectorAll('[data-target-id]')).forEach(c => {
-                targets[c.getAttribute('data-target-id')] = c;
+
+        // --- TWO COLUMN TEMPLATES ---
+        // Use scroll-offset clipping — safest for complex side-by-side layouts
+        if (isTwoColumn) {
+            // Find section boundaries to snap page breaks cleanly
+            const sectionEls = staging.querySelectorAll([
+                '.cv-section', '.section', '.block', '.job',
+                '.right-section', '.left-section', '.edu-item',
+                '.project', '.lang-item', '.resume-section',
+                '.content-block', '.sidebar-section', '.main-section',
+                '.prof-section', '.item'
+            ].join(', '));
+
+            const stagingRect = staging.getBoundingClientRect();
+            let breakPoints = [0];
+
+            sectionEls.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const topRelative = rect.top - stagingRect.top;
+                if (topRelative > 0) breakPoints.push(Math.floor(topRelative));
             });
-            
-            if (Object.keys(targets).length === 0) {
-                targets['target-0'] = pageDiv.querySelector('.resume-wrapper') || pageDiv;
-            }
-            
-            // Step 1 - Fix Initial Remaining Height
-            const PAGE_HEIGHT = 1050;
-            const TOP_PADDING = 20;
-            let pageRemaining = PAGE_HEIGHT - TOP_PADDING;
-            
-            // Step 2 - Fix Header Subtraction
-            if (pageIndex === 0) {
-                stagingContainer.getBoundingClientRect(); // Force layout
-                const hdrObj = pageDiv.querySelector(headerSelectors);
-                if (hdrObj) {
-                    const headerHeight = hdrObj.getBoundingClientRect().height;
-                    pageRemaining = pageRemaining - headerHeight;
-                }
-                console.log("After header, remaining:", pageRemaining);
-            }
-            
-            let remainings = {};
-            Object.keys(targets).forEach(k => remainings[k] = pageRemaining);
-            
-            const pageObj = { wrapper: pageDiv, targets: targets, remaining: remainings };
-            return pageObj;
-        }
-        
-        let ptrs = {};
-        
-        // Step 4 & 5 - Fill Pages Correctly + Two Column
-        for (let i = 0; i < sections.length; i++) {
-            const sec = sections[i];
-            if (ptrs[sec.target] === undefined) ptrs[sec.target] = 0;
-            
-            let cIdx = ptrs[sec.target];
-            if (!pages[cIdx]) {
-                pages.push(createPage(cIdx));
-                if (cIdx > 0) console.log("New page created:", cIdx + 1);
-            }
-            
-            pages[cIdx].targets[sec.target].appendChild(sec.el);
-            
-            // Force Layout Before Measuring
-            stagingContainer.getBoundingClientRect();
-            
-            let sectionHeight = sec.el.getBoundingClientRect().height;
-            let currentRemaining = pages[cIdx].remaining[sec.target];
-            
-            console.log("Section:", sec.el.className || sec.el.tagName, "Measured height:", sectionHeight);
-            
-            // Step 3 - Fix Section Addition Logic
-            if (sectionHeight <= currentRemaining) {
-                pages[cIdx].remaining[sec.target] = currentRemaining - sectionHeight;
-                console.log("Section added, remaining now:", pages[cIdx].remaining[sec.target]);
-            } else {
-                const isOnlyChild = pages[cIdx].targets[sec.target].children.length === 1;
-                
-                if (isOnlyChild) {
-                    // Do nothing - fits rule "Never move partial block" if it completely overflows natively
-                    pages[cIdx].remaining[sec.target] = currentRemaining - sectionHeight;
-                    console.log("Section added natively overflowed, remaining now:", pages[cIdx].remaining[sec.target]);
-                } else {
-                    pages[cIdx].targets[sec.target].removeChild(sec.el);
-                    cIdx++;
-                    
-                    if (!pages[cIdx]) {
-                        pages.push(createPage(cIdx));
+
+            breakPoints = [...new Set(breakPoints)].sort((a, b) => a - b);
+
+            document.body.removeChild(staging);
+
+            // Find optimal page break points snapped to section boundaries
+            const pageOffsets = [0];
+            let currentOffset = 0;
+
+            while (currentOffset + SAFE_HEIGHT < totalHeight) {
+                const targetBreak = currentOffset + SAFE_HEIGHT;
+                let bestBreak = targetBreak;
+
+                for (let i = breakPoints.length - 1; i >= 0; i--) {
+                    if (breakPoints[i] <= targetBreak && breakPoints[i] > currentOffset + 200) {
+                        bestBreak = breakPoints[i];
+                        break;
                     }
-                    
-                    pages[cIdx].targets[sec.target].appendChild(sec.el);
-                    stagingContainer.getBoundingClientRect();
-                    let newSectionHeight = sec.el.getBoundingClientRect().height;
-                    
-                    // Step 4 - Fix New Page Remaining Reset
-                    pages[cIdx].remaining[sec.target] = pages[cIdx].remaining[sec.target] - newSectionHeight;
-                    ptrs[sec.target] = cIdx;
-                    
-                    console.log("New page created, total pages:", pages.length);
-                    console.log("New page, remaining now:", pages[cIdx].remaining[sec.target]);
                 }
+
+                pageOffsets.push(bestBreak);
+                currentOffset = bestBreak;
             }
+
+            console.log("Total pages generated:", pageOffsets.length);
+
+            const pageHTMLParts = pageOffsets.map((offset, i) => {
+                const pageWrapper = document.createElement('div');
+                pageWrapper.className = `resume-document page template-${templateName}`;
+                pageWrapper.style.cssText = [
+                    `width:${PAGE_WIDTH}px`,
+                    `height:${PAGE_HEIGHT}px`,
+                    'overflow:hidden',
+                    'position:relative',
+                    'background:white',
+                    'box-sizing:border-box',
+                    'flex-shrink:0',
+                    'min-height:0',
+                ].join(';');
+
+                const inner = document.createElement('div');
+                inner.className = `resume-document template-${templateName}`;
+                inner.style.cssText = [
+                    `width:${PAGE_WIDTH}px`,
+                    'height:auto',
+                    'min-height:0',
+                    `margin-top:-${offset}px`,
+                    'position:relative',
+                    'box-shadow:none',
+                    'border-radius:0',
+                ].join(';');
+                inner.innerHTML = htmlStr;
+
+                pageWrapper.appendChild(inner);
+                console.log("Page", i + 1, "offset:", offset);
+                return pageWrapper.outerHTML;
+            });
+
+            console.log("Pages in DOM:", pageHTMLParts.length);
+            return pageHTMLParts.join('');
         }
-        
-        console.log("Total pages generated:", pages.length);
-        
-        // Step 7 - Final Output
-        const finalHTML = pages.map(page => {
-            page.wrapper.classList.add('page'); // Enforces final css including `page-break-after: always`
-            return page.wrapper.outerHTML;
-        }).join("");
-        
+
+        // --- SINGLE COLUMN TEMPLATES ---
+        // Find header
+        const headerEl = staging.querySelector([
+            '.cv-header', '.header', '.resume-header',
+            '.top-header', '.name-section'
+        ].join(', '));
+
+        const headerHTML = headerEl ? headerEl.outerHTML : '';
+        let headerHeight = 0;
+        if (headerEl) {
+            staging.getBoundingClientRect();
+            headerHeight = headerEl.getBoundingClientRect().height;
+        }
+
+        // Find content container
+        const contentWrapper = staging.querySelector([
+            '.resume-wrapper', '.content', '.resume-body', '.cv-body'
+        ].join(', ')) || staging;
+
+        // Collect top level section blocks excluding header
+        const pageableBlocks = [];
+        Array.from(contentWrapper.children).forEach(child => {
+            if (headerEl && (child === headerEl || child.contains(headerEl) || headerEl.contains(child))) return;
+            pageableBlocks.push(child);
+        });
+
+        if (pageableBlocks.length === 0) {
+            Array.from(staging.children).forEach(child => {
+                if (headerEl && (child === headerEl || child.contains(headerEl) || headerEl.contains(child))) return;
+                pageableBlocks.push(child);
+            });
+        }
+
+        // Measure each block
+        const blockData = pageableBlocks.map(el => {
+            staging.getBoundingClientRect();
+            const h = el.getBoundingClientRect().height;
+            console.log("Block:", el.className || el.tagName, "Height:", h);
+            return { html: el.outerHTML, height: h };
+        });
+
         document.body.removeChild(staging);
-        if (document.body.contains(stagingContainer)) {
-            document.body.removeChild(stagingContainer);
-        }
-        
-        return finalHTML;
+
+        // Distribute blocks across pages
+        const pages = [];
+        let currentPageBlocks = [];
+        let remaining = SAFE_HEIGHT - headerHeight;
+        console.log("After header, remaining:", remaining);
+
+        blockData.forEach(({ html, height }) => {
+            if (height <= remaining) {
+                currentPageBlocks.push(html);
+                remaining -= height;
+                console.log("Block added, remaining:", remaining);
+            } else {
+                pages.push(currentPageBlocks);
+                currentPageBlocks = [html];
+                remaining = SAFE_HEIGHT - height;
+                console.log("New page created, total:", pages.length + 1, "remaining:", remaining);
+            }
+        });
+        if (currentPageBlocks.length > 0) pages.push(currentPageBlocks);
+
+        console.log("Total pages generated:", pages.length);
+
+        const finalPages = pages.map((blocks, pageIndex) => {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = `resume-document page template-${templateName}`;
+            pageDiv.style.cssText = [
+                `width:${PAGE_WIDTH}px`,
+                `height:${PAGE_HEIGHT}px`,
+                'overflow:hidden',
+                'position:relative',
+                'background:white',
+                'box-sizing:border-box',
+                'flex-shrink:0',
+                'min-height:0',
+            ].join(';');
+
+            let html = '';
+            if (pageIndex === 0) {
+                html += headerHTML;
+            } else {
+                html += `<div style="height:20px;"></div>`;
+            }
+            html += blocks.join('');
+            pageDiv.innerHTML = html;
+            return pageDiv.outerHTML;
+        });
+
+        console.log("Pages in DOM:", finalPages.length);
+        return finalPages.join('');
     }
+
 
     // Run on load + resize
     window.addEventListener('load', scaleResume);
@@ -5517,7 +5515,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clone.style.transform = 'none';
         clone.style.margin = '0';
         clone.style.padding = '0';
-        
+
         const pages = clone.querySelectorAll('.resume-document.page');
         if (pages.length > 0) {
             pages.forEach(p => {

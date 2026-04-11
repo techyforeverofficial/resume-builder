@@ -5180,59 +5180,45 @@ document.addEventListener('DOMContentLoaded', () => {
     function adjustMobileScale() {
         const wrapper = document.querySelector('.resume-wrapper');
         const docElement = document.getElementById('resume-document');
-
         if (!wrapper || !docElement) return;
 
+        // Reset to accurately calculate native scroll dimensions without transform influence
+        docElement.style.transform = 'none';
+        
+        let targetScale = 1;
         if (window.innerWidth < 950) {
-            // Reset to measure original
-            docElement.style.transform = 'none';
-            wrapper.style.height = 'auto';
+            targetScale = Math.min(1, (window.innerWidth - 32) / 816);
+        } else if (window.innerWidth >= 1400) {
+            targetScale = 1.15;
+        } else if (window.innerWidth >= 1100) {
+            targetScale = 1.05;
+        }
 
-            const screenWidth = window.innerWidth;
-            // Subtract 32px to allow a tiny visual margin on mobile screens
-            const scale = Math.min(1, (screenWidth - 32) / 816);
+        const originalHeight = docElement.scrollHeight || 1056;
 
-            docElement.style.transform = `scale(${scale})`;
-            docElement.style.transformOrigin = 'top center';
+        if (targetScale !== 1) {
+            // Apply scale explicitly from the top-left to avoid phantom centering expansion issues
+            docElement.style.transformOrigin = 'top left';
+            docElement.style.transform = `scale(${targetScale})`;
 
-            // Get original height of the content mathematically
-            const originalHeight = docElement.scrollHeight || 1056;
-
-            // Use flex to cleanly center the scaled container without arbitrary layout pushes
-            wrapper.style.display = 'flex';
-            wrapper.style.justifyContent = 'center';
-            wrapper.style.padding = '16px 0'; // Only vertical padding, flex handles horizontal
-            wrapper.style.boxSizing = 'border-box';
-            wrapper.style.overflowX = 'hidden';
-            wrapper.style.overflowY = 'hidden';
-            wrapper.style.width = '100%';
-            wrapper.style.maxWidth = '100vw';
-            wrapper.style.height = `${(originalHeight * scale) + 32}px`;
+            // Morph wrapper to exactly fit the scaled content box so layout bounds don't spill
+            wrapper.style.display = 'block';
+            wrapper.style.width = `${816 * targetScale}px`;
+            wrapper.style.height = `${originalHeight * targetScale}px`;
+            wrapper.style.margin = '32px auto'; // Auto-center logically without flex justify overlaps
+            wrapper.style.padding = '0';
+            wrapper.style.overflow = 'hidden'; 
         } else {
-            // Desktop fallback & scaling
-            let desktopScale = 1;
-            if (window.innerWidth >= 1400) {
-                desktopScale = 1.15;
-            } else if (window.innerWidth >= 1100) {
-                desktopScale = 1.05;
-            }
-
-            if (desktopScale > 1) {
-                docElement.style.transform = 'none'; // reset to calculate true height
-                const originalHeight = docElement.scrollHeight || 1056;
-                docElement.style.transform = `scale(${desktopScale})`;
-                docElement.style.transformOrigin = 'top center';
-                wrapper.style.height = `${(originalHeight * desktopScale) + 64}px`;
-                wrapper.style.padding = '32px 0';
-                wrapper.style.overflow = 'hidden';
-            } else {
-                docElement.style.transform = 'none';
-                wrapper.style.height = 'auto';
-                wrapper.style.overflow = 'auto';
-                wrapper.style.padding = '0';
-            }
+            // Standard Desktop
+            docElement.style.transformOrigin = 'top center';
+            docElement.style.transform = 'none';
             wrapper.style.display = 'flex';
             wrapper.style.justifyContent = 'center';
+            wrapper.style.width = '100%';
+            wrapper.style.height = 'auto';
+            wrapper.style.margin = '0 auto';
+            wrapper.style.padding = '32px 0';
+            wrapper.style.overflow = 'visible';
         }
     }
 

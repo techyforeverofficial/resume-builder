@@ -4905,3 +4905,37 @@ textarea {
 .page {
     page-break-after: always;
 }
+
+/* --- Responsive Scaling Fix per User Instructions --- */
+
+body, html {
+  overflow-x: hidden;
+}
+
+.resume-preview-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.preview-container {
+  overflow: auto;
+  max-height: calc(100vh - 120px);
+}
+
+.resume-scale-container {
+  transform-origin: top center;
+}
+
+.resume-document {
+  max-width: 100%;
+}
+
+@media screen and (max-width: 900px) {
+  .resume-scale-container {
+      /* Uses 900 to ensure a safety buffer of padding matches proportions perfectly */
+      transform: scale(calc(100vw / 900));
+  }
+}

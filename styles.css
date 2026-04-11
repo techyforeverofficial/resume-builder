@@ -5056,43 +5056,61 @@ textarea {
 
 /* --- TEMPLATE 21 FULL BLEED FIXES --- */
 
-/* 1. Remove Global Body Margin for Template 21 */
-body:has(.template-21) {
+/* 1. Force Root Level Reset */
+html:has(.template-21),
+html:has(.template-21) body {
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
-/* 2. Fix Resume Container */
-.resume-document.template-21 {
+/* 2 & 4. Override ALL Parent Containers & Remove Centering */
+#preview-view:has(.template-21),
+.preview-container:has(.template-21),
+.resume-preview:has(.template-21),
+.editor-preview:has(.template-21),
+.page-container:has(.template-21),
+.resume-wrapper:has(.template-21) {
+    padding: 0 !important;
     margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+    display: block !important;
+}
+
+/* 3. Force Resume to Stick to Edges */
+.resume-document.template-21,
+.resume.template-21 {
+    margin: 0 !important;
+    padding: 0 !important;
     width: 816px !important;
-    height: 1050px !important;
-    max-height: 1050px !important;
+    min-height: 1050px !important;
     box-shadow: none !important;
     border: none !important;
     overflow: hidden !important;
 }
 
-/* 3. Remove Wrapper Padding (Keep preview centered) */
-.resume-wrapper:has(.template-21),
-.preview-container:has(.template-21) {
-    padding: 0 !important;
-    margin: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: flex-start !important;
+/* 5. Remove Top Gap */
+.resume-wrapper:has(.template-21) > *,
+#preview-view:has(.template-21) > .resume-wrapper {
+    margin-top: 0 !important;
 }
 
-/* 4. PDF Rendering Fix */
+/* 7. Smart Adjustment Rule */
+.resume-wrapper:has(.template-21) > *:not(.resume-document) {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 6. PDF Export Fix */
 @media print {
     @page {
         margin: 0 !important;
     }
-    body:has(.template-21) {
+    html, body {
         margin: 0 !important;
         padding: 0 !important;
-    }
-    .resume-document.template-21 {
-        margin: 0 !important;
     }
 }

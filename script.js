@@ -4051,16 +4051,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const skillsList = resumeData.skills || (data.skills ? data.skills.split(',') : []);
 
+                htmlStr += `
+                    <!-- MAIN LAYOUT -->
+                    <div class="bottom main-layout">
+                `;
+
+                // 1. Skills
                 if (skillsList.length > 0) {
+                    htmlStr += `<div class="section-container">`;
                     htmlStr += `
-                        <!-- SKILLS -->
                         <div class="section-bar">SKILLS</div>
                         <div class="skills">
                     `;
+                    const colLength = Math.ceil(skillsList.length / 2);
 
-                    const colLength = Math.ceil(skillsList.length / 3);
-
-                    for (let c = 0; c < 3; c++) {
+                    for (let c = 0; c < 2; c++) {
                         htmlStr += `<ul style="margin: 0; padding-left: 18px;">`;
                         for (let r = 0; r < colLength; r++) {
                             const index = c * colLength + r;
@@ -4070,19 +4075,52 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         htmlStr += `</ul>`;
                     }
+                    htmlStr += `</div></div>`;
+                }
+
+                // 2. Languages
+                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
+                    htmlStr += `<div class="section-container">`;
+                    htmlStr += `
+                        <div class="section-bar">LANGUAGES</div>
+                        <ul style="margin: 0; padding-left: 18px; margin-bottom: 10px;">
+                    `;
+                    for (let l of additionalInfo.languages) {
+                        htmlStr += `<li class="text" style="margin-bottom: 4px;">${escapeHTML(l.trim())}</li>`;
+                    }
+                    htmlStr += `</ul></div>`;
+                }
+
+                // 3. Certifications
+                if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
+                    htmlStr += `<div class="section-container">`;
+                    htmlStr += `
+                        <div class="section-bar">CERTIFICATIONS</div>
+                        <div class="text" style="margin-bottom:10px;">${additionalInfo.certifications}</div>
+                    `;
                     htmlStr += `</div>`;
                 }
 
-                htmlStr += `
-                    <!-- BOTTOM -->
-                    <div class="bottom">
-                `;
+                // 4. Personal Details
+                let pdText = [];
+                if (additionalInfo.nationality) pdText.push(`Nationality: ${escapeHTML(additionalInfo.nationality)}`);
+                if (additionalInfo.maritalStatus) pdText.push(`Marital Status: ${escapeHTML(additionalInfo.maritalStatus)}`);
+                if (additionalInfo.visaStatus) pdText.push(`Visa Status: ${escapeHTML(additionalInfo.visaStatus)}`);
+                if (additionalInfo.dob) pdText.push(`DOB: ${escapeHTML(additionalInfo.dob)}`);
 
+                if (pdText.length > 0) {
+                    htmlStr += `<div class="section-container">`;
+                    htmlStr += `
+                        <div class="section-bar">PERSONAL DETAILS</div>
+                        <div class="text">${pdText.join('<br>')}</div>
+                    `;
+                    htmlStr += `</div>`;
+                }
+
+                // 5. Projects
                 const projects = resumeData.projects || [];
-                let hasLeftBottomContent = false;
                 if (projects.length > 0) {
-                    htmlStr += `<div>`;
-                    hasLeftBottomContent = true;
+                    htmlStr += `<div class="section-container">`;
                     htmlStr += `<div class="section-bar">PROJECTS</div>`;
                     for (let i = 0; i < projects.length; i++) {
                         const p = projects[i];
@@ -4095,55 +4133,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     htmlStr += `</div>`;
                 }
 
-                if (!hasLeftBottomContent) {
-                    htmlStr += `<div></div>`; // Empty placeholder for grid
-                }
-
-                // Right Bottom Grid
-                let rightBottomHtml = ``;
-
-                if (additionalInfo.certifications && additionalInfo.certifications.trim() !== '' && additionalInfo.certifications !== '<br>') {
-                    rightBottomHtml += `
-                        <div class="section-bar">CERTIFICATIONS</div>
-                        <div class="text" style="margin-bottom:10px;">${additionalInfo.certifications}</div>
-                    `;
-                }
-
+                // 6. Others (Hobbies)
                 if (additionalInfo.hobbies && additionalInfo.hobbies.trim() !== '' && additionalInfo.hobbies !== '<br>') {
-                    rightBottomHtml += `
+                    htmlStr += `<div class="section-container">`;
+                    htmlStr += `
                         <div class="section-bar">HOBBIES</div>
                         <div class="text" style="margin-bottom:10px;">${additionalInfo.hobbies}</div>
                     `;
-                }
-
-                if (additionalInfo.languages && additionalInfo.languages.length > 0) {
-                    rightBottomHtml += `
-                        <div class="section-bar">LANGUAGES</div>
-                        <ul style="margin: 0; padding-left: 18px; margin-bottom: 10px;">
-                    `;
-                    for (let l of additionalInfo.languages) {
-                        rightBottomHtml += `<li class="text" style="margin-bottom: 4px;">${escapeHTML(l.trim())}</li>`;
-                    }
-                    rightBottomHtml += `</ul>`;
-                }
-
-                let pdText = [];
-                if (additionalInfo.nationality) pdText.push(`Nationality: ${escapeHTML(additionalInfo.nationality)}`);
-                if (additionalInfo.maritalStatus) pdText.push(`Marital Status: ${escapeHTML(additionalInfo.maritalStatus)}`);
-                if (additionalInfo.visaStatus) pdText.push(`Visa Status: ${escapeHTML(additionalInfo.visaStatus)}`);
-                if (additionalInfo.dob) pdText.push(`DOB: ${escapeHTML(additionalInfo.dob)}`);
-
-                if (pdText.length > 0) {
-                    rightBottomHtml += `
-                        <div class="section-bar">PERSONAL DETAILS</div>
-                        <div class="text">${pdText.join('<br>')}</div>
-                    `;
-                }
-
-                if (rightBottomHtml) {
-                    htmlStr += `<div>${rightBottomHtml}</div>`;
-                } else {
-                    htmlStr += `<div></div>`;
+                    htmlStr += `</div>`;
                 }
 
                 htmlStr += `
@@ -5298,14 +5295,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // margin set to 0 strictly to avoid pagination overflow on full-bleed 8.5x11 templates
         const opt = {
             margin: 0,
-            filename: 'resume.pdf',
-            image: { type: 'jpeg', quality: 1 },
+            filename: 'my_resume.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
-                scale: 2,
+                scale: 2, // Ensure good quality 
                 useCORS: true,
-                scrollY: 0
+                windowWidth: 816, // Match exact width for 8.5in letter size
+                scrollY: 0,
+                scrollX: 0,
+                x: 0,
+                y: 0
             },
-            jsPDF: { unit: 'px', format: [816, 1050], orientation: 'portrait' }
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
         // 5. Generate and download

@@ -3472,7 +3472,7 @@ textarea {
     position: absolute;
     left: 10px;
     top: 0;
-    height: 100%;
+    bottom: 0;
     width: 1px;
     background: #aaa;
     transform: translateX(-50%);
@@ -3534,7 +3534,12 @@ textarea {
 }
 
 .resume-document.template-13 .bottom-strip {
-    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 25px;
+    background: #1f5fa8;
 }
 
 /* ======================================================== */
@@ -4084,7 +4089,7 @@ textarea {
 /* SKILLS */
 .resume-document.template-16 .skills {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
 }
 
 .resume-document.template-16 .skills ul {
@@ -4096,6 +4101,13 @@ textarea {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
+    align-items: start;
+    grid-auto-flow: row;
+}
+
+.resume-document.template-16 .section-container {
+    break-inside: avoid;
+    page-break-inside: avoid;
 }
 
 /* --- TEMPLATE 17 STYLES --- */
@@ -4329,7 +4341,7 @@ textarea {
     position: absolute;
     left: 12px;
     top: 0;
-    height: 100%;
+    bottom: 0;
     width: 1px;
     background: #aaa;
     transform: translateX(-50%);

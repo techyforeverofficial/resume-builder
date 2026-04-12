@@ -98,6 +98,35 @@ body, html {
     padding: 2rem 1.5rem;
 }
 
+/* ======== ROOT OVERLAYS ======== */
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+
+  z-index: 999999;
+}
+
+.auth-modal.active {
+  display: flex !important;
+}
+
+.auth-modal-content {
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+  border-radius: 16px;
+}
+
 /* ======== PREMIUM MODAL ======== */
 .rf-modal {
   position: fixed;

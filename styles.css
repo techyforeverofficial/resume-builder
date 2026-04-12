@@ -1,4 +1,4 @@
-﻿/* ======== VARIABLES & RESET ======== */
+/* ======== VARIABLES & RESET ======== */
 :root {
     /* App Shell Theme (Modern & Vibrant) */
     --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
@@ -25,7 +25,7 @@
     box-sizing: border-box;
 }
 
-body {
+body, html {
     font-family: 'Inter', sans-serif;
     color: var(--text-primary);
     background: var(--bg-gradient);
@@ -1587,7 +1587,7 @@ textarea {
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; /* IMPORTANT */
     z-index: 9999;
     opacity: 0;
     visibility: hidden;
@@ -2231,7 +2231,8 @@ textarea {
     border-radius: 16px;
     padding: 2.5rem;
     max-width: 420px;
-    width: 90%;
+    width: 100%;
+    margin: auto; /* IMPORTANT fixes left pushing issue */
     position: relative;
     color: #f8fafc;
     animation: modal-fade-scale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -2247,6 +2248,20 @@ textarea {
     100% {
         opacity: 1;
         transform: scale(1) translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-modal-ui {
+        width: 92%;
+        margin: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .payment-modal-overlay.auth-modal-overlay {
+        align-items: center;
+        padding: 12px;
     }
 }
 

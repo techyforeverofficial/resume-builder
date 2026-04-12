@@ -214,6 +214,22 @@ body, html {
   cursor: pointer;
 }
 
+.rf-success {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(34,197,94,0.15);
+  color: #22c55e;
+  text-align: center;
+  font-size: 13px;
+  animation: fadeIn 0.3s ease;
+}
+
+.rf-success-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
 /* Views (SPA Navigation) */
 .view {
     display: none;

@@ -5786,16 +5786,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 sendResetLinkBtn.innerText = "Sending...";
 
                 await sendPasswordResetEmail(auth, email);
-                showToast("Reset link sent 📩");
+                
+                // SHOW SUCCESS UI
+                const successBox = document.getElementById("reset-success");
+                if (successBox) successBox.style.display = "block";
+
+                // RESET BUTTON
+                sendResetLinkBtn.innerText = "Sent ✓";
+                
+                // CLEAR FIELD
                 if (emailInput) emailInput.value = '';
-                window.closeForgotModal();
+
+                // OPTIONAL AUTO CLOSE AFTER 3s
+                setTimeout(() => {
+                    window.closeForgotModal();
+                    if (successBox) successBox.style.display = "none";
+                    sendResetLinkBtn.disabled = false;
+                    sendResetLinkBtn.innerText = "Send Reset Link";
+                }, 3000);
+
             } catch (err) {
                 showToast(err.message);
                 if (forgotErrorMsg) {
                     forgotErrorMsg.innerText = err.message;
                     forgotErrorMsg.style.display = "block";
                 }
-            } finally {
                 sendResetLinkBtn.disabled = false;
                 sendResetLinkBtn.innerText = "Send Reset Link";
             }

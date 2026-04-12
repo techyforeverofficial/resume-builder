@@ -1,6 +1,7 @@
-import { auth, db } from './firebase-config.js';
+import { auth, db, functions } from './firebase-config.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-functions.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
@@ -5217,51 +5218,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (user) {
                 try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) {
-                        const data = userDoc.data();
-                        if (data.premium === true && data.expiresAt && data.expiresAt > Date.now()) {
-                            let planType = data.planType || 'pro'; // backward compatible old users
-                            if (planType === 'starter') {
-                                const used = data.downloadCount || 0;
-                                const limit = data.downloadLimit || 15;
-                                if (used < limit) {
-                                    isPremium = true;
-                                    // Increment download logic handled before trigger
-                                } else {
-                                    alert("Starter plan limit reached (15 downloads). Please upgrade to continue.");
-                                    isPremium = false;
-                                }
-                            } else {
-                                isPremium = true; // Pro and Premium are unlimited
-                            }
-                        } else if (data.singleDownload === true) {
+                    const decrementDownload = httpsCallable(functions, 'decrementDownload');
+                    const response = await decrementDownload({ userId: user.uid });
+                    
+                    if (response.data && response.data.success) {
+                        isPremium = true;
+                    } else {
+                        // Backend explicitly rejected (not premium, expired, or limit reached)
+                        isPremium = false;
+                        
+                        // Check if it's specifically a limit issue to show a better alert,
+                        // otherwise default back to showing payment modal.
+                        if (response.data && response.data.message === 'Download limit reached.') {
+                            alert("Download limit reached. Please upgrade your plan.");
+                        } 
+                    }
+                    
+                    // Fallback local check for older 'singleDownload' logic just in case
+                    if (!isPremium) {
+                        const userDoc = await getDoc(doc(db, "users", user.uid));
+                        if (userDoc.exists() && userDoc.data().singleDownload === true) {
                             hasSingleDownload = true;
                         }
                     }
                 } catch (error) {
-                    console.error("Error checking premium status:", error);
+                    console.error("Backend premium check failed:", error);
+                    alert("Failed to securely verify subscription. Please try downloading again later.");
                 }
             }
 
             try {
                 if (isPremium) {
-                    // Pre-increment count for starter users
-                    if (user) {
-                        try {
-                            const userDoc = await getDoc(doc(db, "users", user.uid));
-                            if (userDoc.exists()) {
-                                const data = userDoc.data();
-                                let planType = data.planType || 'pro';
-                                if (planType === 'starter') {
-                                    const currentCount = data.downloadCount || 0;
-                                    await setDoc(doc(db, "users", user.uid), { downloadCount: currentCount + 1 }, { merge: true });
-                                }
-                            }
-                        } catch (err) {
-                            console.error("Failed to update download count", err);
-                        }
-                    }
                     if (typeof window.triggerPDFDownload === 'function') {
                         window.triggerPDFDownload();
                     }
@@ -5269,11 +5256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (typeof window.triggerPDFDownload === 'function') {
                         await window.triggerPDFDownload();
                     }
-                    try {
-                        await setDoc(doc(db, "users", user.uid), { singleDownload: false }, { merge: true });
-                    } catch (err) {
-                        console.error("Error consuming single download:", err);
-                    }
+                    // singleDownload consumption now handled securely on backend
                 } else {
                     if (typeof window.openPaymentModal === 'function') {
                         window.openPaymentModal();
@@ -5417,53 +5400,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Razorpay Payment Logic
         async function handlePaymentSuccess(amountValue, planType) {
-            // Step 1: mark user as premium
             const user = auth.currentUser;
-
-            if (user) {
-                try {
-                    const userRef = doc(db, "users", user.uid);
-                    let planData = {};
-
-                    if (planType === 'starter') {
-                        planData = {
-                            premium: true,
-                            planType: "starter",
-                            downloadLimit: 15,
-                            downloadCount: 0,
-                            expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000),
-                            lastPaymentAmount: "19",
-                            lastPaymentDate: Date.now()
-                        };
-                    } else if (planType === 'pro') {
-                        planData = {
-                            premium: true,
-                            planType: "pro",
-                            expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000),
-                            lastPaymentAmount: "49",
-                            lastPaymentDate: Date.now()
-                        };
-                    } else if (planType === 'premium') {
-                        planData = {
-                            premium: true,
-                            planType: "premium",
-                            expiresAt: Date.now() + (90 * 24 * 60 * 60 * 1000),
-                            lastPaymentAmount: "99",
-                            lastPaymentDate: Date.now()
-                        };
-                    }
-
-                    await setDoc(userRef, planData, { merge: true });
-                } catch (error) {
-                    console.error("Error setting premium status:", error);
-                }
+            if (!user) {
+                alert("Error: User not logged in.");
+                return;
             }
 
-            // Step 2: show success message
-            alert(`Payment successful! Welcome to the ${planType.toUpperCase()} plan.`);
+            try {
+                // Call secure Cloud Function
+                const activatePremium = httpsCallable(functions, 'activatePremium');
+                await activatePremium({ 
+                    userId: user.uid, 
+                    planType: planType 
+                });
 
-            // Step 3: trigger download
+                alert(`Payment successful! Welcome to the ${planType.toUpperCase()} plan. Your account has been securely upgraded.`);
+            } catch (error) {
+                console.error("Backend activation failed:", error);
+                alert("Payment was successful, but there was an issue upgrading your account automatically. Please contact support.");
+            }
+
             window.closePaymentModal();
+            
+            // Trigger download after successful backend upgrade
             const btnDownload = document.getElementById('btn-download');
             if (btnDownload) {
                 btnDownload.click();
@@ -5831,9 +5790,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         progressText = `${diffDays} days remaining out of ${totalDays}`;
 
                         if (planType === 'starter') {
-                           let count = data.downloadCount || 0;
-                           let limit = data.downloadLimit || 15;
-                           progressText += ` • ${count}/${limit} Downloads Used`;
+                           let limit = data.downloadLimit !== undefined ? data.downloadLimit : 15;
+                           progressText += ` • ${limit} Downloads Remaining`;
                         }
                     }
                 }

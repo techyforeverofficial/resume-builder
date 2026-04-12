@@ -1,4 +1,4 @@
-﻿import { auth, db } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
@@ -2025,14 +2025,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         await window.triggerPDFDownload();
 
                     }
-                    try {
-                        await setDoc(doc(db, "users", user.uid), { singleDownload: false }, { merge: true });
-
-                    } catch (err) {
-                        console.error("Error consuming single download:", err);
-
-                    }
-
+                    // singleDownload consumption now handled securely on backend
                 } else {
                     if (typeof window.openPaymentModal === 'function') {
                         window.openPaymentModal();
@@ -2198,39 +2191,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Razorpay Payment Logic
         async function handlePaymentSuccess(amountValue) {
-            // Step 1: mark user as premium
-            const user = auth.currentUser;
+            // NOTE: Premium status should be securely updated via backend webhooks (e.g., Razorpay webhooks).
+            // Direct assignment on the frontend has been removed for security.
+            
             const isMonthly = amountValue === 1900;
-
-            if (user) {
-                try {
-                    const userRef = doc(db, "users", user.uid);
-                    const planData = isMonthly ? {
-                        premium: true,
-                        expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000),
-                        lastPaymentAmount: "19",
-                        lastPaymentDate: Date.now()
-                    } : {
-                        singleDownload: true,
-                        lastPaymentAmount: "2",
-                        lastPaymentDate: Date.now()
-                    };
-                    await setDoc(userRef, planData, { merge: true });
-
-                } catch (error) {
-                    console.error("Error setting premium status:", error);
-
-                }
-
-            }
-
+            
             // Step 2: show success message
             if (isMonthly) {
-                alert("Payment successful! You have unlimited downloads for 30 days.");
-
+                alert("Payment successful! Your account is being seamlessly upgraded. You will have unlimited downloads for 30 days.");
             } else {
                 alert("Payment successful! You can download your resume once.");
-
             }
 
             // Step 3: trigger download

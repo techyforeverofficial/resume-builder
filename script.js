@@ -5738,77 +5738,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Forgot Password Logic ---
+    // --- Forgot Password Logic ---
     function openForgotPasswordModal() {
-        console.log("Opening modal");
         const modal = document.getElementById("forgot-password-modal");
-
-        if (modal) {
-            modal.style.display = "flex";
-            modal.style.zIndex = "999999";
-            modal.classList.add("active");
-        }
+        if (modal) modal.classList.add("active");
     }
-
-    // Use global event delegation to guarantee click firing strictly
-    document.addEventListener("click", function (e) {
-        const targetBtn = e.target.closest && e.target.closest("#forgot-password-btn");
-        if (targetBtn || (e.target && e.target.id === "forgot-password-btn")) {
-            e.preventDefault();
-            console.log("Forgot clicked (delegation)");
-            openForgotPasswordModal();
-        }
-    });
 
     window.closeForgotModal = function() {
         const modal = document.getElementById("forgot-password-modal");
-        if (modal) {
-            modal.style.display = "none";
-            modal.classList.remove("active");
-            if (forgotErrorMsg) forgotErrorMsg.style.display = 'none';
-        }
+        if (modal) modal.classList.remove("active");
     };
 
-    if (closeForgotModal) {
-        closeForgotModal.addEventListener('click', window.closeForgotModal);
-    }
-
-    if (btnSendResetLink) {
-        btnSendResetLink.addEventListener("click", async (e) => {
+    document.addEventListener("click", function (e) {
+        if (e.target.id === "forgot-password-btn") {
             e.preventDefault();
-            if (!resetEmail) return;
-            const email = resetEmail.value;
+            openForgotPasswordModal();
+        }
+
+        if (e.target.id === "close-forgot-modal" || e.target.id === "back-to-login") {
+            window.closeForgotModal();
+        }
+
+        if (e.target.classList && e.target.classList.contains("rf-modal-overlay")) {
+            window.closeForgotModal();
+        }
+    });
+
+    const sendResetLinkBtn = document.getElementById("send-reset-link");
+    if (sendResetLinkBtn) {
+        sendResetLinkBtn.addEventListener("click", async () => {
+            const emailInput = document.getElementById("reset-email");
+            const email = emailInput ? emailInput.value : "";
+            const forgotErrorMsg = document.getElementById("forgot-error-msg");
+
             if (!email) {
-                forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">Please enter your email.</span>';
-                forgotErrorMsg.style.display = 'block';
+                showToast("Enter email");
+                if (forgotErrorMsg) {
+                    forgotErrorMsg.innerText = "Please enter your email.";
+                    forgotErrorMsg.style.display = "block";
+                }
                 return;
             }
-            
-            forgotErrorMsg.style.display = 'none';
-            btnSendResetLink.disabled = true;
-            btnSendResetLink.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
             try {
+                if (forgotErrorMsg) forgotErrorMsg.style.display = 'none';
+                sendResetLinkBtn.disabled = true;
+                sendResetLinkBtn.innerText = "Sending...";
+
                 await sendPasswordResetEmail(auth, email);
-                showToast("Reset link sent to your email");
-                if (forgotForm) forgotForm.reset();
-                forgotErrorMsg.innerHTML = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Password reset link sent to your email.</span>';
-                forgotErrorMsg.style.display = 'block';
-            } catch (error) {
-                console.error("Forgot password error:", error);
-                if (error.code === 'auth/user-not-found') {
-                    showToast("No account found with this email.");
-                    forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">No account found with this email.</span>';
-                } else if (error.code === 'auth/invalid-email') {
-                    showToast("Invalid email address format.");
-                    forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">Invalid email address format.</span>';
-                } else {
-                    showToast(error.message || "Failed to send reset link.");
-                    forgotErrorMsg.innerHTML = `<span style="color: #ef4444;">${error.message}</span>`;
+                showToast("Reset link sent 📩");
+                if (emailInput) emailInput.value = '';
+                window.closeForgotModal();
+            } catch (err) {
+                showToast(err.message);
+                if (forgotErrorMsg) {
+                    forgotErrorMsg.innerText = err.message;
+                    forgotErrorMsg.style.display = "block";
                 }
-                forgotErrorMsg.style.display = 'block';
             } finally {
-                btnSendResetLink.disabled = false;
-                btnSendResetLink.innerText = 'Send Reset Link';
+                sendResetLinkBtn.disabled = false;
+                sendResetLinkBtn.innerText = "Send Reset Link";
             }
         });
     }

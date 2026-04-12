@@ -1456,14 +1456,31 @@
     <script type="module" src="script.js"></script>
 
     <!-- Forgot Password Modal (Forced UI) -->
-    <div id="forgot-password-modal" class="modal">
-        <div class="modal-box">
+    <div id="forgot-password-modal" class="rf-modal">
+        <div class="rf-modal-overlay"></div>
+
+        <div class="rf-modal-card">
+            <button class="rf-close-btn" id="close-forgot-modal" aria-label="Close">✕</button>
+
             <h2>Reset Password 🔐</h2>
-            <input type="email" id="reset-email" placeholder="Enter your email" />
-            <div id="forgot-error-msg" style="display: none; margin-bottom: 10px; color: #ef4444; font-size: 14px;"></div>
-            <button id="send-reset-link">Send Reset Link</button>
-            <button onclick="closeForgotModal()">Close</button>
+            <p class="rf-subtext">
+                Enter your email and we’ll send you a reset link.
+            </p>
+
+            <input type="email" id="reset-email" placeholder="Enter your email" class="rf-input" />
+
+            <div id="forgot-error-msg" style="display: none; margin-top: 10px; color: #ef4444; font-size: 14px;"></div>
+
+            <button id="send-reset-link" class="rf-primary-btn">
+                Send Reset Link
+            </button>
+
+            <p class="rf-footer-text">
+                Remember your password?
+                <span id="back-to-login">Login</span>
+            </p>
         </div>
     </div>
 </body>
+
 </html>

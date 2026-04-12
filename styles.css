@@ -1,4 +1,4 @@
-/* ======== VARIABLES & RESET ======== */
+﻿/* ======== VARIABLES & RESET ======== */
 :root {
     /* App Shell Theme (Modern & Vibrant) */
     --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
@@ -96,6 +96,93 @@ body {
     max-width: 1440px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
+}
+
+/* ======== PREMIUM MODAL ======== */
+.rf-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 99999;
+}
+
+.rf-modal.active {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.rf-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 15, 40, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.rf-modal-card {
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border-radius: 16px;
+  padding: 28px;
+  z-index: 2;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: scaleIn 0.25s ease;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.rf-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.rf-input {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #020617;
+  color: white;
+}
+
+.rf-primary-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.rf-subtext {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.rf-footer-text {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #888;
+}
+
+.rf-footer-text span {
+  color: #6366f1;
+  cursor: pointer;
 }
 
 /* Views (SPA Navigation) */
@@ -1105,7 +1192,7 @@ textarea {
 }
 
 .resume-document.template-classic .cv-skill-tag::after {
-    content: " • ";
+    content: " â€¢ ";
     color: #999999;
 }
 
@@ -5258,7 +5345,7 @@ textarea {
 }
 
 .resume-document.template-20 .skill-item::before {
-    content: '�';
+    content: 'ï¿½';
     color: #c9a84c;
     font-size: 13px;
     line-height: 1.4;
@@ -5396,9 +5483,4 @@ body, html {
     min-height: auto !important;
     overflow: visible !important;
   }
-} 
- . m o d a l   {   d i s p l a y :   n o n e ;   }  
- . m o d a l . a c t i v e   {   d i s p l a y :   f l e x ;   }  
- . m o d a l   {   d i s p l a y :   n o n e ;   p o s i t i o n :   f i x e d ;   z - i n d e x :   9 9 9 9 ;   }  
- . m o d a l . a c t i v e   {   d i s p l a y :   f l e x   ! i m p o r t a n t ;   }  
- 
+}

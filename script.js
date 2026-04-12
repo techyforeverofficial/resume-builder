@@ -1,5 +1,5 @@
 import { auth, db, functions } from './firebase-config.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-functions.js";
 
@@ -5216,6 +5216,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (!user.emailVerified) {
+                const verifyModal = document.getElementById('verify-modal');
+                if (verifyModal) verifyModal.classList.add('active');
+                btnDownload.innerHTML = originalHtml;
+                btnDownload.disabled = false;
+                return;
+            }
+
             if (user) {
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -5236,14 +5244,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                 } else {
                                     isPremium = false;
                                     if (response.data && response.data.message === 'Download limit reached.') {
-                                        alert("Download limit reached. Please upgrade your plan.");
+                                        showToast("Download limit reached. Please upgrade your plan.");
                                     } else {
-                                        alert("Secure verification failed. Please check your subscription.");
+                                        showToast("Secure verification failed. Please check your subscription.");
                                     }
                                 }
                             } catch (error) {
                                 console.error("Backend premium check failed:", error);
-                                alert("Failed to securely verify subscription. Please try downloading again later.");
+                                showToast("Failed to securely verify subscription. Please try downloading again later.");
                             }
                         } else if (data.singleDownload === true) {
                             // Fallback local check for older 'singleDownload' logic
@@ -5494,6 +5502,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const authSubtitle = document.getElementById('auth-subtitle');
     const authErrorMsg = document.getElementById('auth-error-msg');
     const btnSave = document.getElementById('btn-save');
+    
+    // New Auth Elements
+    const btnGoogleSignIn = document.getElementById('btn-google-signin');
+    const forgotPasswordTrigger = document.getElementById('forgot-password-trigger');
+    const forgotModal = document.getElementById('forgot-modal');
+    const closeForgotModal = document.getElementById('close-forgot-modal');
+    const forgotForm = document.getElementById('forgot-form');
+    const forgotEmail = document.getElementById('forgot-email');
+    const forgotErrorMsg = document.getElementById('forgot-error-msg');
+    const forgotSubmitBtn = document.getElementById('forgot-submit-btn');
+    
+    const verifyModal = document.getElementById('verify-modal');
+    const closeVerifyModal = document.getElementById('close-verify-modal');
+    const btnIveVerified = document.getElementById('btn-ive-verified');
+    const btnResendVerify = document.getElementById('btn-resend-verify');
+    const verifyErrorMsg = document.getElementById('verify-error-msg');
 
     let isSignUpMode = false;
     let currentUser = null;
@@ -5529,12 +5553,14 @@ document.addEventListener('DOMContentLoaded', () => {
             authToggleText.innerText = 'Already have an account?';
             authToggleBtn.innerText = 'Login';
             authSubmitBtn.innerText = 'Sign Up';
+            if (forgotPasswordTrigger) forgotPasswordTrigger.style.display = 'none';
         } else {
             authTitle.innerText = 'Welcome Back';
             authSubtitle.innerText = 'Login to save your resume';
             authToggleText.innerText = 'Don\'t have an account?';
             authToggleBtn.innerText = 'Sign Up';
             authSubmitBtn.innerText = 'Login';
+            if (forgotPasswordTrigger) forgotPasswordTrigger.style.display = 'inline-block';
         }
         if (authErrorMsg) authErrorMsg.style.display = 'none';
         authModal.classList.add('active');
@@ -5559,16 +5585,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 authSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
                 if (isSignUpMode) {
-                    await createUserWithEmailAndPassword(auth, email, password);
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    await sendEmailVerification(userCredential.user);
+                    
+                    if (authModal) authModal.classList.remove('active');
+                    showToast("Account created! Please check your email to verify.");
+                    
+                    // Show verification modal instead of silently completing
+                    if (verifyModal) {
+                        verifyModal.classList.add('active');
+                    }
                 } else {
                     await signInWithEmailAndPassword(auth, email, password);
+                    if (authModal) authModal.classList.remove('active');
+                    showToast("Logged in successfully!");
                 }
 
                 authForm.reset();
-
-                // Immediately close the modal and show success feedback
-                if (authModal) authModal.classList.remove('active');
-                showToast(isSignUpMode ? "Account created successfully!" : "Logged in successfully!");
 
 
                 if (pendingPaymentPrompt) {
@@ -5619,9 +5652,172 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Google Auth Logic ---
+    if (btnGoogleSignIn) {
+        btnGoogleSignIn.addEventListener('click', async () => {
+            try {
+                btnGoogleSignIn.disabled = true;
+                btnGoogleSignIn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                
+                // Track user securely via Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userDocRef);
+                
+                if (!docSnap.exists()) {
+                    await setDoc(userDocRef, {
+                        userId: user.uid,
+                        name: user.displayName,
+                        email: user.email,
+                        createdAt: serverTimestamp()
+                    }, { merge: true });
+                }
+
+                if (authModal) authModal.classList.remove('active');
+                showToast("Logged in with Google successfully!");
+                
+                if (pendingPaymentPrompt) {
+                    pendingPaymentPrompt = false;
+                    setTimeout(() => {
+                        if (typeof window.openPaymentModal === 'function') {
+                            window.openPaymentModal();
+                        }
+                    }, 500);
+                }
+            } catch (error) {
+                console.error("Google login error:", error);
+                if (authErrorMsg) {
+                    authErrorMsg.innerText = 'Google login failed. Please try again.';
+                    authErrorMsg.style.color = '#ef4444';
+                    authErrorMsg.style.display = 'block';
+                }
+            } finally {
+                btnGoogleSignIn.disabled = false;
+                btnGoogleSignIn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google';
+            }
+        });
+    }
+
+    // --- Forgot Password Logic ---
+    if (forgotPasswordTrigger) {
+        forgotPasswordTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (authModal) authModal.classList.remove('active');
+            if (forgotModal) forgotModal.classList.add('active');
+        });
+    }
+    
+    if (closeForgotModal) {
+        closeForgotModal.addEventListener('click', () => {
+            forgotModal.classList.remove('active');
+            if (forgotErrorMsg) forgotErrorMsg.style.display = 'none';
+        });
+    }
+
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = forgotEmail.value;
+            forgotErrorMsg.style.display = 'none';
+            
+            try {
+                forgotSubmitBtn.disabled = true;
+                forgotSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                
+                await sendPasswordResetEmail(auth, email);
+                
+                forgotErrorMsg.innerHTML = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Password reset link sent to your email.</span>';
+                forgotErrorMsg.style.display = 'block';
+                forgotForm.reset();
+            } catch (error) {
+                console.error("Forgot password error:", error);
+                if (error.code === 'auth/user-not-found') {
+                    forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">No account found with this email.</span>';
+                } else if (error.code === 'auth/invalid-email') {
+                    forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">Invalid email address format.</span>';
+                } else {
+                    forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">Failed to send reset link. Try again later.</span>';
+                }
+                forgotErrorMsg.style.display = 'block';
+            } finally {
+                forgotSubmitBtn.disabled = false;
+                forgotSubmitBtn.innerText = 'Send Reset Link';
+            }
+        });
+    }
+
+    // --- Email Verification Modal Logic ---
+    if (closeVerifyModal) {
+        closeVerifyModal.addEventListener('click', () => {
+            verifyModal.classList.remove('active');
+        });
+    }
+
+    if (btnIveVerified) {
+        btnIveVerified.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (user) {
+                btnIveVerified.disabled = true;
+                btnIveVerified.innerText = 'Checking...';
+                try {
+                    await user.reload(); // crucial to fetch updated verified state
+                    if (user.emailVerified) {
+                        verifyModal.classList.remove('active');
+                        showToast("Email verified successfully! You can now proceed.");
+                    } else {
+                        verifyErrorMsg.innerHTML = '<span style="color: #ef4444;">Still not verified. Please check your inbox and click the link in the email.</span>';
+                        verifyErrorMsg.style.display = 'block';
+                    }
+                } catch (error) {
+                    verifyErrorMsg.innerHTML = '<span style="color: #ef4444;">Error checking status. Try again later.</span>';
+                    verifyErrorMsg.style.display = 'block';
+                } finally {
+                    btnIveVerified.disabled = false;
+                    btnIveVerified.innerText = 'I’ve Verified';
+                }
+            }
+        });
+    }
+
+    if (btnResendVerify) {
+        btnResendVerify.addEventListener('click', async () => {
+             const user = auth.currentUser;
+             if (user) {
+                 btnResendVerify.disabled = true;
+                 btnResendVerify.innerText = 'Sending...';
+                 try {
+                     await sendEmailVerification(user);
+                     verifyErrorMsg.innerHTML = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Verification email sent!</span>';
+                     verifyErrorMsg.style.display = 'block';
+                 } catch (error) {
+                     if (error.code === 'auth/too-many-requests') {
+                         verifyErrorMsg.innerHTML = '<span style="color: #ef4444;">We recently sent an email. Please check your inbox or wait a minute before trying again.</span>';
+                     } else {
+                         verifyErrorMsg.innerHTML = '<span style="color: #ef4444;">Failed to resend. Try again later.</span>';
+                     }
+                     verifyErrorMsg.style.display = 'block';
+                 } finally {
+                     btnResendVerify.disabled = false;
+                     btnResendVerify.innerText = 'Resend Email';
+                 }
+             }
+        });
+    }
+
     const executeSaveAction = async () => {
         if (!currentResumeData) {
-            alert("Please generate a resume first before saving.");
+            // Replace alert with dynamic UI injection if there isn't a toast/modal
+            showToast("Please generate a resume first before saving.");
+            return;
+        }
+        
+        const user = auth.currentUser;
+        if (user && !user.emailVerified) {
+            const verifyModal = document.getElementById('verify-modal');
+            if (verifyModal) verifyModal.classList.add('active');
             return;
         }
 
@@ -5642,15 +5838,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             await addDoc(collection(db, "resumes"), resumeDataToSave);
 
-            alert("Resume saved successfully!");
-            // Optionally show "View My Resumes"
+            showToast("Resume saved successfully! 🚀");
             // Let's redirect to dashboard and fetch resumes to show it
             navigateTo('dashboard');
             fetchMyResumes();
 
         } catch (error) {
             console.error("Error saving resume: ", error);
-            alert("Failed to save resume: " + error.message);
+            showToast("Failed to save resume. Please try again.");
         } finally {
             btnSave.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Save to Account';
             btnSave.disabled = false;

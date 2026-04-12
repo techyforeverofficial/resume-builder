@@ -5505,7 +5505,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // New Auth Elements
     const btnGoogleSignIn = document.getElementById('btn-google-signin');
-    const forgotPasswordTrigger = document.getElementById('forgot-password-trigger');
+    const forgotPasswordBtn = document.getElementById('forgot-password-btn');
     const forgotModal = document.getElementById('forgot-modal');
     const closeForgotModal = document.getElementById('close-forgot-modal');
     const forgotForm = document.getElementById('forgot-form');
@@ -5519,21 +5519,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnResendVerify = document.getElementById('btn-resend-verify');
     const verifyErrorMsg = document.getElementById('verify-error-msg');
 
+    const verifiedSuccessModal = document.getElementById('verified-success-modal');
+    const closeVerifiedSuccessModal = document.getElementById('close-verified-success-modal');
+    const btnContinueVerified = document.getElementById('btn-continue-verified');
+
     let isSignUpMode = false;
     let currentUser = null;
     let isAuthLoaded = false;
     let pendingSave = false;
 
-    onAuthStateChanged(auth, (user) => {
+    // Track to prevent spamming reload loop if already verified
+    let hasShownVerifiedSuccess = false;
+
+    onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         isAuthLoaded = true;
 
-        if (user && pendingSave) {
-            pendingSave = false;
-            if (authModal) authModal.classList.remove('active');
-            executeSaveAction();
+        if (user) {
+            try {
+                // Force refresh real-time user state (ensures no platform freeze or stale cache)
+                await user.reload();
+                
+                // If they verified their email (e.g. from a link redirect) and haven't seen the success yet:
+                if (user.emailVerified && !hasShownVerifiedSuccess) {
+                    hasShownVerifiedSuccess = true;
+                    if (verifyModal && verifyModal.classList.contains('active')) {
+                        verifyModal.classList.remove('active');
+                        if (verifiedSuccessModal) verifiedSuccessModal.classList.add('active');
+                    } else if (window.location.search.includes('mode=verifyEmail') || window.location.search.includes('verified=true')) {
+                        // Show explicitly on fresh load if URL specifies verifying
+                        if (verifiedSuccessModal) verifiedSuccessModal.classList.add('active');
+                    }
+                }
+            } catch (e) {
+                console.error("Auth reload issue:", e);
+            }
+
+            if (pendingSave) {
+                pendingSave = false;
+                if (authModal) authModal.classList.remove('active');
+                executeSaveAction();
+            }
         }
     });
+
+    if (btnContinueVerified) {
+        btnContinueVerified.addEventListener('click', () => {
+             if (verifiedSuccessModal) verifiedSuccessModal.classList.remove('active');
+             navigateTo('home');
+        });
+    }
+    if (closeVerifiedSuccessModal) {
+        closeVerifiedSuccessModal.addEventListener('click', () => {
+             if (verifiedSuccessModal) verifiedSuccessModal.classList.remove('active');
+        });
+    }
 
 
     if (closeAuthBtn && authModal) {
@@ -5553,14 +5593,14 @@ document.addEventListener('DOMContentLoaded', () => {
             authToggleText.innerText = 'Already have an account?';
             authToggleBtn.innerText = 'Login';
             authSubmitBtn.innerText = 'Sign Up';
-            if (forgotPasswordTrigger) forgotPasswordTrigger.style.display = 'none';
+            if (forgotPasswordBtn) forgotPasswordBtn.style.display = 'none';
         } else {
             authTitle.innerText = 'Welcome Back';
             authSubtitle.innerText = 'Login to save your resume';
             authToggleText.innerText = 'Don\'t have an account?';
             authToggleBtn.innerText = 'Sign Up';
             authSubmitBtn.innerText = 'Login';
-            if (forgotPasswordTrigger) forgotPasswordTrigger.style.display = 'inline-block';
+            if (forgotPasswordBtn) forgotPasswordBtn.style.display = 'inline-block';
         }
         if (authErrorMsg) authErrorMsg.style.display = 'none';
         authModal.classList.add('active');
@@ -5586,7 +5626,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (isSignUpMode) {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    await sendEmailVerification(userCredential.user);
+                    // Force refresh directly after sign up to clear stale caches
+                    await auth.currentUser.reload();
+                    
+                    const actionCodeSettings = {
+                        url: 'https://resumebuilder.techyforever.com/?verified=true',
+                        handleCodeInApp: false
+                    };
+                    await sendEmailVerification(userCredential.user, actionCodeSettings);
                     
                     if (authModal) authModal.classList.remove('active');
                     showToast("Account created! Please check your email to verify.");
@@ -5597,6 +5644,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else {
                     await signInWithEmailAndPassword(auth, email, password);
+                    await auth.currentUser.reload();
                     if (authModal) authModal.classList.remove('active');
                     showToast("Logged in successfully!");
                 }
@@ -5702,12 +5750,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Forgot Password Logic ---
-    if (forgotPasswordTrigger) {
-        forgotPasswordTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (authModal) authModal.classList.remove('active');
-            if (forgotModal) forgotModal.classList.add('active');
-        });
+    function openForgotPasswordModal(e) {
+        if (e) e.preventDefault();
+        if (authModal) authModal.classList.remove('active');
+        if (forgotModal) forgotModal.classList.add('active');
+    }
+
+    if (forgotPasswordBtn) {
+        forgotPasswordBtn.addEventListener('click', openForgotPasswordModal);
     }
     
     if (closeForgotModal) {
@@ -5789,7 +5839,11 @@ document.addEventListener('DOMContentLoaded', () => {
                  btnResendVerify.disabled = true;
                  btnResendVerify.innerText = 'Sending...';
                  try {
-                     await sendEmailVerification(user);
+                     const actionCodeSettings = {
+                         url: 'https://resumebuilder.techyforever.com/?verified=true',
+                         handleCodeInApp: false
+                     };
+                     await sendEmailVerification(user, actionCodeSettings);
                      verifyErrorMsg.innerHTML = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Verification email sent!</span>';
                      verifyErrorMsg.style.display = 'block';
                  } catch (error) {

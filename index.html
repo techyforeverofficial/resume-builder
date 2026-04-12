@@ -1371,7 +1371,7 @@
                         <i class="fas fa-eye toggle-password" id="toggle-auth-password" title="Show/Hide Password"></i>
                     </div>
                     <div style="display: flex; justify-content: flex-end; margin-top: -10px; margin-bottom: 15px;">
-                        <a href="#" id="forgot-password-trigger" class="auth-link"
+                        <a href="#" id="forgot-password-btn" class="auth-link"
                             style="font-size: 0.85rem; font-weight: 500;">Forgot Password?</a>
                     </div>
                     <div id="auth-error-msg" style="display: none; margin-bottom: 1.25rem;"></div>
@@ -1451,6 +1451,20 @@
                 <button type="submit" class="auth-submit-btn" id="forgot-submit-btn"
                     style="width: 100%; margin-top: 10px;">Send Reset Link</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Email Verified Success Modal -->
+    <div id="verified-success-modal" class="payment-modal-overlay auth-modal-overlay">
+        <div class="payment-modal-content auth-modal-ui" style="text-align: center;">
+            <button class="auth-close-btn" id="close-verified-success-modal"><i class="fas fa-times"></i></button>
+            <div class="auth-header" style="margin-bottom: 25px;">
+                <h2 style="font-size: 1.7rem; margin-bottom: 10px;">Email Verified 🎉</h2>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem; line-height: 1.5;">Your account is now verified. You can now download your resume.</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button type="button" class="auth-submit-btn" id="btn-continue-verified" style="width: 100%;">Continue</button>
+            </div>
         </div>
     </div>
 

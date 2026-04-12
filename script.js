@@ -5208,25 +5208,23 @@ document.addEventListener('DOMContentLoaded', () => {
             btnDownload.disabled = true;
 
             try {
-                if (!auth.currentUser) {
+                const user = auth.currentUser;
+                if (!user) {
                     pendingPaymentPrompt = true;
                     const authModal = document.getElementById('auth-modal');
                     if (authModal) authModal.classList.add('active');
                     return;
                 }
 
-                await auth.currentUser.reload();
-                console.log("User after reload:", auth.currentUser);
-                console.log("Verified after reload:", auth.currentUser?.emailVerified);
+                // RELOAD USER (IMPORTANT)
+                await user.reload();
                 
-                if (!auth.currentUser.emailVerified) {
-                    console.log("Verify modal triggered");
-                    const verifyModal = document.getElementById('verify-modal');
+                if (!user.emailVerified) {
+                    const verifyModal = document.getElementById('verify-email-modal');
                     if (verifyModal) verifyModal.classList.add('active');
                     return;
                 }
 
-                const user = auth.currentUser;
                 let isPremium = false;
                 let hasSingleDownload = false;
 
@@ -5501,11 +5499,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const forgotErrorMsg = document.getElementById('forgot-error-msg');
     const btnSendResetLink = document.getElementById('send-reset-link');
     
-    const verifyModal = document.getElementById('verify-modal');
+    const verifyModal = document.getElementById('verify-email-modal');
     const closeVerifyModal = document.getElementById('close-verify-modal');
-    const btnIveVerified = document.getElementById('btn-ive-verified');
-    const btnResendVerify = document.getElementById('btn-resend-verify');
-    const verifyErrorMsg = document.getElementById('verify-error-msg');
+    const btnIveVerified = document.getElementById('i-verified-btn');
+    const btnResendVerify = document.getElementById('resend-verification');
 
     const verifiedSuccessModal = document.getElementById('verified-success-modal');
     const closeVerifiedSuccessModal = document.getElementById('close-verified-success-modal');
@@ -5817,10 +5814,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Email Verification Modal Logic ---
+    // --- Email Verification Modal Logic (New Premium Flow) ---
     if (closeVerifyModal) {
         closeVerifyModal.addEventListener('click', () => {
-            verifyModal.classList.remove('active');
+            if (verifyModal) verifyModal.classList.remove('active');
         });
     }
 
@@ -5833,18 +5830,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     await user.reload(); // crucial to fetch updated verified state
                     if (user.emailVerified) {
-                        verifyModal.classList.remove('active');
-                        showToast("Email verified successfully! You can now proceed.");
+                        showToast("Verified successfully 🎉");
+                        if (verifyModal) verifyModal.classList.remove('active');
                     } else {
-                        verifyErrorMsg.innerHTML = '<span style="color: #ef4444;">Still not verified. Please check your inbox and click the link in the email.</span>';
-                        verifyErrorMsg.style.display = 'block';
+                        showToast("Still not verified");
                     }
                 } catch (error) {
-                    verifyErrorMsg.innerHTML = '<span style="color: #ef4444;">Error checking status. Try again later.</span>';
-                    verifyErrorMsg.style.display = 'block';
+                    showToast("Error checking status. Try again later.");
                 } finally {
                     btnIveVerified.disabled = false;
-                    btnIveVerified.innerText = 'I’ve Verified';
+                    btnIveVerified.innerText = "I've Verified";
                 }
             }
         });
@@ -5857,20 +5852,10 @@ document.addEventListener('DOMContentLoaded', () => {
                  btnResendVerify.disabled = true;
                  btnResendVerify.innerText = 'Sending...';
                  try {
-                     const actionCodeSettings = {
-                         url: 'https://resumebuilder.techyforever.com/?verified=true',
-                         handleCodeInApp: false
-                     };
-                     await sendEmailVerification(user, actionCodeSettings);
-                     verifyErrorMsg.innerHTML = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Verification email sent!</span>';
-                     verifyErrorMsg.style.display = 'block';
+                     await sendEmailVerification(user);
+                     showToast("Verification email sent 📩");
                  } catch (error) {
-                     if (error.code === 'auth/too-many-requests') {
-                         verifyErrorMsg.innerHTML = '<span style="color: #ef4444;">We recently sent an email. Please check your inbox or wait a minute before trying again.</span>';
-                     } else {
-                         verifyErrorMsg.innerHTML = '<span style="color: #ef4444;">Failed to resend. Try again later.</span>';
-                     }
-                     verifyErrorMsg.style.display = 'block';
+                     showToast(error.message);
                  } finally {
                      btnResendVerify.disabled = false;
                      btnResendVerify.innerText = 'Resend Email';
@@ -5888,7 +5873,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const user = auth.currentUser;
         if (user && !user.emailVerified) {
-            const verifyModal = document.getElementById('verify-modal');
+            const verifyModal = document.getElementById('verify-email-modal');
             if (verifyModal) verifyModal.classList.add('active');
             return;
         }

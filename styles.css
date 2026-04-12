@@ -1497,8 +1497,7 @@ textarea {
     width: 100%;
     height: 100%;
     background: rgba(15, 23, 42, 0.85);
-    /* Dark overlay */
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1556,6 +1555,10 @@ textarea {
     background: #f3f4f6;
 }
 
+.modal-header {
+    margin-bottom: 24px;
+}
+
 .payment-title {
     font-size: 1.5rem;
     font-weight: 700;
@@ -1567,16 +1570,149 @@ textarea {
 .payment-subtitle {
     font-size: 0.95rem;
     color: #6b7280;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
-.payment-options {
+/* Premium Modal Dark overrides */
+.payment-modal-content.premium-modal {
+    background: linear-gradient(145deg, #1e1b4b, #0f172a);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+}
+
+.premium-modal .payment-title {
+    color: #f8fafc;
+}
+
+.premium-modal .payment-subtitle {
+    color: #94a3b8;
+}
+
+.premium-modal .payment-close-btn {
+    color: #94a3b8;
+}
+
+.premium-modal .payment-close-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Stacked Options Styling */
+.stacked-options {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* Auth Specific UI */
+.stacked-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.stacked-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.stacked-card-info {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stacked-plan-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.stacked-features {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.stacked-card-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+}
+
+.stacked-card-price .price {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+.stacked-card-price .plan-desc {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Plan Button */
+.stacked-card .btn-simulate-pay {
+    margin-left: 12px;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    min-width: 100px;
+    transition: all 0.3s ease;
+}
+
+.stacked-card.highlighted-plan {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+    transform: scale(1.02);
+    margin: 8px 0;
+}
+
+.stacked-card.highlighted-plan:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+}
+
+.stacked-card.highlighted-plan .btn-simulate-pay {
+    background: linear-gradient(135deg, #6366f1, #c084fc);
+    border: none;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+.stacked-card.highlighted-plan .btn-simulate-pay:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.popular-badge.best-value {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+/* Auth Specific UI (preserved) */
 .auth-link {
     background: rgba(99, 102, 241, 0.1);
     color: var(--accent-color) !important;
@@ -1596,69 +1732,6 @@ textarea {
 
 .auth-modal-content .input-group {
     margin-bottom: 1.25rem;
-}
-
-.payment-card {
-    position: relative;
-    width: 100%;
-    background: #ffffff;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 20px 16px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-}
-
-.payment-card-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.payment-card .price {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #111827;
-}
-
-.payment-card .plan-desc {
-    font-size: 1rem;
-    color: #4b5563;
-    font-weight: 500;
-}
-
-/* Pro Plan Highlighting */
-.payment-card.pro-plan {
-    border-color: var(--accent-color);
-    background: rgba(99, 102, 241, 0.03);
-    /* var accent with opacity */
-    box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.15);
-}
-
-.payment-card.pro-plan .price {
-    color: var(--accent-color);
-}
-
-.popular-badge {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--accent-color);
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 4px 16px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
-    white-space: nowrap;
 }
 
 @media (max-width: 480px) {

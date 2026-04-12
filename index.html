@@ -1262,30 +1262,63 @@
 
     <!-- Payment Modal -->
     <div id="payment-modal" class="payment-modal-overlay">
-        <div class="payment-modal-content">
+        <div class="payment-modal-content premium-modal">
             <button class="payment-close-btn" id="close-payment-modal">&times;</button>
-            <h2 class="payment-title">Unlock Your Resume</h2>
-            <p class="payment-subtitle">Your resume is ready. Download it instantly.</p>
 
-            <div class="payment-options">
-                <div class="payment-card basic-plan">
-                    <div class="payment-card-content">
-                        <span class="price">&#8377;2</span>
-                        <span class="plan-desc">Single Download</span>
+            <div class="modal-header">
+                <h2 class="payment-title">Unlock Your Resume 🚀</h2>
+                <p class="payment-subtitle">Choose a plan and download instantly</p>
+            </div>
+
+            <div class="payment-options stacked-options">
+
+                <!-- Starter Plan -->
+                <div class="payment-card stacked-card basic-plan">
+                    <div class="stacked-card-info">
+                        <div class="stacked-plan-name">Starter</div>
+                        <div class="stacked-features">Access to 15 templates &bull; Limited downloads</div>
                     </div>
-                    <button class="btn btn-primary btn-simulate-pay" data-amount="200"
-                        style="width: 100%; margin-top: 10px;">Continue</button>
-                </div>
-
-                <div class="payment-card pro-plan">
-                    <div class="popular-badge">Most Popular</div>
-                    <div class="payment-card-content">
+                    <div class="stacked-card-price">
                         <span class="price">&#8377;19</span>
-                        <span class="plan-desc">30 Days Unlimited Access</span>
+                        <span class="plan-desc">/ 7 Days</span>
                     </div>
-                    <button class="btn btn-primary btn-simulate-pay" data-amount="1900"
-                        style="width: 100%; margin-top: 10px;">Continue</button>
+                    <!-- Send planType starter -->
+                    <button class="btn btn-secondary btn-simulate-pay" data-plano="starter"
+                        data-amount="1900">Continue</button>
                 </div>
+
+                <!-- Pro Plan -->
+                <div class="payment-card stacked-card pro-plan highlighted-plan">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <div class="stacked-card-info">
+                        <div class="stacked-plan-name">Pro</div>
+                        <div class="stacked-features">Unlimited templates &bull; Unlimited downloads</div>
+                    </div>
+                    <div class="stacked-card-price">
+                        <span class="price">&#8377;49</span>
+                        <span class="plan-desc">/ 1 Month</span>
+                    </div>
+                    <!-- Send planType pro -->
+                    <button class="btn btn-primary btn-simulate-pay" data-plano="pro"
+                        data-amount="4900">Continue</button>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="payment-card stacked-card premium-plan">
+                    <div class="popular-badge best-value">BEST VALUE</div>
+                    <div class="stacked-card-info">
+                        <div class="stacked-plan-name">Premium</div>
+                        <div class="stacked-features">Everything in Pro &bull; Best Value</div>
+                    </div>
+                    <div class="stacked-card-price">
+                        <span class="price">&#8377;99</span>
+                        <span class="plan-desc">/ 3 Months</span>
+                    </div>
+                    <!-- Send planType premium -->
+                    <button class="btn btn-secondary btn-simulate-pay" data-plano="premium"
+                        data-amount="9900">Continue</button>
+                </div>
+
             </div>
         </div>
     </div>

@@ -5221,7 +5221,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (userDoc.exists()) {
                         const data = userDoc.data();
                         if (data.premium === true && data.expiresAt && data.expiresAt > Date.now()) {
-                            isPremium = true;
+                            let planType = data.planType || 'pro'; // backward compatible old users
+                            if (planType === 'starter') {
+                                const used = data.downloadCount || 0;
+                                const limit = data.downloadLimit || 15;
+                                if (used < limit) {
+                                    isPremium = true;
+                                    // Increment download logic handled before trigger
+                                } else {
+                                    alert("Starter plan limit reached (15 downloads). Please upgrade to continue.");
+                                    isPremium = false;
+                                }
+                            } else {
+                                isPremium = true; // Pro and Premium are unlimited
+                            }
                         } else if (data.singleDownload === true) {
                             hasSingleDownload = true;
                         }
@@ -5233,6 +5246,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 if (isPremium) {
+                    // Pre-increment count for starter users
+                    if (user) {
+                        try {
+                            const userDoc = await getDoc(doc(db, "users", user.uid));
+                            if (userDoc.exists()) {
+                                const data = userDoc.data();
+                                let planType = data.planType || 'pro';
+                                if (planType === 'starter') {
+                                    const currentCount = data.downloadCount || 0;
+                                    await setDoc(doc(db, "users", user.uid), { downloadCount: currentCount + 1 }, { merge: true });
+                                }
+                            }
+                        } catch (err) {
+                            console.error("Failed to update download count", err);
+                        }
+                    }
                     if (typeof window.triggerPDFDownload === 'function') {
                         window.triggerPDFDownload();
                     }
@@ -5387,24 +5416,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Razorpay Payment Logic
-        async function handlePaymentSuccess(amountValue) {
+        async function handlePaymentSuccess(amountValue, planType) {
             // Step 1: mark user as premium
             const user = auth.currentUser;
-            const isMonthly = amountValue === 1900;
 
             if (user) {
                 try {
                     const userRef = doc(db, "users", user.uid);
-                    const planData = isMonthly ? {
-                        premium: true,
-                        expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000),
-                        lastPaymentAmount: "19",
-                        lastPaymentDate: Date.now()
-                    } : {
-                        singleDownload: true,
-                        lastPaymentAmount: "2",
-                        lastPaymentDate: Date.now()
-                    };
+                    let planData = {};
+
+                    if (planType === 'starter') {
+                        planData = {
+                            premium: true,
+                            planType: "starter",
+                            downloadLimit: 15,
+                            downloadCount: 0,
+                            expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000),
+                            lastPaymentAmount: "19",
+                            lastPaymentDate: Date.now()
+                        };
+                    } else if (planType === 'pro') {
+                        planData = {
+                            premium: true,
+                            planType: "pro",
+                            expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000),
+                            lastPaymentAmount: "49",
+                            lastPaymentDate: Date.now()
+                        };
+                    } else if (planType === 'premium') {
+                        planData = {
+                            premium: true,
+                            planType: "premium",
+                            expiresAt: Date.now() + (90 * 24 * 60 * 60 * 1000),
+                            lastPaymentAmount: "99",
+                            lastPaymentDate: Date.now()
+                        };
+                    }
+
                     await setDoc(userRef, planData, { merge: true });
                 } catch (error) {
                     console.error("Error setting premium status:", error);
@@ -5412,11 +5460,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Step 2: show success message
-            if (isMonthly) {
-                alert("Payment successful! You have unlimited downloads for 30 days.");
-            } else {
-                alert("Payment successful! You can download your resume once.");
-            }
+            alert(`Payment successful! Welcome to the ${planType.toUpperCase()} plan.`);
 
             // Step 3: trigger download
             window.closePaymentModal();
@@ -5434,16 +5478,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!targetBtn.classList.contains('btn-simulate-pay')) {
                     targetBtn = targetBtn.closest('.btn-simulate-pay');
                 }
-                const amountValue = parseInt(targetBtn.getAttribute('data-amount') || 200, 10);
+                const amountValue = parseInt(targetBtn.getAttribute('data-amount') || 1900, 10);
+                const planType = targetBtn.getAttribute('data-plano') || 'starter';
 
                 const options = {
                     key: "rzp_live_SYKrxIL6dlt09U",
                     amount: amountValue,
                     currency: "INR",
                     name: "Resume Builder",
-                    description: "Resume Download",
+                    description: `${planType.toUpperCase()} Plan Subscription`,
                     handler: function (response) {
-                        handlePaymentSuccess(amountValue);
+                        handlePaymentSuccess(amountValue, planType);
                     },
                     prefill: {
                         name: "User",
@@ -5740,9 +5785,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 let lastPaymentAmt = data.lastPaymentAmount ? `₹${data.lastPaymentAmount}` : 'Not available';
                 let lastPaymentDate = data.lastPaymentDate ? new Date(data.lastPaymentDate).toLocaleDateString() : 'Not available';
 
-                let isMonthly = !!data.premium;
+                let planType = data.planType || 'free';
+                let isPremium = !!data.premium;
+
+                // Fallback for older users without explicitly named planTypes
+                if (isPremium && planType === 'free') {
+                    planType = 'pro'; 
+                }
+
                 let planDisplay = 'Free Plan';
-                let priceDisplay = '₹0/month';
+                let priceDisplay = '₹0';
+                
+                if (planType === 'starter') { planDisplay = 'Starter Plan'; priceDisplay = '₹19 / 7 Days'; }
+                if (planType === 'pro') { planDisplay = 'Pro Plan'; priceDisplay = '₹49 / 1 Month'; }
+                if (planType === 'premium') { planDisplay = 'Premium Plan'; priceDisplay = '₹99 / 3 Months'; }
 
                 let statusBadge = '<span class="sub-badge sub-inactive">Inactive</span>';
                 let expiryDateStr = 'Not available';
@@ -5753,9 +5809,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let expiresAt = data.expiresAt || 0;
                 let isExpired = Date.now() > expiresAt;
 
-                if (isMonthly) {
-                    planDisplay = 'Monthly Plan';
-                    priceDisplay = '₹19/month';
+                if (isPremium) {
                     if (isExpired) {
                         statusBadge = '<span class="sub-badge sub-expired">Expired</span>';
                         expiryDateStr = new Date(expiresAt).toLocaleDateString();
@@ -5768,14 +5822,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         let diffTime = Math.abs(expiresAt - Date.now());
                         let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                         daysRemainingStr = `${diffDays} days remaining`;
-                        // Assume 30 days total for progress
-                        progressPercentage = Math.min((diffDays / 30) * 100, 100);
-                        progressText = `${diffDays} days remaining out of 30`;
+                        
+                        let totalDays = 30;
+                        if (planType === 'starter') totalDays = 7;
+                        if (planType === 'premium') totalDays = 90;
+                        
+                        progressPercentage = Math.min((diffDays / totalDays) * 100, 100);
+                        progressText = `${diffDays} days remaining out of ${totalDays}`;
+
+                        if (planType === 'starter') {
+                           let count = data.downloadCount || 0;
+                           let limit = data.downloadLimit || 15;
+                           progressText += ` • ${count}/${limit} Downloads Used`;
+                        }
                     }
-                } else if (data.singleDownload) {
-                    planDisplay = 'Single Download';
-                    priceDisplay = '₹2/download';
-                    statusBadge = '<span class="sub-badge sub-active">Available</span>';
                 }
 
                 subContainer.innerHTML = `
@@ -5792,7 +5852,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
                             
-                            ${isMonthly ? `
+                            ${isPremium ? `
                             <div class="plan-progress-container">
                                 <div class="progress-label"><span>${progressText}</span></div>
                                 <div class="progress-bar-bg">

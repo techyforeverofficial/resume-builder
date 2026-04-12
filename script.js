@@ -5740,10 +5740,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Forgot Password Logic ---
     function openForgotPasswordModal() {
         console.log("Opening modal");
-        if (authModal) authModal.classList.remove('active');
-        if (forgotModal) {
-            forgotModal.style.display = "flex";
-            forgotModal.classList.add('active');
+        const modal = document.getElementById("forgot-password-modal");
+
+        if (modal) {
+            modal.style.display = "flex";
+            modal.style.zIndex = "999999";
+            modal.classList.add("active");
         }
     }
 
@@ -5757,11 +5759,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    if (closeForgotModal) {
-        closeForgotModal.addEventListener('click', () => {
-            forgotModal.classList.remove('active');
+    window.closeForgotModal = function() {
+        const modal = document.getElementById("forgot-password-modal");
+        if (modal) {
+            modal.style.display = "none";
+            modal.classList.remove("active");
             if (forgotErrorMsg) forgotErrorMsg.style.display = 'none';
-        });
+        }
+    };
+
+    if (closeForgotModal) {
+        closeForgotModal.addEventListener('click', window.closeForgotModal);
     }
 
     if (btnSendResetLink) {

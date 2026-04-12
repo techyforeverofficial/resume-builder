@@ -1430,31 +1430,7 @@
         </div>
     </div>
 
-    <!-- Forgot Password Modal -->
-    <div id="forgot-password-modal" class="payment-modal-overlay auth-modal-overlay modal">
-        <div class="payment-modal-content auth-modal-ui modal-content">
-            <button class="auth-close-btn" id="close-forgot-modal"><i class="fas fa-times"></i></button>
-            <div class="auth-header" style="margin-bottom: 20px;">
-                <h2 style="font-size: 1.55rem; margin-bottom: 8px;">Reset Password 🔐</h2>
-                <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">Enter your email to receive a secure
-                    password reset link.</p>
-            </div>
-            <form id="forgot-form" class="auth-form-ui">
-                <div class="auth-input-group">
-                    <label>Email Address</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="reset-email" placeholder="Enter your email" required
-                            style="width:100%; padding: 0.85rem 1rem 0.85rem 2.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff;">
-                    </div>
-                </div>
-                <div id="forgot-error-msg" style="display: none; margin-bottom: 1.25rem; font-size: 0.9rem;"></div>
-                <button type="submit" class="auth-submit-btn" id="send-reset-link"
-                    style="width: 100%; margin-top: 10px;">Send Reset Link</button>
-            </form>
-        </div>
-    </div>
-
+    <!-- Removed old structured forgot modal -->
     <!-- Email Verified Success Modal -->
     <div id="verified-success-modal" class="payment-modal-overlay auth-modal-overlay">
         <div class="payment-modal-content auth-modal-ui" style="text-align: center;">
@@ -1478,6 +1454,16 @@
     </footer>
 
     <script type="module" src="script.js"></script>
-</body>
 
+    <!-- Forgot Password Modal (Forced UI) -->
+    <div id="forgot-password-modal" class="modal">
+        <div class="modal-box">
+            <h2>Reset Password 🔐</h2>
+            <input type="email" id="reset-email" placeholder="Enter your email" />
+            <div id="forgot-error-msg" style="display: none; margin-bottom: 10px; color: #ef4444; font-size: 14px;"></div>
+            <button id="send-reset-link">Send Reset Link</button>
+            <button onclick="closeForgotModal()">Close</button>
+        </div>
+    </div>
+</body>
 </html>

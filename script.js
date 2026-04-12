@@ -5494,12 +5494,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // New Auth Elements
     const btnGoogleSignIn = document.getElementById('btn-google-signin');
     const forgotPasswordBtn = document.getElementById('forgot-password-btn');
-    const forgotModal = document.getElementById('forgot-modal');
+    const forgotModal = document.getElementById('forgot-password-modal');
     const closeForgotModal = document.getElementById('close-forgot-modal');
     const forgotForm = document.getElementById('forgot-form');
-    const forgotEmail = document.getElementById('forgot-email');
+    const resetEmail = document.getElementById('reset-email');
     const forgotErrorMsg = document.getElementById('forgot-error-msg');
-    const forgotSubmitBtn = document.getElementById('forgot-submit-btn');
+    const btnSendResetLink = document.getElementById('send-reset-link');
     
     const verifyModal = document.getElementById('verify-modal');
     const closeVerifyModal = document.getElementById('close-verify-modal');
@@ -5738,19 +5738,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Forgot Password Logic ---
-    function openForgotPasswordModal(e) {
-        if (e) e.preventDefault();
-        console.log("Forgot clicked");
+    function openForgotPasswordModal() {
         if (authModal) authModal.classList.remove('active');
-        if (forgotModal) forgotModal.classList.add('active');
+        if (forgotModal) {
+            forgotModal.style.display = "flex";
+            forgotModal.classList.add('active');
+        }
     }
 
-    // Force binding reliably (Module scripts run after the DOM is ready)
-    const btnForgot = document.getElementById("forgot-password-btn");
-    if (btnForgot) {
-        btnForgot.addEventListener("click", openForgotPasswordModal);
+    document.addEventListener("DOMContentLoaded", () => {
+        const forgotBtn = document.getElementById("forgot-password-btn");
+        if (forgotBtn) {
+            forgotBtn.addEventListener("click", () => {
+                openForgotPasswordModal();
+            });
+        }
+    });
+
+    // Module fallback
+    if (document.readyState !== "loading") {
+        const forgotBtn = document.getElementById("forgot-password-btn");
+        if (forgotBtn && !forgotBtn.dataset.bound) {
+            forgotBtn.dataset.bound = "true";
+            forgotBtn.addEventListener("click", () => {
+                openForgotPasswordModal();
+            });
+        }
     }
-    
+
     if (closeForgotModal) {
         closeForgotModal.addEventListener('click', () => {
             forgotModal.classList.remove('active');
@@ -5758,34 +5773,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (forgotForm) {
-        forgotForm.addEventListener('submit', async (e) => {
+    if (btnSendResetLink) {
+        btnSendResetLink.addEventListener("click", async (e) => {
             e.preventDefault();
-            const email = forgotEmail.value;
-            forgotErrorMsg.style.display = 'none';
+            if (!resetEmail) return;
+            const email = resetEmail.value;
+            if (!email) {
+                forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">Please enter your email.</span>';
+                forgotErrorMsg.style.display = 'block';
+                return;
+            }
             
+            forgotErrorMsg.style.display = 'none';
+            btnSendResetLink.disabled = true;
+            btnSendResetLink.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
             try {
-                forgotSubmitBtn.disabled = true;
-                forgotSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-                
                 await sendPasswordResetEmail(auth, email);
-                
+                showToast("Reset link sent to your email");
+                if (forgotForm) forgotForm.reset();
                 forgotErrorMsg.innerHTML = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Password reset link sent to your email.</span>';
                 forgotErrorMsg.style.display = 'block';
-                forgotForm.reset();
             } catch (error) {
                 console.error("Forgot password error:", error);
                 if (error.code === 'auth/user-not-found') {
+                    showToast("No account found with this email.");
                     forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">No account found with this email.</span>';
                 } else if (error.code === 'auth/invalid-email') {
+                    showToast("Invalid email address format.");
                     forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">Invalid email address format.</span>';
                 } else {
-                    forgotErrorMsg.innerHTML = '<span style="color: #ef4444;">Failed to send reset link. Try again later.</span>';
+                    showToast(error.message || "Failed to send reset link.");
+                    forgotErrorMsg.innerHTML = `<span style="color: #ef4444;">${error.message}</span>`;
                 }
                 forgotErrorMsg.style.display = 'block';
             } finally {
-                forgotSubmitBtn.disabled = false;
-                forgotSubmitBtn.innerText = 'Send Reset Link';
+                btnSendResetLink.disabled = false;
+                btnSendResetLink.innerText = 'Send Reset Link';
             }
         });
     }

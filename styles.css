@@ -5396,4 +5396,7 @@ body, html {
     min-height: auto !important;
     overflow: visible !important;
   }
-}
+} 
+ . m o d a l   {   d i s p l a y :   n o n e ;   }  
+ . m o d a l . a c t i v e   {   d i s p l a y :   f l e x ;   }  
+ 

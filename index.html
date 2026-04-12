@@ -1371,8 +1371,7 @@
                         <i class="fas fa-eye toggle-password" id="toggle-auth-password" title="Show/Hide Password"></i>
                     </div>
                     <div style="display: flex; justify-content: flex-end; margin-top: -10px; margin-bottom: 15px;">
-                        <a href="#" id="forgot-password-btn" class="auth-link"
-                            style="font-size: 0.85rem; font-weight: 500;">Forgot Password?</a>
+                        <button type="button" id="forgot-password-btn" class="auth-link" style="font-size: 0.85rem; font-weight: 500; background: none; border: none; cursor: pointer; padding: 0;">Forgot Password?</button>
                     </div>
                     <div id="auth-error-msg" style="display: none; margin-bottom: 1.25rem;"></div>
 
@@ -1430,8 +1429,8 @@
     </div>
 
     <!-- Forgot Password Modal -->
-    <div id="forgot-modal" class="payment-modal-overlay auth-modal-overlay">
-        <div class="payment-modal-content auth-modal-ui">
+    <div id="forgot-password-modal" class="payment-modal-overlay auth-modal-overlay modal">
+        <div class="payment-modal-content auth-modal-ui modal-content">
             <button class="auth-close-btn" id="close-forgot-modal"><i class="fas fa-times"></i></button>
             <div class="auth-header" style="margin-bottom: 20px;">
                 <h2 style="font-size: 1.55rem; margin-bottom: 8px;">Reset Password 🔐</h2>
@@ -1443,12 +1442,12 @@
                     <label>Email Address</label>
                     <div class="input-with-icon">
                         <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="forgot-email" placeholder="you@example.com" required
+                        <input type="email" id="reset-email" placeholder="Enter your email" required
                             style="width:100%; padding: 0.85rem 1rem 0.85rem 2.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff;">
                     </div>
                 </div>
                 <div id="forgot-error-msg" style="display: none; margin-bottom: 1.25rem; font-size: 0.9rem;"></div>
-                <button type="submit" class="auth-submit-btn" id="forgot-submit-btn"
+                <button type="submit" class="auth-submit-btn" id="send-reset-link"
                     style="width: 100%; margin-top: 10px;">Send Reset Link</button>
             </form>
         </div>

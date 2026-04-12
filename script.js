@@ -5233,35 +5233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const hasLocalPremium = data.premium === true && data.expiresAt && data.expiresAt > Date.now();
                     
                     if (hasLocalPremium) {
-                        if (data.planType !== 'starter') {
-                            // Non-starter plan ("pro", "premium", etc.): unlimited downloads.
-                            shouldTriggerDownload = true;
-                        } else {
-                            try {
-                                console.log("Using callable, NOT fetch");
-                                const decrementDownload = httpsCallable(functions, "decrementDownload");
-                                const res = await decrementDownload({
-                                    userId: user.uid
-                                });
-
-                                console.log("Callable response:", res);
-
-                                if (res.data && res.data.success === false) {
-                                    showToast("Download limit reached");
-                                    // Let finally block handle enabling the button.
-                                    return;
-                                }
-                                
-                                if (res.data && res.data.success) {
-                                    shouldTriggerDownload = true;
-                                }
-                            
-                            } catch (err) {
-                                console.error("Callable ERROR:", err);
-                                showToast("Verification failed");
-                                return;
-                            }
-                        }
+                        shouldTriggerDownload = true;
                     } else if (data.singleDownload === true) {
                         shouldTriggerDownload = true;
                     }
@@ -6065,8 +6037,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         progressText = `${diffDays} days remaining out of ${totalDays}`;
 
                         if (planType === 'starter') {
-                           let limit = data.downloadLimit !== undefined ? data.downloadLimit : 15;
-                           progressText += ` • ${limit} Downloads Remaining`;
+                           progressText += ` • Limited downloads`;
                         }
                     }
                 }

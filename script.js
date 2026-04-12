@@ -5225,8 +5225,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                let isPremium = false;
-                let hasSingleDownload = false;
+                let shouldTriggerDownload = false;
 
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
@@ -5234,28 +5233,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     const hasLocalPremium = data.premium === true && data.expiresAt && data.expiresAt > Date.now();
                     
                     if (hasLocalPremium) {
-                        const decrementDownload = httpsCallable(functions, 'decrementDownload');
-                        const response = await decrementDownload({ userId: user.uid });
-                        
-                        if (response.data && response.data.success) {
-                            isPremium = true;
+                        if (data.planType !== 'starter') {
+                            // Non-starter plan ("pro", "premium", etc.): unlimited downloads.
+                            shouldTriggerDownload = true;
                         } else {
-                            if (response.data && response.data.message === 'Download limit reached.') {
-                                showToast("Download limit reached. Please upgrade your plan.");
-                            } else {
-                                showToast("Secure verification failed. Please check your subscription.");
+                            try {
+                                console.log("Using callable, NOT fetch");
+                                const decrementDownload = httpsCallable(functions, "decrementDownload");
+                                const res = await decrementDownload({
+                                    userId: user.uid
+                                });
+
+                                console.log("Callable response:", res);
+
+                                if (res.data && res.data.success === false) {
+                                    showToast("Download limit reached");
+                                    // Let finally block handle enabling the button.
+                                    return;
+                                }
+                                
+                                if (res.data && res.data.success) {
+                                    shouldTriggerDownload = true;
+                                }
+                            
+                            } catch (err) {
+                                console.error("Callable ERROR:", err);
+                                showToast("Verification failed");
+                                return;
                             }
                         }
                     } else if (data.singleDownload === true) {
-                        hasSingleDownload = true;
+                        shouldTriggerDownload = true;
                     }
                 }
 
-                if (isPremium) {
-                    if (typeof window.triggerPDFDownload === 'function') {
-                        await window.triggerPDFDownload();
-                    }
-                } else if (hasSingleDownload) {
+                if (shouldTriggerDownload) {
                     if (typeof window.triggerPDFDownload === 'function') {
                         await window.triggerPDFDownload();
                     }

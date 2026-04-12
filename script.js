@@ -5739,6 +5739,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Forgot Password Logic ---
     function openForgotPasswordModal() {
+        console.log("Opening modal");
         if (authModal) authModal.classList.remove('active');
         if (forgotModal) {
             forgotModal.style.display = "flex";
@@ -5746,25 +5747,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const forgotBtn = document.getElementById("forgot-password-btn");
-        if (forgotBtn) {
-            forgotBtn.addEventListener("click", () => {
-                openForgotPasswordModal();
-            });
+    // Use global event delegation to guarantee click firing strictly
+    document.addEventListener("click", function (e) {
+        const targetBtn = e.target.closest && e.target.closest("#forgot-password-btn");
+        if (targetBtn || (e.target && e.target.id === "forgot-password-btn")) {
+            e.preventDefault();
+            console.log("Forgot clicked (delegation)");
+            openForgotPasswordModal();
         }
     });
-
-    // Module fallback
-    if (document.readyState !== "loading") {
-        const forgotBtn = document.getElementById("forgot-password-btn");
-        if (forgotBtn && !forgotBtn.dataset.bound) {
-            forgotBtn.dataset.bound = "true";
-            forgotBtn.addEventListener("click", () => {
-                openForgotPasswordModal();
-            });
-        }
-    }
 
     if (closeForgotModal) {
         closeForgotModal.addEventListener('click', () => {

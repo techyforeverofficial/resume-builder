@@ -5399,4 +5399,6 @@ body, html {
 } 
  . m o d a l   {   d i s p l a y :   n o n e ;   }  
  . m o d a l . a c t i v e   {   d i s p l a y :   f l e x ;   }  
+ . m o d a l   {   d i s p l a y :   n o n e ;   p o s i t i o n :   f i x e d ;   z - i n d e x :   9 9 9 9 ;   }  
+ . m o d a l . a c t i v e   {   d i s p l a y :   f l e x   ! i m p o r t a n t ;   }  
  

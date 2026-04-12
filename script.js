@@ -5218,32 +5218,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (user) {
                 try {
-                    const decrementDownload = httpsCallable(functions, 'decrementDownload');
-                    const response = await decrementDownload({ userId: user.uid });
-                    
-                    if (response.data && response.data.success) {
-                        isPremium = true;
-                    } else {
-                        // Backend explicitly rejected (not premium, expired, or limit reached)
-                        isPremium = false;
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
                         
-                        // Check if it's specifically a limit issue to show a better alert,
-                        // otherwise default back to showing payment modal.
-                        if (response.data && response.data.message === 'Download limit reached.') {
-                            alert("Download limit reached. Please upgrade your plan.");
-                        } 
-                    }
-                    
-                    // Fallback local check for older 'singleDownload' logic just in case
-                    if (!isPremium) {
-                        const userDoc = await getDoc(doc(db, "users", user.uid));
-                        if (userDoc.exists() && userDoc.data().singleDownload === true) {
+                        // Local check to efficiently route users to correct UX flow
+                        const hasLocalPremium = data.premium === true && data.expiresAt && data.expiresAt > Date.now();
+                        
+                        if (hasLocalPremium) {
+                            // They appear premium locally, now securely verify with backend
+                            try {
+                                const decrementDownload = httpsCallable(functions, 'decrementDownload');
+                                const response = await decrementDownload({ userId: user.uid });
+                                
+                                if (response.data && response.data.success) {
+                                    isPremium = true;
+                                } else {
+                                    isPremium = false;
+                                    if (response.data && response.data.message === 'Download limit reached.') {
+                                        alert("Download limit reached. Please upgrade your plan.");
+                                    } else {
+                                        alert("Secure verification failed. Please check your subscription.");
+                                    }
+                                }
+                            } catch (error) {
+                                console.error("Backend premium check failed:", error);
+                                alert("Failed to securely verify subscription. Please try downloading again later.");
+                            }
+                        } else if (data.singleDownload === true) {
+                            // Fallback local check for older 'singleDownload' logic
                             hasSingleDownload = true;
+                        } else {
+                            // Free user - bypass backend check entirely and let flow seamlessly open pricing
+                            isPremium = false;
                         }
                     }
                 } catch (error) {
-                    console.error("Backend premium check failed:", error);
-                    alert("Failed to securely verify subscription. Please try downloading again later.");
+                    console.error("Local premium read failed:", error);
                 }
             }
 

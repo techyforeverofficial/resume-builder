@@ -5199,88 +5199,76 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDownload = document.getElementById('btn-download');
     if (btnDownload) {
         btnDownload.addEventListener('click', async (e) => {
+            console.log("Download clicked");
+            console.log("User before reload:", auth.currentUser);
+            console.log("Verified before reload:", auth.currentUser?.emailVerified);
+            
             const originalHtml = btnDownload.innerHTML;
             btnDownload.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
             btnDownload.disabled = true;
 
-            const user = auth.currentUser;
-            let isPremium = false;
-            let hasSingleDownload = false;
-
-            if (!user) {
-                pendingPaymentPrompt = true;
-                const authModal = document.getElementById('auth-modal');
-                if (authModal) authModal.classList.add('active');
-                btnDownload.innerHTML = originalHtml;
-                btnDownload.disabled = false;
-                return;
-            }
-
-            if (!user.emailVerified) {
-                const verifyModal = document.getElementById('verify-modal');
-                if (verifyModal) verifyModal.classList.add('active');
-                btnDownload.innerHTML = originalHtml;
-                btnDownload.disabled = false;
-                return;
-            }
-
-            if (user) {
-                try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) {
-                        const data = userDoc.data();
-                        
-                        // Local check to efficiently route users to correct UX flow
-                        const hasLocalPremium = data.premium === true && data.expiresAt && data.expiresAt > Date.now();
-                        
-                        if (hasLocalPremium) {
-                            // They appear premium locally, now securely verify with backend
-                            try {
-                                const decrementDownload = httpsCallable(functions, 'decrementDownload');
-                                const response = await decrementDownload({ userId: user.uid });
-                                
-                                if (response.data && response.data.success) {
-                                    isPremium = true;
-                                } else {
-                                    isPremium = false;
-                                    if (response.data && response.data.message === 'Download limit reached.') {
-                                        showToast("Download limit reached. Please upgrade your plan.");
-                                    } else {
-                                        showToast("Secure verification failed. Please check your subscription.");
-                                    }
-                                }
-                            } catch (error) {
-                                console.error("Backend premium check failed:", error);
-                                showToast("Failed to securely verify subscription. Please try downloading again later.");
-                            }
-                        } else if (data.singleDownload === true) {
-                            // Fallback local check for older 'singleDownload' logic
-                            hasSingleDownload = true;
-                        } else {
-                            // Free user - bypass backend check entirely and let flow seamlessly open pricing
-                            isPremium = false;
-                        }
-                    }
-                } catch (error) {
-                    console.error("Local premium read failed:", error);
-                }
-            }
-
             try {
+                if (!auth.currentUser) {
+                    pendingPaymentPrompt = true;
+                    const authModal = document.getElementById('auth-modal');
+                    if (authModal) authModal.classList.add('active');
+                    return;
+                }
+
+                await auth.currentUser.reload();
+                console.log("User after reload:", auth.currentUser);
+                console.log("Verified after reload:", auth.currentUser?.emailVerified);
+                
+                if (!auth.currentUser.emailVerified) {
+                    console.log("Verify modal triggered");
+                    const verifyModal = document.getElementById('verify-modal');
+                    if (verifyModal) verifyModal.classList.add('active');
+                    return;
+                }
+
+                const user = auth.currentUser;
+                let isPremium = false;
+                let hasSingleDownload = false;
+
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    const hasLocalPremium = data.premium === true && data.expiresAt && data.expiresAt > Date.now();
+                    
+                    if (hasLocalPremium) {
+                        const decrementDownload = httpsCallable(functions, 'decrementDownload');
+                        const response = await decrementDownload({ userId: user.uid });
+                        
+                        if (response.data && response.data.success) {
+                            isPremium = true;
+                        } else {
+                            if (response.data && response.data.message === 'Download limit reached.') {
+                                showToast("Download limit reached. Please upgrade your plan.");
+                            } else {
+                                showToast("Secure verification failed. Please check your subscription.");
+                            }
+                        }
+                    } else if (data.singleDownload === true) {
+                        hasSingleDownload = true;
+                    }
+                }
+
                 if (isPremium) {
                     if (typeof window.triggerPDFDownload === 'function') {
-                        window.triggerPDFDownload();
+                        await window.triggerPDFDownload();
                     }
                 } else if (hasSingleDownload) {
                     if (typeof window.triggerPDFDownload === 'function') {
                         await window.triggerPDFDownload();
                     }
-                    // singleDownload consumption now handled securely on backend
                 } else {
                     if (typeof window.openPaymentModal === 'function') {
                         window.openPaymentModal();
                     }
                 }
+            } catch (error) {
+                console.error("Download flow failed:", error);
+                showToast("An error occurred starting download. Please try again.");
             } finally {
                 btnDownload.innerHTML = originalHtml;
                 btnDownload.disabled = false;
@@ -5752,12 +5740,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Forgot Password Logic ---
     function openForgotPasswordModal(e) {
         if (e) e.preventDefault();
+        console.log("Forgot clicked");
         if (authModal) authModal.classList.remove('active');
         if (forgotModal) forgotModal.classList.add('active');
     }
 
-    if (forgotPasswordBtn) {
-        forgotPasswordBtn.addEventListener('click', openForgotPasswordModal);
+    // Force binding reliably (Module scripts run after the DOM is ready)
+    const btnForgot = document.getElementById("forgot-password-btn");
+    if (btnForgot) {
+        btnForgot.addEventListener("click", openForgotPasswordModal);
     }
     
     if (closeForgotModal) {

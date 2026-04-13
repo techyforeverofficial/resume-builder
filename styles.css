@@ -1734,7 +1734,7 @@ textarea {
 
 .footer-socials a:hover {
     background: var(--accent-color, #6366f1);
-    transform: translateY(-3px);
+    transform: scale(1.1);
     box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
     border-color: rgba(99, 102, 241, 0.5);
 }

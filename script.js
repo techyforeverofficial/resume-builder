@@ -5395,6 +5395,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Immediately close selection modal and open processing overlay
+            window.closePaymentModal();
+            const processingOverlay = document.getElementById('payment-processing-overlay');
+            const processingLoader = document.getElementById('processing-loader');
+            const processingSuccess = document.getElementById('processing-success');
+            const processingError = document.getElementById('processing-error');
+
+            if (processingOverlay) {
+                processingLoader.style.display = 'block';
+                processingSuccess.style.display = 'none';
+                processingError.style.display = 'none';
+                processingOverlay.classList.add('active');
+            }
+
             try {
                 // Call secure Cloud Function
                 const activatePremium = httpsCallable(functions, 'activatePremium');
@@ -5403,18 +5417,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     planType: planType 
                 });
 
-                alert(`Payment successful! Welcome to the ${planType.toUpperCase()} plan. Your account has been securely upgraded.`);
+                // Backend confirms success -> Replace loader with success UI
+                if (processingOverlay) {
+                    processingLoader.style.display = 'none';
+                    processingSuccess.style.display = 'block';
+                    processingSuccess.style.animation = 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+                    
+                    // After 1-1.5 seconds, automatically close modal and trigger PDF download
+                    setTimeout(() => {
+                        processingOverlay.classList.remove('active');
+                        const btnDownload = document.getElementById('btn-download');
+                        if (btnDownload) {
+                            btnDownload.click();
+                        }
+                    }, 1500);
+                } else {
+                    // Fallback if UI is missing
+                    const btnDownload = document.getElementById('btn-download');
+                    if (btnDownload) {
+                        btnDownload.click();
+                    }
+                }
             } catch (error) {
                 console.error("Backend activation failed:", error);
-                alert("Payment was successful, but there was an issue upgrading your account automatically. Please contact support.");
-            }
-
-            window.closePaymentModal();
-            
-            // Trigger download after successful backend upgrade
-            const btnDownload = document.getElementById('btn-download');
-            if (btnDownload) {
-                btnDownload.click();
+                if (processingOverlay) {
+                    processingLoader.style.display = 'none';
+                    processingError.style.display = 'block';
+                    processingError.style.animation = 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+                }
             }
         }
 

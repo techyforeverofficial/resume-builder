@@ -1363,6 +1363,32 @@
         </div>
     </div>
 
+    <!-- Payment Processing Overlay -->
+    <div id="payment-processing-overlay" class="payment-modal-overlay">
+        <div class="processing-content auth-modal-ui" style="text-align: center; padding: 40px; max-width: 400px; width: 90%;">
+            <div id="processing-loader">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+                <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Processing Payment...</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">Please do not close or refresh this window.</p>
+            </div>
+            <div id="processing-success" style="display: none;">
+                <div style="width: 70px; height: 70px; background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Payment Successful 🎉</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">Your plan has been activated.</p>
+            </div>
+            <div id="processing-error" style="display: none;">
+                <div style="width: 70px; height: 70px; background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Something went wrong</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem; margin-bottom: 20px;">Please contact support.</p>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('payment-processing-overlay').classList.remove('active'); window.location.reload();" style="width: 100%;">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Razorpay Checkout -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 

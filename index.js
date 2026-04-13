@@ -5,22 +5,13 @@ const { Resend } = require('resend');
 // Initialize Firebase Admin
 admin.initializeApp();
 
-// Initialize Resend
-// Note: Set your API key via: firebase functions:config:set resend.key="YOUR_API_KEY"
-let resend;
-try {
-  const apiKey = functions.config().resend.key;
-  resend = new Resend(apiKey);
-} catch (error) {
-  console.log("Resend not initialized yet during deploy");
-}
-
 /**
  * Cloud Function to securely activate premium subscription status.
  * This should ideally be called via a trusted server context like a Razorpay webhook,
  * or securely authenticated from the client.
  */
 exports.activatePremium = functions.https.onCall(async (data, context) => {
+    const resend = new Resend(functions.config().resend.key);
     const userId = data.userId;
     const planType = data.planType;
 
@@ -118,15 +109,13 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
 
             try {
                 // To activate standard deployment, configure process.env.RESEND_API_KEY
-                if (resend) {
-                    await resend.emails.send({
-                        from: 'ResumeForge <onboarding@resend.dev>',
-                        to: email,
-                        subject: 'Your ResumeForge Plan is Activated 🚀',
-                        html: emailHtml
-                    });
-                    console.log(`Activation email sent successfully to ${email}`);
-                }
+                await resend.emails.send({
+                    from: 'ResumeForge <onboarding@resend.dev>',
+                    to: email,
+                    subject: 'Your ResumeForge Plan is Activated 🚀',
+                    html: emailHtml
+                });
+                console.log(`Activation email sent successfully to ${email}`);
             } catch (emailError) {
                 console.error("Resend API error sending email:", emailError);
                 // Non-blocking: We don't want the function to return an error to the client if email fails

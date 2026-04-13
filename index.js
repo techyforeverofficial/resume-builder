@@ -1,13 +1,14 @@
-require("dotenv").config();
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { Resend } = require('resend');
+require("dotenv").config();
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
 // Initialize Resend
 // Note: Set your API key via environment variable: process.env.RESEND_API_KEY
+// Alternatively configure via Firebase parameters if required.
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
@@ -22,7 +23,7 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
     // Validate inputs
     if (!userId || !planType) {
         throw new functions.https.HttpsError(
-            'invalid-argument', 
+            'invalid-argument',
             'The function must be called with a valid userId and planType.'
         );
     }
@@ -42,7 +43,7 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
             break;
         default:
             throw new functions.https.HttpsError(
-                'invalid-argument', 
+                'invalid-argument',
                 'Invalid planType provided. Must be starter, pro, or premium.'
             );
     }
@@ -114,7 +115,7 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
             try {
                 // To activate standard deployment, configure process.env.RESEND_API_KEY
                 await resend.emails.send({
-                    from: 'ResumeForge <noreply@techyforever.com>',
+                    from: 'ResumeForge <onboarding@resend.dev>',
                     to: email,
                     subject: 'Your ResumeForge Plan is Activated 🚀',
                     html: emailHtml
@@ -126,14 +127,14 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
             }
         }
 
-        return { 
-            success: true, 
+        return {
+            success: true,
             message: "Successfully activated " + planType + " plan for user."
         };
     } catch (error) {
         console.error("Error setting user premium status:", error);
         throw new functions.https.HttpsError(
-            'internal', 
+            'internal',
             'An error occurred securely upgrading the user subscription.'
         );
     }

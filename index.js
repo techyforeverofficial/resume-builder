@@ -64,14 +64,21 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
         // Retrieve User info for Email
         let email = '';
         let name = 'User';
+        
         try {
             const userRecord = await admin.auth().getUser(userId);
-            email = userRecord.email;
+            email = userRecord.email || '';
             name = userRecord.displayName || 'User';
         } catch (authError) {
-            console.error("Could not fetch user details for email:", authError);
-            // Non-blocking: continue without email if auth fails gracefully
+            console.error("Auth fetch failed:", authError);
         }
+        
+        if (!email) {
+            const userDoc = await admin.firestore().collection('users').doc(userId).get();
+            email = userDoc.data()?.email || '';
+        }
+        
+        console.log("Final email value:", email);
 
         // Send Email Notification if email is present
         if (email) {

@@ -1,15 +1,19 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { Resend } = require('resend');
-require("dotenv").config();
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
 // Initialize Resend
-// Note: Set your API key via environment variable: process.env.RESEND_API_KEY
-// Alternatively configure via Firebase parameters if required.
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Note: Set your API key via: firebase functions:config:set resend.key="YOUR_API_KEY"
+let resend;
+try {
+  const apiKey = functions.config().resend.key;
+  resend = new Resend(apiKey);
+} catch (error) {
+  console.log("Resend not initialized yet during deploy");
+}
 
 /**
  * Cloud Function to securely activate premium subscription status.
@@ -114,13 +118,15 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
 
             try {
                 // To activate standard deployment, configure process.env.RESEND_API_KEY
-                await resend.emails.send({
-                    from: 'ResumeForge <onboarding@resend.dev>',
-                    to: email,
-                    subject: 'Your ResumeForge Plan is Activated 🚀',
-                    html: emailHtml
-                });
-                console.log(`Activation email sent successfully to ${email}`);
+                if (resend) {
+                    await resend.emails.send({
+                        from: 'ResumeForge <onboarding@resend.dev>',
+                        to: email,
+                        subject: 'Your ResumeForge Plan is Activated 🚀',
+                        html: emailHtml
+                    });
+                    console.log(`Activation email sent successfully to ${email}`);
+                }
             } catch (emailError) {
                 console.error("Resend API error sending email:", emailError);
                 // Non-blocking: We don't want the function to return an error to the client if email fails

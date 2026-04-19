@@ -1,6 +1,7 @@
-import { auth, db, functions } from './firebase-config.js';
+import { auth, db, functions, storage } from './firebase-config.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-functions.js";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -281,9 +282,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else if (viewName === 'account') {
                 const pageEmail = document.getElementById('page-ma-email');
-                const pagePhoto = document.getElementById('page-ma-photo');
                 if (pageEmail) pageEmail.innerText = user.email || 'No email associated';
-                if (pagePhoto) pagePhoto.src = user.photoURL || 'https://via.placeholder.com/100';
+                try {
+                    getDoc(doc(db, "users", user.uid)).then(d => {
+                        if (typeof window.updateGlobalProfilePhoto === 'function') {
+                            window.updateGlobalProfilePhoto(d.exists() && d.data().profilePicture ? d.data().profilePicture : user.photoURL || null);
+                        }
+                    });
+                } catch(e) {}
             }
         }
 
@@ -5859,6 +5865,23 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser = user;
         isAuthLoaded = true;
 
+        if (typeof window.updateGlobalProfilePhoto === 'function') {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists() && userDoc.data().profilePicture) {
+                        window.updateGlobalProfilePhoto(userDoc.data().profilePicture);
+                    } else {
+                        window.updateGlobalProfilePhoto(user.photoURL || null);
+                    }
+                } catch (e) {
+                    window.updateGlobalProfilePhoto(user.photoURL || null);
+                }
+            } else {
+                window.updateGlobalProfilePhoto(null);
+            }
+        }
+
         if (user) {
             try {
                 // Force refresh real-time user state (ensures no platform freeze or stale cache)
@@ -6517,6 +6540,128 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Account Management SPA Core ---
+    window.updateGlobalProfilePhoto = (url) => {
+        const defaultAvatar = 'https://via.placeholder.com/100';
+        const finalUrl = url || defaultAvatar;
+
+        const pagePhoto = document.getElementById('page-ma-photo');
+        if (pagePhoto) pagePhoto.src = finalUrl;
+
+        const navIcon = document.getElementById('nav-profile-icon');
+        const navPhoto = document.getElementById('nav-profile-photo');
+        if (navPhoto && navIcon) {
+            if (url) {
+                navIcon.style.display = 'none';
+                navPhoto.src = url;
+                navPhoto.style.display = 'block';
+            } else {
+                navIcon.style.display = 'block';
+                navPhoto.src = '';
+                navPhoto.style.display = 'none';
+            }
+        }
+    };
+
+    const btnEditProfilePhoto = document.getElementById('btn-edit-profile-photo');
+    const photoEditDropdown = document.getElementById('photo-edit-dropdown');
+    
+    if (btnEditProfilePhoto && photoEditDropdown) {
+        btnEditProfilePhoto.addEventListener('click', (e) => {
+            e.stopPropagation();
+            photoEditDropdown.classList.toggle('hidden');
+        });
+        document.addEventListener('click', () => {
+            photoEditDropdown.classList.add('hidden');
+        });
+    }
+
+    const btnUploadNewPhoto = document.getElementById('btn-upload-new-photo');
+    const hiddenProfileUpload = document.getElementById('hidden-profile-upload');
+    
+    if (btnUploadNewPhoto && hiddenProfileUpload) {
+        btnUploadNewPhoto.addEventListener('click', (e) => {
+            e.stopPropagation();
+            photoEditDropdown.classList.add('hidden');
+            hiddenProfileUpload.click();
+        });
+
+        hiddenProfileUpload.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a valid image (JPG, PNG, or WEBP).');
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Image must be less than 2MB.');
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) return;
+
+            try {
+                const pagePhoto = document.getElementById('page-ma-photo');
+                if (pagePhoto) pagePhoto.style.opacity = '0.5';
+                
+                const fileRef = ref(storage, `profile_photos/${user.uid}/${file.name}`);
+                await uploadBytes(fileRef, file);
+                const downloadURL = await getDownloadURL(fileRef);
+
+                const userDocRef = doc(db, 'users', user.uid);
+                await updateDoc(userDocRef, { profilePicture: downloadURL });
+
+                window.updateGlobalProfilePhoto(downloadURL);
+            } catch (error) {
+                console.error("Error uploading image:", error);
+                alert("Failed to upload image. Please try again.");
+            } finally {
+                const pagePhoto = document.getElementById('page-ma-photo');
+                if (pagePhoto) pagePhoto.style.opacity = '1';
+                e.target.value = '';
+            }
+        });
+    }
+
+    const btnRemovePhoto = document.getElementById('btn-remove-photo');
+    if (btnRemovePhoto) {
+        btnRemovePhoto.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            photoEditDropdown.classList.add('hidden');
+            
+            const user = auth.currentUser;
+            if (!user) return;
+
+            if (!confirm("Are you sure you want to remove your profile picture?")) return;
+
+            try {
+                const pagePhoto = document.getElementById('page-ma-photo');
+                if (pagePhoto) pagePhoto.style.opacity = '0.5';
+                
+                const userDocRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(userDocRef);
+                
+                if (docSnap.exists() && docSnap.data().profilePicture) {
+                    const picUrl = docSnap.data().profilePicture;
+                    if (picUrl.includes('firebasestorage')) {
+                        const fileRef = ref(storage, picUrl);
+                        try { await deleteObject(fileRef); } catch (err) { console.error(err); }
+                    }
+                }
+
+                await updateDoc(userDocRef, { profilePicture: null });
+                window.updateGlobalProfilePhoto(null);
+            } catch (error) {
+                console.error("Error removing image:", error);
+            } finally {
+                const pagePhoto = document.getElementById('page-ma-photo');
+                if (pagePhoto) pagePhoto.style.opacity = '1';
+            }
+        });
+    }
+
     const btnOpenDeleteAccount = document.getElementById('page-btn-open-delete-account');
     const deleteAccountConfirmBox = document.getElementById('delete-account-confirm-box');
     const deleteAccountFlowWrapper = document.getElementById('delete-account-flow-wrapper');

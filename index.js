@@ -155,7 +155,7 @@ exports.generateExperience = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         const prompt = `Generate 5-6 strong resume bullet points for a ${role}. Make them ATS-friendly, action-oriented, and professional. Return ONLY the text, one point per line, with no markdown, no asterisks, and no bullet symbols.`;
         const result = await model.generateContent(prompt);
         const text = result.response.text();
@@ -172,7 +172,7 @@ exports.generateSkills = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         const prompt = `Suggest 15 relevant technical and soft skills for a ${role}. Return only comma-separated skills without any markdown or extra text.`;
         const result = await model.generateContent(prompt);
         const text = result.response.text();
@@ -189,7 +189,7 @@ exports.generateSummary = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         const prompt = `Write a professional 3-4 line resume summary for a ${role}. Make it ATS-friendly and impactful. Do not use markdown or special formatting. Return plain text only.`;
         const result = await model.generateContent(prompt);
         const text = result.response.text();

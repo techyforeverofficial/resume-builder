@@ -268,6 +268,42 @@
             </div>
         </section>
 
+        <!-- Account View -->
+        <section id="account-view" class="view">
+            <header class="view-header">
+                <h2>My Account</h2>
+            </header>
+            <div class="dashboard-container">
+                <div class="form-section" style="max-width: 600px; margin: 0 auto; text-align: center;">
+                    <h3><i class="fas fa-user-circle"></i> Profile Details</h3>
+                    <img id="page-ma-photo" src="https://via.placeholder.com/100" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 1.5rem auto 1rem; border: 3px solid var(--accent-color); display: block;">
+                    <p id="page-ma-email" style="font-weight: 500; color: var(--text-primary); margin-bottom: 2rem; font-size: 1.2rem;">Loading...</p>
+                    
+                    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: left;">
+                        <h4 style="color: #ef4444; margin-bottom: 1rem;"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h4>
+                        <div style="background-color: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 1.5rem; border-radius: 8px;">
+                            <p style="margin-top: 0; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem;">Executing this command will irreversibly destroy your account credentials and permanently wipe all saved Resumes.</p>
+                            
+                            <div id="delete-account-flow-wrapper">
+                                <button id="page-btn-open-delete-account" class="btn btn-secondary" style="border-color: #ef4444; color: #ef4444;"><i class="fas fa-trash-alt"></i> Delete Account</button>
+                            </div>
+                            
+                            <div id="delete-account-confirm-box" style="display: none; margin-top: 1rem; border-top: 1px dashed rgba(239,68,68,0.3); padding-top: 1rem;">
+                                <div class="input-group" style="text-align: left; margin-bottom: 1rem;">
+                                    <label style="color: var(--text-primary);">Type <strong style="color: #ef4444; letter-spacing: 1px;">DELETE</strong> to confirm</label>
+                                    <input type="text" id="page-delete-confirm-input" placeholder="DELETE" style="width: 100%; margin-top: 0.5rem; font-weight: bold; letter-spacing: 2px;">
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <button class="btn btn-secondary" id="page-btn-cancel-delete" style="flex: 1;">Cancel</button>
+                                    <button id="page-btn-execute-delete" class="btn btn-primary" disabled style="flex: 1; background: #ef4444; border-color: #dc2626;"><i class="fas fa-skull"></i> Execute</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Form Page View -->
         <section id="form-view" class="view">
             <header class="view-header">
@@ -1642,44 +1678,6 @@
                 Remember your password?
                 <span id="back-to-login">Login</span>
             </p>
-        </div>
-    </div>
-
-    <!-- My Account Modal -->
-    <div id="my-account-modal" class="rf-modal">
-        <div class="rf-modal-overlay js-close-account"></div>
-        <div class="rf-modal-content" style="max-width: 400px; padding: 2rem; border-radius: 12px; background: var(--bg-hover); text-align: center;">
-            <button class="rf-modal-close js-close-account" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            <h3 style="margin-top: 0; color: var(--text-primary); margin-bottom: 1.5rem;">My Account</h3>
-            
-            <img id="ma-photo" src="https://via.placeholder.com/80" alt="Profile" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; border: 2px solid var(--accent-color);">
-            <p id="ma-email" style="font-weight: 500; color: var(--text-primary); margin-bottom: 2rem; font-size: 1.1rem;"></p>
-            
-            <button id="btn-open-delete-account" class="btn btn-secondary" style="width: 100%; border-color: #ef4444; color: #ef4444;"><i class="fas fa-trash-alt"></i> Delete Account</button>
-        </div>
-    </div>
-
-    <!-- Delete Account Confirmation Modal -->
-    <div id="delete-account-modal" class="rf-modal">
-        <div class="rf-modal-overlay js-close-delete-account"></div>
-        <div class="rf-modal-content" style="max-width: 450px; padding: 2rem; border-radius: 12px; background: var(--bg-hover);">
-            <button class="rf-modal-close js-close-delete-account" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            <h3 style="margin-top: 0; color: #ef4444; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-exclamation-triangle"></i> Safe Delete Protocol</h3>
-            
-            <div style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 15px; border-radius: 6px; margin-bottom: 1.5rem; text-align: left;">
-                <p style="margin: 0; color: #ef4444; font-size: 0.95rem; line-height: 1.5;"><strong>WARNING:</strong> This action is permanent.</p>
-                <p style="margin: 0; color: #ef4444; font-size: 0.95rem; margin-top: 8px; line-height: 1.5;">Executing this command will irreversibly destroy your account credentials and permanently wipe all saved Resumes from our database matrices.</p>
-            </div>
-
-            <div class="input-group" style="text-align: left; margin-bottom: 1.5rem;">
-                <label style="color: var(--text-primary);">Type <strong style="color: #ef4444; letter-spacing: 1px;">DELETE</strong> to confirm</label>
-                <input type="text" id="delete-confirm-input" placeholder="DELETE" style="width: 100%; margin-top: 0.5rem; text-align: center; font-weight: bold; letter-spacing: 2px;">
-            </div>
-            
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-secondary js-close-delete-account" style="flex: 1;">Cancel</button>
-                <button id="btn-execute-delete" class="btn btn-primary" disabled style="flex: 1; background: #ef4444; border-color: #dc2626;"><i class="fas fa-skull"></i> Execute</button>
-            </div>
         </div>
     </div>
 </body>

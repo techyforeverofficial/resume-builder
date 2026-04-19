@@ -186,12 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const myAccountModal = document.getElementById('my-account-modal');
                 document.getElementById("myAccount").onclick = () => {
                     dropdown.classList.add('hidden');
-                    if (myAccountModal) {
-                        document.getElementById('ma-email').innerText = user.email || 'No email associated';
-                        const userPhoto = user.photoURL || 'https://via.placeholder.com/80';
-                        document.getElementById('ma-photo').src = userPhoto;
-                        myAccountModal.classList.add('active');
-                    }
+                    navigateTo('account');
                 };
 
                 document.getElementById("logout").onclick = async () => {
@@ -263,7 +258,8 @@ document.addEventListener('DOMContentLoaded', () => {
         contact: document.getElementById('contact-view'),
         privacy: document.getElementById('privacy-view'),
         dashboard: document.getElementById('dashboard-view'),
-        subscription: document.getElementById('subscription-view')
+        subscription: document.getElementById('subscription-view'),
+        account: document.getElementById('account-view')
     };
 
     const navLinks = {
@@ -273,6 +269,24 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const navigateTo = (viewName, skipHistory = false) => {
+        // Protected Route Authorization check
+        if (viewName === 'account' || viewName === 'dashboard' || viewName === 'subscription') {
+            const user = auth.currentUser;
+            if (!user) {
+                // Not authenticated, redirect to home and prompt
+                viewName = 'home';
+                const authModal = document.getElementById('auth-modal');
+                if (authModal) {
+                    setTimeout(() => authModal.classList.add('active'), 100);
+                }
+            } else if (viewName === 'account') {
+                const pageEmail = document.getElementById('page-ma-email');
+                const pagePhoto = document.getElementById('page-ma-photo');
+                if (pageEmail) pageEmail.innerText = user.email || 'No email associated';
+                if (pagePhoto) pagePhoto.src = user.photoURL || 'https://via.placeholder.com/100';
+            }
+        }
+
         // Hide all views
         Object.values(views).forEach(v => {
             if (v) v.classList.remove('active');
@@ -6502,29 +6516,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Account Management UI Core ---
-    const myAccountModal = document.getElementById('my-account-modal');
-    const deleteAccountModal = document.getElementById('delete-account-modal');
-    const btnOpenDeleteAccount = document.getElementById('btn-open-delete-account');
-    const deleteConfirmInput = document.getElementById('delete-confirm-input');
-    const btnExecuteDelete = document.getElementById('btn-execute-delete');
-
-    document.querySelectorAll('.js-close-account').forEach(btn => {
-        btn.addEventListener('click', () => { if (myAccountModal) myAccountModal.classList.remove('active'); });
-    });
+    // --- Account Management SPA Core ---
+    const btnOpenDeleteAccount = document.getElementById('page-btn-open-delete-account');
+    const deleteAccountConfirmBox = document.getElementById('delete-account-confirm-box');
+    const deleteAccountFlowWrapper = document.getElementById('delete-account-flow-wrapper');
+    const deleteConfirmInput = document.getElementById('page-delete-confirm-input');
+    const btnExecuteDelete = document.getElementById('page-btn-execute-delete');
+    const btnCancelDelete = document.getElementById('page-btn-cancel-delete');
 
     if (btnOpenDeleteAccount) {
         btnOpenDeleteAccount.addEventListener('click', () => {
-            if (myAccountModal) myAccountModal.classList.remove('active');
-            if (deleteAccountModal) deleteAccountModal.classList.add('active');
-            if (deleteConfirmInput) deleteConfirmInput.value = '';
-            if (btnExecuteDelete) btnExecuteDelete.disabled = true;
+            if (deleteAccountFlowWrapper) deleteAccountFlowWrapper.style.display = 'none';
+            if (deleteAccountConfirmBox) deleteAccountConfirmBox.style.display = 'block';
+            if (deleteConfirmInput) {
+                deleteConfirmInput.value = '';
+                if (btnExecuteDelete) btnExecuteDelete.disabled = true;
+            }
         });
     }
 
-    document.querySelectorAll('.js-close-delete-account').forEach(btn => {
-        btn.addEventListener('click', () => { if (deleteAccountModal) deleteAccountModal.classList.remove('active'); });
-    });
+    if (btnCancelDelete) {
+        btnCancelDelete.addEventListener('click', () => {
+            if (deleteAccountConfirmBox) deleteAccountConfirmBox.style.display = 'none';
+            if (deleteAccountFlowWrapper) deleteAccountFlowWrapper.style.display = 'block';
+        });
+    }
 
     if (deleteConfirmInput && btnExecuteDelete) {
         deleteConfirmInput.addEventListener('input', (e) => {
@@ -6559,18 +6575,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 3. Delete Firebase Auth user natively using injected script
                 await deleteUser(user);
 
-                if (deleteAccountModal) deleteAccountModal.classList.remove('active');
                 alert("Your account has been deleted successfully");
-                
-                // Redirection ensures total flush logic resets securely
                 window.location.href = '/';
 
             } catch (error) {
                 console.error("Deletion Error:", error);
-                // Enforce recent login auth context error securely
                 if (error.code === 'auth/requires-recent-login') {
                     alert("Security Check: You must have logged in recently to delete your account. Please log out, sign back in, and try again.");
-                    if (deleteAccountModal) deleteAccountModal.classList.remove('active');
+                    if (deleteAccountConfirmBox) deleteAccountConfirmBox.style.display = 'none';
+                    if (deleteAccountFlowWrapper) deleteAccountFlowWrapper.style.display = 'block';
                 } else {
                     alert("Error processing deletion: " + error.message);
                 }

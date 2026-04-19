@@ -2193,9 +2193,9 @@ document.addEventListener('DOMContentLoaded', () => {
         async function handlePaymentSuccess(amountValue) {
             // NOTE: Premium status should be securely updated via backend webhooks (e.g., Razorpay webhooks).
             // Direct assignment on the frontend has been removed for security.
-            
+
             const isMonthly = amountValue === 1900;
-            
+
             // Step 2: show success message
             if (isMonthly) {
                 alert("Payment successful! Your account is being seamlessly upgraded. You will have unlimited downloads for 30 days.");

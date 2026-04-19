@@ -488,24 +488,11 @@
                         <div class="form-section">
                             <h3><i class="fas fa-tools"></i> Skills</h3>
                             <div class="ai-generator-tools" style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid rgba(99, 102, 241, 0.2);">
-                                <label style="display: block; margin-bottom: 5px; color: var(--text-primary); font-size: 0.9rem;"><i class="fas fa-magic" style="color: var(--accent-color);"></i> AI Skills Suggestion</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <select id="skills-ai-role" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--bg-color); color: var(--text-primary);">
-                                        <option value="">Select a role to auto-generate skills...</option>
-                                        <option value="Frontend Developer">Frontend Developer</option>
-                                        <option value="Backend Developer">Backend Developer</option>
-                                        <option value="Full Stack Developer">Full Stack Developer</option>
-                                        <option value="Software Engineer">Software Engineer</option>
-                                        <option value="Data Scientist">Data Scientist</option>
-                                        <option value="UX/UI Designer">UX/UI Designer</option>
-                                        <option value="Product Manager">Product Manager</option>
-                                        <option value="Project Manager">Project Manager</option>
-                                        <option value="Marketing Manager">Marketing Manager</option>
-                                        <option value="Sales Executive">Sales Executive</option>
-                                        <option value="Business Analyst">Business Analyst</option>
-                                    </select>
-                                    <button type="button" id="btn-skills-regen" class="btn btn-secondary btn-small" style="display:none;">Suggest More</button>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <label style="margin: 0; color: var(--text-primary); font-size: 0.9rem;"><i class="fas fa-magic" style="color: var(--accent-color);"></i> AI Skills Suggestion</label>
+                                    <button type="button" id="btn-skills-regen" class="btn btn-primary btn-small">Get AI Skill Suggestions</button>
                                 </div>
+                                <div id="skills-suggestions-box" class="suggestions-container" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 5px;"></div>
                             </div>
                             <div class="input-group">
                                 <label for="skills">List your core skills (comma-separated).</label>
@@ -526,23 +513,9 @@
                         <div class="form-section">
                             <h3><i class="fas fa-align-left"></i> Professional Summary</h3>
                             <div class="ai-generator-tools" style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid rgba(99, 102, 241, 0.2);">
-                                <label style="display: block; margin-bottom: 5px; color: var(--text-primary); font-size: 0.9rem;"><i class="fas fa-magic" style="color: var(--accent-color);"></i> AI Summary Generation</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <select id="summary-ai-role" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--bg-color); color: var(--text-primary);">
-                                        <option value="">Select a role to auto-generate summary...</option>
-                                        <option value="Frontend Developer">Frontend Developer</option>
-                                        <option value="Backend Developer">Backend Developer</option>
-                                        <option value="Full Stack Developer">Full Stack Developer</option>
-                                        <option value="Software Engineer">Software Engineer</option>
-                                        <option value="Data Scientist">Data Scientist</option>
-                                        <option value="UX/UI Designer">UX/UI Designer</option>
-                                        <option value="Product Manager">Product Manager</option>
-                                        <option value="Project Manager">Project Manager</option>
-                                        <option value="Marketing Manager">Marketing Manager</option>
-                                        <option value="Sales Executive">Sales Executive</option>
-                                        <option value="Business Analyst">Business Analyst</option>
-                                    </select>
-                                    <button type="button" id="btn-summary-regen" class="btn btn-secondary btn-small" style="display:none;">Generate Again</button>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <label style="margin: 0; color: var(--text-primary); font-size: 0.9rem;"><i class="fas fa-magic" style="color: var(--accent-color);"></i> AI Summary Generation</label>
+                                    <button type="button" id="btn-summary-regen" class="btn btn-primary btn-small">Generate AI Summary</button>
                                 </div>
                             </div>
                             <div class="input-group">
@@ -936,6 +909,25 @@
 
     </main>
 
+    <datalist id="predefined-roles">
+        <option value="Frontend Developer">
+        <option value="Backend Developer">
+        <option value="Full Stack Developer">
+        <option value="Software Engineer">
+        <option value="Data Scientist">
+        <option value="Machine Learning Engineer">
+        <option value="UX/UI Designer">
+        <option value="Product Manager">
+        <option value="Project Manager">
+        <option value="Marketing Manager">
+        <option value="Sales Executive">
+        <option value="Business Analyst">
+        <option value="Financial Analyst">
+        <option value="Human Resources Specialist">
+        <option value="DevOps Engineer">
+        <option value="System Administrator">
+    </datalist>
+
     <footer class="app-footer">
         <div class="footer-content">
             <div class="footer-brand">
@@ -974,7 +966,7 @@
                 </div>
                 <div class="input-group">
                     <label>Role / Title</label>
-                    <input type="text" name="expRole[]" required>
+                    <input type="text" name="expRole[]" class="primary-role-input" list="predefined-roles" required>
                 </div>
             </div>
 
@@ -1074,23 +1066,12 @@
             <div class="input-group">
                 <label>Description</label>
                 <div class="ai-generator-tools" style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid rgba(99, 102, 241, 0.2);">
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <select class="exp-ai-role" style="flex: 1; min-width: 150px; padding: 10px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--bg-color); color: var(--text-primary);">
-                            <option value="">Select Role...</option>
-                            <option value="Frontend Developer">Frontend Developer</option>
-                            <option value="Backend Developer">Backend Developer</option>
-                            <option value="Full Stack Developer">Full Stack Developer</option>
-                            <option value="Software Engineer">Software Engineer</option>
-                            <option value="Data Scientist">Data Scientist</option>
-                            <option value="UX/UI Designer">UX/UI Designer</option>
-                            <option value="Product Manager">Product Manager</option>
-                            <option value="Project Manager">Project Manager</option>
-                            <option value="Marketing Manager">Marketing Manager</option>
-                            <option value="Sales Executive">Sales Executive</option>
-                            <option value="Business Analyst">Business Analyst</option>
-                        </select>
-                        <button type="button" class="btn btn-primary btn-small btn-exp-ai" style="padding: 10px 15px;"><i class="fas fa-magic"></i> Generate Description</button>
-                        <button type="button" class="btn btn-secondary btn-small btn-exp-ai-regen" style="display:none; padding: 10px 15px;">Generate Again</button>
+                    <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                        <label style="margin: 0; color: var(--text-primary); font-size: 0.9rem;"><i class="fas fa-magic" style="color: var(--accent-color);"></i> AI Experience Bullets Option</label>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-primary btn-small btn-exp-ai" style="padding: 10px 15px;">✨ Generate Description</button>
+                            <button type="button" class="btn btn-secondary btn-small btn-exp-ai-regen" style="display:none; padding: 10px 15px;">Generate Again</button>
+                        </div>
                     </div>
                 </div>
                 <div class="rich-text-container">
@@ -1120,7 +1101,7 @@
                 </div>
                 <div class="input-group">
                     <label>Role / Title</label>
-                    <input type="text" name="internRole[]" required>
+                    <input type="text" name="internRole[]" class="primary-role-input" list="predefined-roles" required>
                 </div>
             </div>
 
@@ -1220,23 +1201,12 @@
             <div class="input-group">
                 <label>Description</label>
                 <div class="ai-generator-tools" style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid rgba(99, 102, 241, 0.2);">
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <select class="intern-ai-role" style="flex: 1; min-width: 150px; padding: 10px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--bg-color); color: var(--text-primary);">
-                            <option value="">Select Role...</option>
-                            <option value="Frontend Developer">Frontend Developer</option>
-                            <option value="Backend Developer">Backend Developer</option>
-                            <option value="Full Stack Developer">Full Stack Developer</option>
-                            <option value="Software Engineer">Software Engineer</option>
-                            <option value="Data Scientist">Data Scientist</option>
-                            <option value="UX/UI Designer">UX/UI Designer</option>
-                            <option value="Product Manager">Product Manager</option>
-                            <option value="Project Manager">Project Manager</option>
-                            <option value="Marketing Analyst">Marketing Analyst</option>
-                            <option value="Sales Intern">Sales Intern</option>
-                            <option value="Business Analyst">Business Analyst</option>
-                        </select>
-                        <button type="button" class="btn btn-primary btn-small btn-intern-ai" style="padding: 10px 15px;"><i class="fas fa-magic"></i> Generate Description</button>
-                        <button type="button" class="btn btn-secondary btn-small btn-intern-ai-regen" style="display:none; padding: 10px 15px;">Generate Again</button>
+                    <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                        <label style="margin: 0; color: var(--text-primary); font-size: 0.9rem;"><i class="fas fa-magic" style="color: var(--accent-color);"></i> AI Internship Bullets Option</label>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-primary btn-small btn-intern-ai" style="padding: 10px 15px;">✨ Generate Description</button>
+                            <button type="button" class="btn btn-secondary btn-small btn-intern-ai-regen" style="display:none; padding: 10px 15px;">Generate Again</button>
+                        </div>
                     </div>
                 </div>
                 <div class="rich-text-container">

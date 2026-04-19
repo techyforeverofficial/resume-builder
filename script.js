@@ -12,6 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateSkillsFn = httpsCallable(functions, 'generateSkills');
     const generateSummaryFn = httpsCallable(functions, 'generateSummary');
 
+    // --- Global Role Helper ---
+    const getPrimaryRole = () => {
+        const roleInputs = document.querySelectorAll('.primary-role-input');
+        for (let input of roleInputs) {
+            if (input.value && input.value.trim() !== '') {
+                return input.value.trim();
+            }
+        }
+        return null;
+    };
+
     // --- Dynamic Education Field Validation ---
     const validateEduDegree = function (degreeInput) {
         if (!degreeInput) return;
@@ -773,12 +784,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- AI Button Bindings ---
             const aiBtn = item.querySelector('.btn-exp-ai') || item.querySelector('.btn-intern-ai');
             const aiRegenBtn = item.querySelector('.btn-exp-ai-regen') || item.querySelector('.btn-intern-ai-regen');
-            const aiRoleSelect = item.querySelector('.exp-ai-role') || item.querySelector('.intern-ai-role');
-            if (aiBtn && aiRoleSelect && editor) {
+            const localRoleInput = item.querySelector('.primary-role-input');
+
+            if (aiBtn && localRoleInput && editor) {
                 const handleGeneration = async () => {
-                    const role = aiRoleSelect.value;
+                    const role = localRoleInput.value.trim();
                     if (!role) {
-                        alert("Please select a role first.");
+                        alert("We need to know your role context first! Please enter a Role/Title in the input field above.");
                         return;
                     }
                     try {
@@ -830,45 +842,75 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDynamicList('btn-add-proj', 'proj-list', 'proj-template');
 
     // --- AI Skills and Summary section globals ---
-    const skillsRoleSelect = document.getElementById('skills-ai-role');
     const skillsRegenBtn = document.getElementById('btn-skills-regen');
     const skillsInput = document.getElementById('skills');
+    const skillsSuggestionsBox = document.getElementById('skills-suggestions-box');
 
     const generateSkillsHandler = async () => {
-        const role = skillsRoleSelect.value;
-        if (!role) return;
+        const role = getPrimaryRole();
+        if (!role) {
+            alert("We need to know your role first! Please enter a Role / Title in the Work or Internship Experience section.");
+            return;
+        }
         try {
-            skillsRoleSelect.disabled = true;
             skillsRegenBtn.disabled = true;
-            skillsRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            skillsRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
             skillsRegenBtn.style.display = 'inline-block';
 
             const result = await generateSkillsFn({ role });
             const skillsArray = result.data;
             if (skillsArray && skillsArray.length > 0) {
-                skillsInput.value = skillsArray.join(', ');
+                if(skillsSuggestionsBox) skillsSuggestionsBox.innerHTML = ''; // clear previous tags
+                
+                skillsArray.forEach(skill => {
+                    const chip = document.createElement('span');
+                    chip.textContent = '+ ' + skill;
+                    chip.className = 'skill-chip';
+                    chip.style.cssText = 'background: var(--accent-color); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s, transform 0.1s; user-select: none;';
+                    
+                    chip.onmouseover = () => {
+                        chip.style.opacity = '0.85';
+                    };
+                    chip.onmouseout = () => {
+                        chip.style.opacity = '1';
+                    };
+                    chip.onmousedown = () => chip.style.transform = 'scale(0.95)';
+                    chip.onmouseup = () => chip.style.transform = 'none';
+
+                    chip.onclick = () => {
+                        const currentVal = skillsInput.value.trim();
+                        if (currentVal) {
+                            if (!currentVal.split(',').map(s => s.trim().toLowerCase()).includes(skill.toLowerCase())) {
+                                skillsInput.value = currentVal + ', ' + skill;
+                            }
+                        } else {
+                            skillsInput.value = skill;
+                        }
+                        chip.style.display = 'none'; // hide chip after clicking
+                    };
+                    skillsSuggestionsBox.appendChild(chip);
+                });
             }
         } catch (err) {
             console.error(err);
             alert("Error suggesting skills: " + err.message);
         } finally {
-            skillsRegenBtn.innerHTML = 'Suggest More';
-            skillsRoleSelect.disabled = false;
+            skillsRegenBtn.innerHTML = 'Get AI Skill Suggestions';
             skillsRegenBtn.disabled = false;
         }
     };
-    if (skillsRoleSelect) skillsRoleSelect.addEventListener('change', generateSkillsHandler);
     if (skillsRegenBtn) skillsRegenBtn.addEventListener('click', generateSkillsHandler);
 
-    const summaryRoleSelect = document.getElementById('summary-ai-role');
     const summaryRegenBtn = document.getElementById('btn-summary-regen');
     const summaryInput = document.getElementById('summary');
 
     const generateSummaryHandler = async () => {
-        const role = summaryRoleSelect.value;
-        if (!role) return;
+        const role = getPrimaryRole();
+        if (!role) {
+            alert("We need to know your role first! Please enter a Role / Title in the Work or Internship Experience section.");
+            return;
+        }
         try {
-            summaryRoleSelect.disabled = true;
             summaryRegenBtn.disabled = true;
             summaryRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
             summaryRegenBtn.style.display = 'inline-block';
@@ -882,12 +924,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(err);
             alert("Error generating summary: " + err.message);
         } finally {
-            summaryRegenBtn.innerHTML = 'Generate Again';
-            summaryRoleSelect.disabled = false;
+            summaryRegenBtn.innerHTML = 'Generate AI Summary';
             summaryRegenBtn.disabled = false;
         }
     };
-    if (summaryRoleSelect) summaryRoleSelect.addEventListener('change', generateSummaryHandler);
     if (summaryRegenBtn) summaryRegenBtn.addEventListener('click', generateSummaryHandler);
 
     // --- Dynamic Experience Logic ---

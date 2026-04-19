@@ -433,6 +433,27 @@
                             <div class="exp-hint">
                                 <i class="fas fa-info-circle"></i> You can change this later
                             </div>
+                            
+                            <!-- FRESHER AI PERSONALIZATION -->
+                            <div id="fresher-ai-personalization" style="display: none; margin-top: 1.5rem; background: var(--bg-hover); padding: 1.5rem; border-radius: 8px; border: 1px dashed var(--accent-color);">
+                                <h4 style="margin-top: 0; color: var(--accent-color); font-size: 1.1rem;"><i class="fas fa-robot"></i> Fresher AI Personalization <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-secondary);">(Optional)</span></h4>
+                                <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Enter these details to get targeted AI suggestions for your Skills and Summary.</p>
+                                <div class="input-group-row">
+                                    <div class="input-group">
+                                        <label>Target Role</label>
+                                        <input type="text" id="fresher-target-role" placeholder="e.g. Software Engineer, Data Analyst">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Area of Interest / Specialization</label>
+                                        <input type="text" id="fresher-target-spec" placeholder="e.g. Frontend Development, Machine Learning">
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <button type="button" class="btn btn-secondary btn-small btn-jd-trigger" id="fresher-jd-trigger"><i class="fas fa-paste"></i> Paste Job Description</button>
+                                </div>
+                            </div>
+                            <!-- END FRESHER AI -->
+
                         </div>
                         <div class="step-actions">
                             <button type="button" class="btn btn-secondary btn-prev"><i class="fas fa-arrow-left"></i>

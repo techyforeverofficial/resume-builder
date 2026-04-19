@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Global Role Helper ---
     const getPrimaryRole = () => {
+        const selectedExp = document.querySelector('input[name="experienceType"]:checked');
+        if (selectedExp && selectedExp.value === 'fresher') {
+            const fresherRole = document.getElementById('fresher-target-role');
+            if (fresherRole && fresherRole.value.trim() !== '') return fresherRole.value.trim();
+        }
+
         const roleInputs = document.querySelectorAll('.primary-role-input');
         for (let input of roleInputs) {
             if (input.value && input.value.trim() !== '') {
@@ -24,6 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getPrimarySpecialization = () => {
+        const selectedExp = document.querySelector('input[name="experienceType"]:checked');
+        if (selectedExp && selectedExp.value === 'fresher') {
+            const fresherSpec = document.getElementById('fresher-target-spec');
+            if (fresherSpec && fresherSpec.value.trim() !== '') return fresherSpec.value.trim();
+        }
+
         const specInputs = document.querySelectorAll('.primary-spec-input');
         for (let input of specInputs) {
             if (input.value && input.value.trim() !== '') {
@@ -43,10 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     };
 
-    const buildPromptContext = (role, spec, jd) => {
+    const buildPromptContext = (role, spec, jd, isFresher = false) => {
         let ctx = `Role: ${role}`;
         if (spec) ctx += `\nSpecialization: ${spec}`;
         if (jd) ctx += `\nJob Description: ${jd}`;
+        if (isFresher) {
+            ctx += `\n\nCRITICAL SYSTEM CONSTRAINTS FOR THIS QUERY:\n- User is a FRESHER (Entry-Level/Student).\n- Tone: Eager, academic, learning-focused.\n- MUST NOT output senior, management, or expert-level claims. Keep it strictly foundational.`;
+        }
         return ctx;
     };
 
@@ -61,23 +76,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const openJdModal = (btnRef) => {
         currentJdBtnRef = btnRef;
         jdInputArea.value = btnRef.getAttribute('data-jd') || '';
-        if(jdModal) jdModal.classList.add('active');
+        if (jdModal) jdModal.classList.add('active');
     };
 
     const closeJdModal = () => {
         currentJdBtnRef = null;
         jdInputArea.value = '';
-        if(jdModal) jdModal.classList.remove('active');
+        if (jdModal) jdModal.classList.remove('active');
     };
 
-    if(btnCancelJd) btnCancelJd.addEventListener('click', closeJdModal);
-    if(btnCloseJd) btnCloseJd.addEventListener('click', closeJdModal);
+    if (btnCancelJd) btnCancelJd.addEventListener('click', closeJdModal);
+    if (btnCloseJd) btnCloseJd.addEventListener('click', closeJdModal);
 
-    if(btnSaveJd) {
+    if (btnSaveJd) {
         btnSaveJd.addEventListener('click', () => {
-            if(currentJdBtnRef) {
+            if (currentJdBtnRef) {
                 const text = jdInputArea.value.trim();
-                if(text) {
+                if (text) {
                     currentJdBtnRef.setAttribute('data-jd', text);
                     currentJdBtnRef.innerHTML = '<i class="fas fa-check-circle" style="color: #4ade80;"></i> JD Saved';
                     currentJdBtnRef.classList.remove('btn-secondary');
@@ -96,6 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             closeJdModal();
+        });
+    }
+
+    const fresherJdTrigger = document.getElementById('fresher-jd-trigger');
+    if (fresherJdTrigger) {
+        fresherJdTrigger.addEventListener('click', () => {
+            openJdModal(fresherJdTrigger);
         });
     }
 
@@ -336,6 +358,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.btn-next').forEach(btn => {
         btn.addEventListener('click', () => {
             const stepNumber = visibleSteps[currentStepIndex];
+            
+            // Fresher AI Personalization Intercept
+            if (stepNumber === 3) {
+                const selectedExp = document.querySelector('input[name="experienceType"]:checked');
+                if (selectedExp && selectedExp.value === 'fresher') {
+                    const fresherAiSection = document.getElementById('fresher-ai-personalization');
+                    if (fresherAiSection && fresherAiSection.style.display === 'none') {
+                        // Reveal the sub-section instead of advancing
+                        fresherAiSection.style.display = 'block';
+                        fresherAiSection.scrollIntoView({ behavior: 'smooth' });
+                        return; // Halt progression natively
+                    }
+                }
+            }
+
             if (stepNumber === 1 && !selectedTemplate) {
                 alert("Please select a template to continue");
                 return;
@@ -883,16 +920,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     try {
                         aiBtn.disabled = true;
                         aiRegenBtn.disabled = true;
-                        if(jdBtn) jdBtn.disabled = true;
+                        if (jdBtn) jdBtn.disabled = true;
                         const originalHtml = aiBtn.innerHTML;
                         const isMainBtnHidden = aiBtn.style.display === 'none';
-                        
+
                         if (!isMainBtnHidden) {
                             aiBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
                         } else {
                             aiRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
                         }
-                        
+
                         const smartRoleContext = buildPromptContext(baseRole, spec, jd);
                         const result = await generateExperienceFn({ role: smartRoleContext });
                         const bullets = result.data;
@@ -910,7 +947,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         aiRegenBtn.innerText = 'Generate Again';
                         aiBtn.disabled = false;
                         aiRegenBtn.disabled = false;
-                        if(jdBtn) jdBtn.disabled = false;
+                        if (jdBtn) jdBtn.disabled = false;
                     }
                 };
 
@@ -939,7 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateSkillsHandler = async () => {
         const role = getPrimaryRole();
         if (!role) {
-            alert("We need to know your role first! Please enter a Role / Title in the Work or Internship Experience section.");
+            alert("We need to know your role first! Please enter a Role/Title in the Experience section, or fill out the AI target input.");
             return;
         }
         try {
@@ -947,18 +984,19 @@ document.addEventListener('DOMContentLoaded', () => {
             skillsRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
             skillsRegenBtn.style.display = 'inline-block';
 
-            const smartRoleContext = buildPromptContext(role, getPrimarySpecialization(), getPrimaryJD());
+            const isFresher = (document.querySelector('input[name="experienceType"]:checked')?.value === 'fresher');
+            const smartRoleContext = buildPromptContext(role, getPrimarySpecialization(), getPrimaryJD(), isFresher);
             const result = await generateSkillsFn({ role: smartRoleContext });
             const skillsArray = result.data;
             if (skillsArray && skillsArray.length > 0) {
-                if(skillsSuggestionsBox) skillsSuggestionsBox.innerHTML = ''; // clear previous tags
-                
+                if (skillsSuggestionsBox) skillsSuggestionsBox.innerHTML = ''; // clear previous tags
+
                 skillsArray.forEach(skill => {
                     const chip = document.createElement('span');
                     chip.textContent = '+ ' + skill;
                     chip.className = 'skill-chip';
                     chip.style.cssText = 'background: var(--accent-color); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s, transform 0.1s; user-select: none;';
-                    
+
                     chip.onmouseover = () => {
                         chip.style.opacity = '0.85';
                     };
@@ -998,7 +1036,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateSummaryHandler = async () => {
         const role = getPrimaryRole();
         if (!role) {
-            alert("We need to know your role first! Please enter a Role / Title in the Work or Internship Experience section.");
+            alert("We need to know your role first! Please enter a Role/Title in the Experience section, or fill out the AI target input.");
             return;
         }
         try {
@@ -1006,7 +1044,8 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
             summaryRegenBtn.style.display = 'inline-block';
 
-            const smartRoleContext = buildPromptContext(role, getPrimarySpecialization(), getPrimaryJD());
+            const isFresher = (document.querySelector('input[name="experienceType"]:checked')?.value === 'fresher');
+            const smartRoleContext = buildPromptContext(role, getPrimarySpecialization(), getPrimaryJD(), isFresher);
             const result = await generateSummaryFn({ role: smartRoleContext });
             const sumText = result.data;
             if (sumText) {
@@ -1027,8 +1066,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const workSection = document.getElementById('work-experience-section');
         const internSection = document.getElementById('internship-experience-section');
         const fresherBanner = document.getElementById('fresher-tip-banner');
+        const fresherAiSection = document.getElementById('fresher-ai-personalization');
 
         if (!workSection || !internSection) return;
+
+        if (fresherAiSection && type !== 'fresher') {
+            fresherAiSection.style.display = 'none'; // reset intercept
+        }
 
         if (type === 'work') {
             workSection.style.display = 'block';
@@ -5457,7 +5501,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Download clicked");
             console.log("User before reload:", auth.currentUser);
             console.log("Verified before reload:", auth.currentUser?.emailVerified);
-            
+
             const originalHtml = btnDownload.innerHTML;
             btnDownload.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
             btnDownload.disabled = true;
@@ -5473,7 +5517,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // RELOAD USER (IMPORTANT)
                 await user.reload();
-                
+
                 if (!user.emailVerified) {
                     const verifyModal = document.getElementById('verify-email-modal');
                     if (verifyModal) verifyModal.classList.add('active');
@@ -5486,7 +5530,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userDoc.exists()) {
                     const data = userDoc.data();
                     const hasLocalPremium = data.premium === true && data.expiresAt && data.expiresAt > Date.now();
-                    
+
                     if (hasLocalPremium) {
                         shouldTriggerDownload = true;
                     } else if (data.singleDownload === true) {
@@ -5667,9 +5711,9 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Call secure Cloud Function
                 const activatePremium = httpsCallable(functions, 'activatePremium');
-                await activatePremium({ 
-                    userId: user.uid, 
-                    planType: planType 
+                await activatePremium({
+                    userId: user.uid,
+                    planType: planType
                 });
 
                 // Backend confirms success -> Replace loader with success UI
@@ -5677,7 +5721,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     processingLoader.style.display = 'none';
                     processingSuccess.style.display = 'block';
                     processingSuccess.style.animation = 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
-                    
+
                     // After 1-1.5 seconds, automatically close modal and trigger PDF download
                     setTimeout(() => {
                         processingOverlay.classList.remove('active');
@@ -5757,7 +5801,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authSubtitle = document.getElementById('auth-subtitle');
     const authErrorMsg = document.getElementById('auth-error-msg');
     const btnSave = document.getElementById('btn-save');
-    
+
     // New Auth Elements
     const btnGoogleSignIn = document.getElementById('btn-google-signin');
     const forgotPasswordBtn = document.getElementById('forgot-password-btn');
@@ -5767,7 +5811,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetEmail = document.getElementById('reset-email');
     const forgotErrorMsg = document.getElementById('forgot-error-msg');
     const btnSendResetLink = document.getElementById('send-reset-link');
-    
+
     const verifyModal = document.getElementById('verify-email-modal');
     const closeVerifyModal = document.getElementById('close-verify-modal');
     const btnIveVerified = document.getElementById('i-verified-btn');
@@ -5793,7 +5837,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Force refresh real-time user state (ensures no platform freeze or stale cache)
                 await user.reload();
-                
+
                 // If they verified their email (e.g. from a link redirect) and haven't seen the success yet:
                 if (user.emailVerified && !hasShownVerifiedSuccess) {
                     hasShownVerifiedSuccess = true;
@@ -5819,13 +5863,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnContinueVerified) {
         btnContinueVerified.addEventListener('click', () => {
-             if (verifiedSuccessModal) verifiedSuccessModal.classList.remove('active');
-             navigateTo('home');
+            if (verifiedSuccessModal) verifiedSuccessModal.classList.remove('active');
+            navigateTo('home');
         });
     }
     if (closeVerifiedSuccessModal) {
         closeVerifiedSuccessModal.addEventListener('click', () => {
-             if (verifiedSuccessModal) verifiedSuccessModal.classList.remove('active');
+            if (verifiedSuccessModal) verifiedSuccessModal.classList.remove('active');
         });
     }
 
@@ -5882,16 +5926,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     // Force refresh directly after sign up to clear stale caches
                     await auth.currentUser.reload();
-                    
+
                     const actionCodeSettings = {
                         url: 'https://resumebuilder.techyforever.com/?verified=true',
                         handleCodeInApp: false
                     };
                     await sendEmailVerification(userCredential.user, actionCodeSettings);
-                    
+
                     if (authModal) authModal.classList.remove('active');
                     showToast("Account created! Please check your email to verify.");
-                    
+
                     // Show verification modal instead of silently completing
                     if (verifyModal) {
                         verifyModal.classList.add('active');
@@ -5960,15 +6004,15 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 btnGoogleSignIn.disabled = true;
                 btnGoogleSignIn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                
+
                 const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                
+
                 // Track user securely via Firestore
                 const userDocRef = doc(db, "users", user.uid);
                 const docSnap = await getDoc(userDocRef);
-                
+
                 if (!docSnap.exists()) {
                     await setDoc(userDocRef, {
                         userId: user.uid,
@@ -5980,7 +6024,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (authModal) authModal.classList.remove('active');
                 showToast("Logged in with Google successfully!");
-                
+
                 if (pendingPaymentPrompt) {
                     pendingPaymentPrompt = false;
                     setTimeout(() => {
@@ -6010,7 +6054,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modal) modal.classList.add("active");
     }
 
-    window.closeForgotModal = function() {
+    window.closeForgotModal = function () {
         const modal = document.getElementById("forgot-password-modal");
         if (modal) modal.classList.remove("active");
     };
@@ -6052,14 +6096,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 sendResetLinkBtn.innerText = "Sending...";
 
                 await sendPasswordResetEmail(auth, email);
-                
+
                 // SHOW SUCCESS UI
                 const successBox = document.getElementById("reset-success");
                 if (successBox) successBox.style.display = "block";
 
                 // RESET BUTTON
                 sendResetLinkBtn.innerText = "Sent ✓";
-                
+
                 // CLEAR FIELD
                 if (emailInput) emailInput.value = '';
 
@@ -6116,20 +6160,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnResendVerify) {
         btnResendVerify.addEventListener('click', async () => {
-             const user = auth.currentUser;
-             if (user) {
-                 btnResendVerify.disabled = true;
-                 btnResendVerify.innerText = 'Sending...';
-                 try {
-                     await sendEmailVerification(user);
-                     showToast("Verification email sent 📩");
-                 } catch (error) {
-                     showToast(error.message);
-                 } finally {
-                     btnResendVerify.disabled = false;
-                     btnResendVerify.innerText = 'Resend Email';
-                 }
-             }
+            const user = auth.currentUser;
+            if (user) {
+                btnResendVerify.disabled = true;
+                btnResendVerify.innerText = 'Sending...';
+                try {
+                    await sendEmailVerification(user);
+                    showToast("Verification email sent 📩");
+                } catch (error) {
+                    showToast(error.message);
+                } finally {
+                    btnResendVerify.disabled = false;
+                    btnResendVerify.innerText = 'Resend Email';
+                }
+            }
         });
     }
 
@@ -6139,7 +6183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Please generate a resume first before saving.");
             return;
         }
-        
+
         const user = auth.currentUser;
         if (user && !user.emailVerified) {
             const verifyModal = document.getElementById('verify-email-modal');
@@ -6281,12 +6325,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Fallback for older users without explicitly named planTypes
                 if (isPremium && planType === 'free') {
-                    planType = 'pro'; 
+                    planType = 'pro';
                 }
 
                 let planDisplay = 'Free Plan';
                 let priceDisplay = '₹0';
-                
+
                 if (planType === 'starter') { planDisplay = 'Starter Plan'; priceDisplay = '₹19 / 7 Days'; }
                 if (planType === 'pro') { planDisplay = 'Pro Plan'; priceDisplay = '₹49 / 1 Month'; }
                 if (planType === 'premium') { planDisplay = 'Premium Plan'; priceDisplay = '₹99 / 3 Months'; }
@@ -6313,16 +6357,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         let diffTime = Math.abs(expiresAt - Date.now());
                         let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                         daysRemainingStr = `${diffDays} days remaining`;
-                        
+
                         let totalDays = 30;
                         if (planType === 'starter') totalDays = 7;
                         if (planType === 'premium') totalDays = 90;
-                        
+
                         progressPercentage = Math.min((diffDays / totalDays) * 100, 100);
                         progressText = `${diffDays} days remaining out of ${totalDays}`;
 
                         if (planType === 'starter') {
-                           progressText += ` • Limited downloads`;
+                            progressText += ` • Limited downloads`;
                         }
                     }
                 }

@@ -182,7 +182,18 @@ exports.generateExperience = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
     try {
-        const prompt = `Generate 5-6 strong resume bullet points for a ${role}. Make them ATS-friendly, action-oriented, and professional. Return ONLY the text, one point per line, with no markdown, no asterisks, and no bullet symbols.`;
+        const prompt = `Generate 5-6 strong resume bullet points for a ${role}.
+
+Rules:
+- Each point must be a single line
+- Start with strong action verbs
+- Be ATS-friendly and professional
+- Do NOT include any explanation, reasoning, or headings
+- Do NOT include words like THOUGHT, Attempt, or Refinement
+- Do NOT use bullet symbols, numbers, or markdown
+- Return only plain text lines
+
+If anything other than final bullet points is included, the output is invalid.`;
         const text = await callGemini(prompt);
         return text.split('\n').map(b => b.replace(/^[\*\-\•\s]+/, '').trim()).filter(b => b.length > 0);
     } catch (error) {
@@ -197,7 +208,17 @@ exports.generateSkills = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
     try {
-        const prompt = `Suggest 15 relevant technical and soft skills for a ${role}. Return only comma-separated skills without any markdown or extra text.`;
+        const prompt = `Suggest 15 relevant technical and soft skills for a ${role}.
+
+Rules:
+- Output only a comma-separated list
+- Be ATS-friendly and professional
+- Do NOT include any explanation, reasoning, or headings
+- Do NOT include words like THOUGHT, Attempt, or Refinement
+- Do NOT use bullet symbols, numbers, or markdown
+- Return only plain text
+
+If anything other than the comma-separated skills list is included, the output is invalid.`;
         const text = await callGemini(prompt);
         return text.split(',').map(s => s.trim().replace(/^[\*\-\•\s]+/, '')).filter(s => s.length > 0);
     } catch (error) {
@@ -212,7 +233,17 @@ exports.generateSummary = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
     try {
-        const prompt = `Write a professional 3-4 line resume summary for a ${role}. Make it ATS-friendly and impactful. Do not use markdown or special formatting. Return plain text only.`;
+        const prompt = `Write a professional 3-4 line resume summary for a ${role}.
+
+Rules:
+- Provide a single continuous abstract
+- Make it ATS-friendly and impactful
+- Do NOT include any explanation, reasoning, or headings
+- Do NOT include words like THOUGHT, Attempt, or Refinement
+- Do NOT use markdown, numbers, asterisks, or special formatting
+- Return only plain text
+
+If anything other than the final summary is included, the output is invalid.`;
         const text = await callGemini(prompt);
         return text.replace(/[\*\-\•#_]+/g, '').trim();
     } catch (error) {

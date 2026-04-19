@@ -928,6 +928,22 @@
         <option value="System Administrator">
     </datalist>
 
+    <div class="rf-modal" id="jd-modal">
+        <div class="rf-modal-overlay"></div>
+        <div class="rf-modal-content" style="max-width: 600px; padding: 25px; border-radius: 12px; background: var(--bg-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 15px; margin-bottom: 20px;">
+                <h3 style="margin: 0; font-size: 1.25rem;"><i class="fas fa-file-alt"></i> Job Description Context</h3>
+                <button type="button" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);" id="btn-close-jd">&times;</button>
+            </div>
+            <p style="margin-bottom: 15px; font-size: 0.95rem; color: var(--text-secondary);">Paste the full job description below. It will vastly improve the relevance of your AI generated bullets, skills, and summary.</p>
+            <textarea id="jd-input-area" rows="10" placeholder="Paste the job description here..." style="width: 100%; border-radius: 8px; border: 1px solid var(--card-border); background: var(--bg-color); color: var(--text-primary); padding: 15px; font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none; transition: border-color 0.2s;"></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-jd">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-jd">Save Context</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="app-footer">
         <div class="footer-content">
             <div class="footer-brand">
@@ -967,6 +983,10 @@
                 <div class="input-group">
                     <label>Role / Title</label>
                     <input type="text" name="expRole[]" class="primary-role-input" list="predefined-roles" required>
+                </div>
+                <div class="input-group">
+                    <label>Area of Work/Specialization (Optional)</label>
+                    <input type="text" class="primary-spec-input" placeholder="e.g. Backend Development, UI Design">
                 </div>
             </div>
 
@@ -1069,6 +1089,7 @@
                     <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                         <label style="margin: 0; color: var(--text-primary); font-size: 0.9rem;"><i class="fas fa-magic" style="color: var(--accent-color);"></i> AI Experience Bullets Option</label>
                         <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-secondary btn-small btn-jd-trigger" style="padding: 10px 15px;"><i class="fas fa-paste"></i> Paste Job Description</button>
                             <button type="button" class="btn btn-primary btn-small btn-exp-ai" style="padding: 10px 15px;">✨ Generate Description</button>
                             <button type="button" class="btn btn-secondary btn-small btn-exp-ai-regen" style="display:none; padding: 10px 15px;">Generate Again</button>
                         </div>
@@ -1102,6 +1123,10 @@
                 <div class="input-group">
                     <label>Role / Title</label>
                     <input type="text" name="internRole[]" class="primary-role-input" list="predefined-roles" required>
+                </div>
+                <div class="input-group">
+                    <label>Area of Work/Specialization (Optional)</label>
+                    <input type="text" class="primary-spec-input" placeholder="e.g. Backend Development, UI Design">
                 </div>
             </div>
 
@@ -1204,6 +1229,7 @@
                     <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                         <label style="margin: 0; color: var(--text-primary); font-size: 0.9rem;"><i class="fas fa-magic" style="color: var(--accent-color);"></i> AI Internship Bullets Option</label>
                         <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-secondary btn-small btn-jd-trigger" style="padding: 10px 15px;"><i class="fas fa-paste"></i> Paste Job Description</button>
                             <button type="button" class="btn btn-primary btn-small btn-intern-ai" style="padding: 10px 15px;">✨ Generate Description</button>
                             <button type="button" class="btn btn-secondary btn-small btn-intern-ai-regen" style="display:none; padding: 10px 15px;">Generate Again</button>
                         </div>

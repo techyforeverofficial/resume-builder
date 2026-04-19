@@ -23,6 +23,82 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     };
 
+    const getPrimarySpecialization = () => {
+        const specInputs = document.querySelectorAll('.primary-spec-input');
+        for (let input of specInputs) {
+            if (input.value && input.value.trim() !== '') {
+                return input.value.trim();
+            }
+        }
+        return null;
+    };
+
+    const getPrimaryJD = () => {
+        const jdButtons = document.querySelectorAll('.btn-jd-trigger');
+        for (let btn of jdButtons) {
+            if (btn.hasAttribute('data-jd') && btn.getAttribute('data-jd').trim() !== '') {
+                return btn.getAttribute('data-jd').trim();
+            }
+        }
+        return null;
+    };
+
+    const buildPromptContext = (role, spec, jd) => {
+        let ctx = `Role: ${role}`;
+        if (spec) ctx += `\nSpecialization: ${spec}`;
+        if (jd) ctx += `\nJob Description: ${jd}`;
+        return ctx;
+    };
+
+    // --- Global JD Modal Handlers ---
+    const jdModal = document.getElementById('jd-modal');
+    const jdInputArea = document.getElementById('jd-input-area');
+    const btnCancelJd = document.getElementById('btn-cancel-jd');
+    const btnCloseJd = document.getElementById('btn-close-jd');
+    const btnSaveJd = document.getElementById('btn-save-jd');
+    let currentJdBtnRef = null;
+
+    const openJdModal = (btnRef) => {
+        currentJdBtnRef = btnRef;
+        jdInputArea.value = btnRef.getAttribute('data-jd') || '';
+        if(jdModal) jdModal.classList.add('active');
+    };
+
+    const closeJdModal = () => {
+        currentJdBtnRef = null;
+        jdInputArea.value = '';
+        if(jdModal) jdModal.classList.remove('active');
+    };
+
+    if(btnCancelJd) btnCancelJd.addEventListener('click', closeJdModal);
+    if(btnCloseJd) btnCloseJd.addEventListener('click', closeJdModal);
+
+    if(btnSaveJd) {
+        btnSaveJd.addEventListener('click', () => {
+            if(currentJdBtnRef) {
+                const text = jdInputArea.value.trim();
+                if(text) {
+                    currentJdBtnRef.setAttribute('data-jd', text);
+                    currentJdBtnRef.innerHTML = '<i class="fas fa-check-circle" style="color: #4ade80;"></i> JD Saved';
+                    currentJdBtnRef.classList.remove('btn-secondary');
+                    currentJdBtnRef.classList.add('btn-primary');
+                    currentJdBtnRef.style.background = '#22c55e';
+                    currentJdBtnRef.style.borderColor = '#16a34a';
+                    currentJdBtnRef.style.color = '#fff';
+                } else {
+                    currentJdBtnRef.removeAttribute('data-jd');
+                    currentJdBtnRef.innerHTML = '<i class="fas fa-paste"></i> Paste Job Description';
+                    currentJdBtnRef.classList.add('btn-secondary');
+                    currentJdBtnRef.classList.remove('btn-primary');
+                    currentJdBtnRef.style.background = '';
+                    currentJdBtnRef.style.borderColor = '';
+                    currentJdBtnRef.style.color = '';
+                }
+            }
+            closeJdModal();
+        });
+    }
+
     // --- Dynamic Education Field Validation ---
     const validateEduDegree = function (degreeInput) {
         if (!degreeInput) return;
@@ -785,17 +861,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const aiBtn = item.querySelector('.btn-exp-ai') || item.querySelector('.btn-intern-ai');
             const aiRegenBtn = item.querySelector('.btn-exp-ai-regen') || item.querySelector('.btn-intern-ai-regen');
             const localRoleInput = item.querySelector('.primary-role-input');
+            const localSpecInput = item.querySelector('.primary-spec-input');
+            const jdBtn = item.querySelector('.btn-jd-trigger');
+
+            if (jdBtn) {
+                jdBtn.addEventListener('click', () => {
+                    openJdModal(jdBtn);
+                });
+            }
 
             if (aiBtn && localRoleInput && editor) {
                 const handleGeneration = async () => {
-                    const role = localRoleInput.value.trim();
-                    if (!role) {
+                    const baseRole = localRoleInput.value.trim();
+                    const spec = localSpecInput ? localSpecInput.value.trim() : '';
+                    const jd = jdBtn ? (jdBtn.getAttribute('data-jd') || '') : '';
+
+                    if (!baseRole) {
                         alert("We need to know your role context first! Please enter a Role/Title in the input field above.");
                         return;
                     }
                     try {
                         aiBtn.disabled = true;
                         aiRegenBtn.disabled = true;
+                        if(jdBtn) jdBtn.disabled = true;
                         const originalHtml = aiBtn.innerHTML;
                         const isMainBtnHidden = aiBtn.style.display === 'none';
                         
@@ -805,7 +893,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             aiRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
                         }
                         
-                        const result = await generateExperienceFn({ role });
+                        const smartRoleContext = buildPromptContext(baseRole, spec, jd);
+                        const result = await generateExperienceFn({ role: smartRoleContext });
                         const bullets = result.data;
                         if (bullets && bullets.length > 0) {
                             const html = '<ul>' + bullets.map(b => `<li>${b}</li>`).join('') + '</ul>';
@@ -821,6 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         aiRegenBtn.innerText = 'Generate Again';
                         aiBtn.disabled = false;
                         aiRegenBtn.disabled = false;
+                        if(jdBtn) jdBtn.disabled = false;
                     }
                 };
 
@@ -857,7 +947,8 @@ document.addEventListener('DOMContentLoaded', () => {
             skillsRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
             skillsRegenBtn.style.display = 'inline-block';
 
-            const result = await generateSkillsFn({ role });
+            const smartRoleContext = buildPromptContext(role, getPrimarySpecialization(), getPrimaryJD());
+            const result = await generateSkillsFn({ role: smartRoleContext });
             const skillsArray = result.data;
             if (skillsArray && skillsArray.length > 0) {
                 if(skillsSuggestionsBox) skillsSuggestionsBox.innerHTML = ''; // clear previous tags
@@ -915,7 +1006,8 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
             summaryRegenBtn.style.display = 'inline-block';
 
-            const result = await generateSummaryFn({ role });
+            const smartRoleContext = buildPromptContext(role, getPrimarySpecialization(), getPrimaryJD());
+            const result = await generateSummaryFn({ role: smartRoleContext });
             const sumText = result.data;
             if (sumText) {
                 summaryInput.value = sumText;

@@ -1,7 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { Resend } = require('resend');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Initialize Firebase Admin
 admin.initializeApp();
 
@@ -146,3 +149,53 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
     }
 });
 
+exports.generateExperience = functions.https.onCall(async (data, context) => {
+    const role = data.role;
+    if (!role) {
+        throw new functions.https.HttpsError('invalid-argument', 'Role is required');
+    }
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `Generate 5-6 strong resume bullet points for a ${role}. Make them ATS-friendly, action-oriented, and professional. Return ONLY the text, one point per line, with no markdown, no asterisks, and no bullet symbols.`;
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        return text.split('\n').map(b => b.replace(/^[\*\-\•\s]+/, '').trim()).filter(b => b.length > 0);
+    } catch (error) {
+        console.error("AI Error:", error);
+        throw new functions.https.HttpsError('internal', 'AI generation failed');
+    }
+});
+
+exports.generateSkills = functions.https.onCall(async (data, context) => {
+    const role = data.role;
+    if (!role) {
+        throw new functions.https.HttpsError('invalid-argument', 'Role is required');
+    }
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `Suggest 15 relevant technical and soft skills for a ${role}. Return only comma-separated skills without any markdown or extra text.`;
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        return text.split(',').map(s => s.trim().replace(/^[\*\-\•\s]+/, '')).filter(s => s.length > 0);
+    } catch (error) {
+        console.error("AI Error:", error);
+        throw new functions.https.HttpsError('internal', 'AI generation failed');
+    }
+});
+
+exports.generateSummary = functions.https.onCall(async (data, context) => {
+    const role = data.role;
+    if (!role) {
+        throw new functions.https.HttpsError('invalid-argument', 'Role is required');
+    }
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `Write a professional 3-4 line resume summary for a ${role}. Make it ATS-friendly and impactful. Do not use markdown or special formatting. Return plain text only.`;
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        return text.replace(/[\*\-\•#_]+/g, '').trim();
+    } catch (error) {
+        console.error("AI Error:", error);
+        throw new functions.https.HttpsError('internal', 'AI generation failed');
+    }
+});

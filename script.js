@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
     let pendingPaymentPrompt = false;
 
+    // --- AI Integration ---
+    const generateExperienceFn = httpsCallable(functions, 'generateExperience');
+    const generateSkillsFn = httpsCallable(functions, 'generateSkills');
+    const generateSummaryFn = httpsCallable(functions, 'generateSummary');
+
     // --- Dynamic Education Field Validation ---
     const validateEduDegree = function (degreeInput) {
         if (!degreeInput) return;
@@ -765,6 +770,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 editor.addEventListener('click', updateToolbarState);
             }
 
+            // --- AI Button Bindings ---
+            const aiBtn = item.querySelector('.btn-exp-ai') || item.querySelector('.btn-intern-ai');
+            const aiRegenBtn = item.querySelector('.btn-exp-ai-regen') || item.querySelector('.btn-intern-ai-regen');
+            const aiRoleSelect = item.querySelector('.exp-ai-role') || item.querySelector('.intern-ai-role');
+            if (aiBtn && aiRoleSelect && editor) {
+                const handleGeneration = async () => {
+                    const role = aiRoleSelect.value;
+                    if (!role) {
+                        alert("Please select a role first.");
+                        return;
+                    }
+                    try {
+                        aiBtn.disabled = true;
+                        aiRegenBtn.disabled = true;
+                        const originalHtml = aiBtn.innerHTML;
+                        const isMainBtnHidden = aiBtn.style.display === 'none';
+                        
+                        if (!isMainBtnHidden) {
+                            aiBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                        } else {
+                            aiRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                        }
+                        
+                        const result = await generateExperienceFn({ role });
+                        const bullets = result.data;
+                        if (bullets && bullets.length > 0) {
+                            const html = '<ul>' + bullets.map(b => `<li>${b}</li>`).join('') + '</ul>';
+                            editor.innerHTML = html;
+                            aiBtn.style.display = 'none';
+                            aiRegenBtn.style.display = 'inline-block';
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Error generating description: " + err.message);
+                    } finally {
+                        aiBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Description';
+                        aiRegenBtn.innerText = 'Generate Again';
+                        aiBtn.disabled = false;
+                        aiRegenBtn.disabled = false;
+                    }
+                };
+
+                aiBtn.addEventListener('click', handleGeneration);
+                if (aiRegenBtn) aiRegenBtn.addEventListener('click', handleGeneration);
+            }
+
             list.appendChild(clone);
         };
 
@@ -777,6 +828,67 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDynamicList('btn-add-intern-exp', 'intern-exp-list', 'intern-exp-template');
     setupDynamicList('btn-add-edu', 'edu-list', 'edu-template');
     setupDynamicList('btn-add-proj', 'proj-list', 'proj-template');
+
+    // --- AI Skills and Summary section globals ---
+    const skillsRoleSelect = document.getElementById('skills-ai-role');
+    const skillsRegenBtn = document.getElementById('btn-skills-regen');
+    const skillsInput = document.getElementById('skills');
+
+    const generateSkillsHandler = async () => {
+        const role = skillsRoleSelect.value;
+        if (!role) return;
+        try {
+            skillsRoleSelect.disabled = true;
+            skillsRegenBtn.disabled = true;
+            skillsRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            skillsRegenBtn.style.display = 'inline-block';
+
+            const result = await generateSkillsFn({ role });
+            const skillsArray = result.data;
+            if (skillsArray && skillsArray.length > 0) {
+                skillsInput.value = skillsArray.join(', ');
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error suggesting skills: " + err.message);
+        } finally {
+            skillsRegenBtn.innerHTML = 'Suggest More';
+            skillsRoleSelect.disabled = false;
+            skillsRegenBtn.disabled = false;
+        }
+    };
+    if (skillsRoleSelect) skillsRoleSelect.addEventListener('change', generateSkillsHandler);
+    if (skillsRegenBtn) skillsRegenBtn.addEventListener('click', generateSkillsHandler);
+
+    const summaryRoleSelect = document.getElementById('summary-ai-role');
+    const summaryRegenBtn = document.getElementById('btn-summary-regen');
+    const summaryInput = document.getElementById('summary');
+
+    const generateSummaryHandler = async () => {
+        const role = summaryRoleSelect.value;
+        if (!role) return;
+        try {
+            summaryRoleSelect.disabled = true;
+            summaryRegenBtn.disabled = true;
+            summaryRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            summaryRegenBtn.style.display = 'inline-block';
+
+            const result = await generateSummaryFn({ role });
+            const sumText = result.data;
+            if (sumText) {
+                summaryInput.value = sumText;
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error generating summary: " + err.message);
+        } finally {
+            summaryRegenBtn.innerHTML = 'Generate Again';
+            summaryRoleSelect.disabled = false;
+            summaryRegenBtn.disabled = false;
+        }
+    };
+    if (summaryRoleSelect) summaryRoleSelect.addEventListener('change', generateSummaryHandler);
+    if (summaryRegenBtn) summaryRegenBtn.addEventListener('click', generateSummaryHandler);
 
     // --- Dynamic Experience Logic ---
     const handleExperienceTypeChange = (type) => {

@@ -1473,6 +1473,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 hasMeaningfulText(exp.description)
             );
 
+            if (resumeData.experienceType === 'fresher') {
+                resumeData.workExperience = [];
+                resumeData.work = [];
+                resumeData.internshipExperience = [];
+            } else if (resumeData.experienceType === 'work') {
+                resumeData.internshipExperience = [];
+            } else if (resumeData.experienceType === 'internship') {
+                resumeData.workExperience = [];
+                resumeData.work = [];
+            }
+
             if (resumeData.additional) {
                 if (!hasMeaningfulText(resumeData.additional.certifications)) resumeData.additional.certifications = '';
                 if (!hasMeaningfulText(resumeData.additional.hobbies)) resumeData.additional.hobbies = '';

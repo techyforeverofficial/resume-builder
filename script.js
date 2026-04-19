@@ -1,5 +1,5 @@
 import { auth, db, functions } from './firebase-config.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-functions.js";
 
@@ -177,10 +177,22 @@ document.addEventListener('DOMContentLoaded', () => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 dropdown.innerHTML = `
+                    <div class="dropdown-item" id="myAccount">My Account</div>
                     <div class="dropdown-item" id="myResumes">My Resumes</div>
                     <div class="dropdown-item" id="mySubscription">My Subscription</div>
                     <div class="dropdown-item" id="logout">Logout</div>
                 `;
+
+                const myAccountModal = document.getElementById('my-account-modal');
+                document.getElementById("myAccount").onclick = () => {
+                    dropdown.classList.add('hidden');
+                    if (myAccountModal) {
+                        document.getElementById('ma-email').innerText = user.email || 'No email associated';
+                        const userPhoto = user.photoURL || 'https://via.placeholder.com/80';
+                        document.getElementById('ma-photo').src = userPhoto;
+                        myAccountModal.classList.add('active');
+                    }
+                };
 
                 document.getElementById("logout").onclick = async () => {
                     try {
@@ -6490,6 +6502,84 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Account Management UI Core ---
+    const myAccountModal = document.getElementById('my-account-modal');
+    const deleteAccountModal = document.getElementById('delete-account-modal');
+    const btnOpenDeleteAccount = document.getElementById('btn-open-delete-account');
+    const deleteConfirmInput = document.getElementById('delete-confirm-input');
+    const btnExecuteDelete = document.getElementById('btn-execute-delete');
+
+    document.querySelectorAll('.js-close-account').forEach(btn => {
+        btn.addEventListener('click', () => { if (myAccountModal) myAccountModal.classList.remove('active'); });
+    });
+
+    if (btnOpenDeleteAccount) {
+        btnOpenDeleteAccount.addEventListener('click', () => {
+            if (myAccountModal) myAccountModal.classList.remove('active');
+            if (deleteAccountModal) deleteAccountModal.classList.add('active');
+            if (deleteConfirmInput) deleteConfirmInput.value = '';
+            if (btnExecuteDelete) btnExecuteDelete.disabled = true;
+        });
+    }
+
+    document.querySelectorAll('.js-close-delete-account').forEach(btn => {
+        btn.addEventListener('click', () => { if (deleteAccountModal) deleteAccountModal.classList.remove('active'); });
+    });
+
+    if (deleteConfirmInput && btnExecuteDelete) {
+        deleteConfirmInput.addEventListener('input', (e) => {
+            if (e.target.value === 'DELETE') {
+                btnExecuteDelete.disabled = false;
+            } else {
+                btnExecuteDelete.disabled = true;
+            }
+        });
+    }
+
+    if (btnExecuteDelete) {
+        btnExecuteDelete.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            try {
+                const originalText = btnExecuteDelete.innerHTML;
+                btnExecuteDelete.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Executing...';
+                btnExecuteDelete.disabled = true;
+
+                // 1. Delete all resumes tied to User natively inside Firestore
+                const resumesQ = query(collection(db, "resumes"), where("userId", "==", user.uid));
+                const resDocs = await getDocs(resumesQ);
+                for (let rDoc of resDocs.docs) {
+                    await deleteDoc(rDoc.ref);
+                }
+
+                // 2. Delete the user document globally via admin
+                await deleteDoc(doc(db, "users", user.uid));
+
+                // 3. Delete Firebase Auth user natively using injected script
+                await deleteUser(user);
+
+                if (deleteAccountModal) deleteAccountModal.classList.remove('active');
+                alert("Your account has been deleted successfully");
+                
+                // Redirection ensures total flush logic resets securely
+                window.location.href = '/';
+
+            } catch (error) {
+                console.error("Deletion Error:", error);
+                // Enforce recent login auth context error securely
+                if (error.code === 'auth/requires-recent-login') {
+                    alert("Security Check: You must have logged in recently to delete your account. Please log out, sign back in, and try again.");
+                    if (deleteAccountModal) deleteAccountModal.classList.remove('active');
+                } else {
+                    alert("Error processing deletion: " + error.message);
+                }
+            } finally {
+                btnExecuteDelete.innerHTML = '<i class="fas fa-skull"></i> Execute';
+                btnExecuteDelete.disabled = false;
+            }
+        });
+    }
 });
 
 

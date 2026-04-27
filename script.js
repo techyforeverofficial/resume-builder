@@ -10,6 +10,27 @@ document.addEventListener('DOMContentLoaded', () => {
     window.aiCreditsLeft = undefined;
     let creditsUnsubscribe = null;
 
+    // --- Content Protection ---
+    // Prevent right-click and drag on the resume preview
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.closest('.preview-container')) {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('dragstart', (e) => {
+        if (e.target.closest('.preview-container')) {
+            e.preventDefault();
+        }
+    });
+
+    // Prevent Ctrl+P (Print) and Ctrl+S (Save)
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'p' || e.key.toLowerCase() === 's')) {
+            e.preventDefault();
+        }
+    });
+
     // --- Out of Credits Modal Handlers ---
     const closeCreditsModal = document.getElementById('close-credits-modal');
     const btnContinueManual = document.getElementById('btn-continue-manual');

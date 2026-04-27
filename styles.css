@@ -5874,3 +5874,18 @@ body, html {
     background: rgba(99, 102, 241, 0.2);
     border-color: var(--accent-color);
 }
+
+/* --- Resume Content Protection --- */
+.preview-container {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@media print {
+    /* Completely hide everything in print preview to prevent standard printing bypassing our PDF generator */
+    body {
+        display: none !important;
+    }
+}

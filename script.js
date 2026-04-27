@@ -7,7 +7,7 @@ import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.9.0/firebas
 document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
     let pendingPaymentPrompt = false;
-    window.aiCreditsLeft = 0;
+    window.aiCreditsLeft = undefined;
     let creditsUnsubscribe = null;
 
     // --- Out of Credits Modal Handlers ---
@@ -982,7 +982,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
 
-                    if (window.aiCreditsLeft <= 0) {
+                    if (window.aiCreditsLeft === undefined || window.aiCreditsLeft === null) {
+                        if (typeof showToast === 'function') {
+                            showToast("Loading credits... Please wait.", 'info');
+                        } else {
+                            console.log("Loading credits... Please wait.");
+                        }
+                    } else if (window.aiCreditsLeft <= 0) {
                         const outOfCreditsModal = document.getElementById('out-of-credits-modal');
                         if (outOfCreditsModal) outOfCreditsModal.classList.add('active');
                         return;
@@ -1060,7 +1066,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (window.aiCreditsLeft <= 0) {
+        if (window.aiCreditsLeft === undefined || window.aiCreditsLeft === null) {
+            if (typeof showToast === 'function') {
+                showToast("Loading credits... Please wait.", 'info');
+            } else {
+                console.log("Loading credits... Please wait.");
+            }
+        } else if (window.aiCreditsLeft <= 0) {
             const outOfCreditsModal = document.getElementById('out-of-credits-modal');
             if (outOfCreditsModal) outOfCreditsModal.classList.add('active');
             return;
@@ -1137,7 +1149,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (window.aiCreditsLeft <= 0) {
+        if (window.aiCreditsLeft === undefined || window.aiCreditsLeft === null) {
+            if (typeof showToast === 'function') {
+                showToast("Loading credits... Please wait.", 'info');
+            } else {
+                console.log("Loading credits... Please wait.");
+            }
+        } else if (window.aiCreditsLeft <= 0) {
             const outOfCreditsModal = document.getElementById('out-of-credits-modal');
             if (outOfCreditsModal) outOfCreditsModal.classList.add('active');
             return;
@@ -5962,7 +5980,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 creditsUnsubscribe();
                 creditsUnsubscribe = null;
             }
-            window.aiCreditsLeft = 0;
+            window.aiCreditsLeft = undefined;
         }
 
         if (user) {
@@ -5993,10 +6011,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (creditsUnsubscribe) creditsUnsubscribe();
             creditsUnsubscribe = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
                 if (docSnap.exists()) {
-                    window.aiCreditsLeft = docSnap.data().aiCredits || 0;
+                    const data = docSnap.data();
+                    if (data.aiCredits !== undefined) {
+                        window.aiCreditsLeft = data.aiCredits;
+                    } else if (!data.premium) {
+                        window.aiCreditsLeft = 0;
+                    }
                 } else {
                     window.aiCreditsLeft = 0;
                 }
+                console.log("Credits updated:", window.aiCreditsLeft);
             });
 
             try {

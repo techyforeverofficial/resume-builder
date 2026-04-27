@@ -5855,3 +5855,22 @@ body, html {
     0% { opacity: 0; transform: translateY(20px) scale(0.95); }
     100% { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* AI Credits Badge */
+.ai-credits-badge {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    color: #f8fafc;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.ai-credits-badge:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: var(--accent-color);
+}

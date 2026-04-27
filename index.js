@@ -37,16 +37,21 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
 
     let days = 0;
 
+    let aiCredits = 0;
+
     // Plan Configuration Logic
     switch (planType) {
         case 'starter':
             days = 7;
+            aiCredits = 5;
             break;
         case 'pro':
             days = 30;
+            aiCredits = 15;
             break;
         case 'premium':
             days = 90;
+            aiCredits = 30;
             break;
         default:
             throw new functions.https.HttpsError(
@@ -63,7 +68,8 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
         premium: true,
         planType: planType,
         expiresAt: expiresAt,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        aiCredits: admin.firestore.FieldValue.increment(aiCredits)
     };
 
     try {
@@ -177,10 +183,22 @@ async function callGemini(prompt) {
 }
 
 exports.generateExperience = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'User must be logged in');
+    }
     const role = data.role;
     if (!role) {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
+
+    const userRef = admin.firestore().collection('users').doc(context.auth.uid);
+    const userDoc = await userRef.get();
+    const currentCredits = userDoc.data()?.aiCredits || 0;
+
+    if (currentCredits <= 0) {
+        throw new functions.https.HttpsError('resource-exhausted', 'No credits left');
+    }
+
     try {
         const prompt = `Generate 4-6 strong resume bullet points for a ${role}.
 
@@ -199,6 +217,7 @@ Rules:
 
 If anything other than final bullet points is included, the output is invalid.`;
         const text = await callGemini(prompt);
+        await userRef.update({ aiCredits: admin.firestore.FieldValue.increment(-1) });
         return text.split('\n').map(b => b.replace(/^[\*\-\•\s]+/, '').trim()).filter(b => b.length > 0);
     } catch (error) {
         console.error("AI Error:", error);
@@ -207,10 +226,22 @@ If anything other than final bullet points is included, the output is invalid.`;
 });
 
 exports.generateSkills = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'User must be logged in');
+    }
     const role = data.role;
     if (!role) {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
+
+    const userRef = admin.firestore().collection('users').doc(context.auth.uid);
+    const userDoc = await userRef.get();
+    const currentCredits = userDoc.data()?.aiCredits || 0;
+
+    if (currentCredits <= 0) {
+        throw new functions.https.HttpsError('resource-exhausted', 'No credits left');
+    }
+
     try {
         const prompt = `Suggest 15 relevant technical and soft skills for a ${role}.
 
@@ -224,6 +255,7 @@ Rules:
 
 If anything other than the comma-separated skills list is included, the output is invalid.`;
         const text = await callGemini(prompt);
+        await userRef.update({ aiCredits: admin.firestore.FieldValue.increment(-1) });
         return text.split(',').map(s => s.trim().replace(/^[\*\-\•\s]+/, '')).filter(s => s.length > 0);
     } catch (error) {
         console.error("AI Error:", error);
@@ -232,10 +264,22 @@ If anything other than the comma-separated skills list is included, the output i
 });
 
 exports.generateSummary = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'User must be logged in');
+    }
     const role = data.role;
     if (!role) {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
+
+    const userRef = admin.firestore().collection('users').doc(context.auth.uid);
+    const userDoc = await userRef.get();
+    const currentCredits = userDoc.data()?.aiCredits || 0;
+
+    if (currentCredits <= 0) {
+        throw new functions.https.HttpsError('resource-exhausted', 'No credits left');
+    }
+
     try {
         const prompt = `Write a professional 3-4 line resume summary for a ${role}.
 
@@ -249,6 +293,7 @@ Rules:
 
 If anything other than the final summary is included, the output is invalid.`;
         const text = await callGemini(prompt);
+        await userRef.update({ aiCredits: admin.firestore.FieldValue.increment(-1) });
         return text.replace(/[\*\-\•#_]+/g, '').trim();
     } catch (error) {
         console.error("AI Error:", error);

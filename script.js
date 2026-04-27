@@ -1,12 +1,38 @@
 import { auth, db, functions, storage } from './firebase-config.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, query, where, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-functions.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     let currentResumeData = null;
     let pendingPaymentPrompt = false;
+    window.aiCreditsLeft = 0;
+    let creditsUnsubscribe = null;
+
+    // --- Out of Credits Modal Handlers ---
+    const closeCreditsModal = document.getElementById('close-credits-modal');
+    const btnContinueManual = document.getElementById('btn-continue-manual');
+    const btnUpgradeCredits = document.getElementById('btn-upgrade-credits');
+    const outOfCreditsModal = document.getElementById('out-of-credits-modal');
+
+    const hideCreditsModal = () => {
+        if (outOfCreditsModal) outOfCreditsModal.classList.remove('active');
+    };
+
+    if (closeCreditsModal) closeCreditsModal.addEventListener('click', hideCreditsModal);
+    if (btnContinueManual) btnContinueManual.addEventListener('click', hideCreditsModal);
+    if (btnUpgradeCredits) {
+        btnUpgradeCredits.addEventListener('click', () => {
+            hideCreditsModal();
+            if (typeof navigateTo === 'function') navigateTo('home');
+            // Scroll to pricing section
+            setTimeout(() => {
+                const pricing = document.getElementById('pricing');
+                if (pricing) pricing.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        });
+    }
 
     // --- AI Integration ---
     const generateExperienceFn = httpsCallable(functions, 'generateExperience');
@@ -949,6 +975,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         alert("We need to know your role context first! Please enter a Role/Title in the input field above.");
                         return;
                     }
+                    
+                    if (!auth.currentUser) {
+                        const authModal = document.getElementById('auth-modal');
+                        if (authModal) authModal.classList.add('active');
+                        return;
+                    }
+
+                    if (window.aiCreditsLeft <= 0) {
+                        const outOfCreditsModal = document.getElementById('out-of-credits-modal');
+                        if (outOfCreditsModal) outOfCreditsModal.classList.add('active');
+                        return;
+                    }
+
                     try {
                         aiBtn.disabled = true;
                         aiRegenBtn.disabled = true;
@@ -970,6 +1009,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             editor.innerHTML = html;
                             aiBtn.style.display = 'none';
                             aiRegenBtn.style.display = 'inline-block';
+                            if (typeof showToast === 'function') {
+                                showToast(`AI generated successfully — ${Math.max(0, window.aiCreditsLeft - 1)} generations left`);
+                            }
                         }
                     } catch (err) {
                         console.error(err);
@@ -1011,6 +1053,19 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("We need to know your role first! Please enter a Role/Title in the Experience section, or fill out the AI target input.");
             return;
         }
+
+        if (!auth.currentUser) {
+            const authModal = document.getElementById('auth-modal');
+            if (authModal) authModal.classList.add('active');
+            return;
+        }
+
+        if (window.aiCreditsLeft <= 0) {
+            const outOfCreditsModal = document.getElementById('out-of-credits-modal');
+            if (outOfCreditsModal) outOfCreditsModal.classList.add('active');
+            return;
+        }
+
         try {
             skillsRegenBtn.disabled = true;
             skillsRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
@@ -1022,6 +1077,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const skillsArray = result.data;
             if (skillsArray && skillsArray.length > 0) {
                 if (skillsSuggestionsBox) skillsSuggestionsBox.innerHTML = ''; // clear previous tags
+
+                if (typeof showToast === 'function') {
+                    showToast(`AI generated successfully — ${Math.max(0, window.aiCreditsLeft - 1)} generations left`);
+                }
 
                 skillsArray.forEach(skill => {
                     const chip = document.createElement('span');
@@ -1071,6 +1130,19 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("We need to know your role first! Please enter a Role/Title in the Experience section, or fill out the AI target input.");
             return;
         }
+
+        if (!auth.currentUser) {
+            const authModal = document.getElementById('auth-modal');
+            if (authModal) authModal.classList.add('active');
+            return;
+        }
+
+        if (window.aiCreditsLeft <= 0) {
+            const outOfCreditsModal = document.getElementById('out-of-credits-modal');
+            if (outOfCreditsModal) outOfCreditsModal.classList.add('active');
+            return;
+        }
+
         try {
             summaryRegenBtn.disabled = true;
             summaryRegenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
@@ -1082,6 +1154,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const sumText = result.data;
             if (sumText) {
                 summaryInput.value = sumText;
+                if (typeof showToast === 'function') {
+                    showToast(`AI generated successfully — ${Math.max(0, window.aiCreditsLeft - 1)} generations left`);
+                }
             }
         } catch (err) {
             console.error(err);
@@ -5882,7 +5957,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        if (!user) {
+            if (creditsUnsubscribe) {
+                creditsUnsubscribe();
+                creditsUnsubscribe = null;
+            }
+            const badge = document.getElementById('ai-credits-badge');
+            if (badge) badge.classList.add('hidden');
+            window.aiCreditsLeft = 0;
+        }
+
         if (user) {
+            if (creditsUnsubscribe) creditsUnsubscribe();
+            creditsUnsubscribe = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                const badge = document.getElementById('ai-credits-badge');
+                const countSpan = document.getElementById('ai-credits-count');
+                if (docSnap.exists()) {
+                    window.aiCreditsLeft = docSnap.data().aiCredits || 0;
+                    if (badge && countSpan) {
+                        countSpan.innerText = window.aiCreditsLeft;
+                        badge.classList.remove('hidden');
+                    }
+                } else {
+                    window.aiCreditsLeft = 0;
+                    if (badge && countSpan) {
+                        countSpan.innerText = '0';
+                        badge.classList.remove('hidden');
+                    }
+                }
+            });
+
             try {
                 // Force refresh real-time user state (ensures no platform freeze or stale cache)
                 await user.reload();

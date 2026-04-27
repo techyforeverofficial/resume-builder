@@ -31,6 +31,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Prevent Screenshots (Best Effort)
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'PrintScreen') {
+            navigator.clipboard.writeText('Screenshots are disabled.');
+            if (typeof showToast === 'function') {
+                showToast("Screenshots are not allowed.", 'error');
+            } else {
+                alert("Screenshots are not allowed.");
+            }
+        }
+    });
+
+    // Hide preview when window loses focus (blocks Snipping Tool / OS screenshot tools)
+    window.addEventListener('blur', () => {
+        const preview = document.querySelector('.preview-container');
+        if (preview) {
+            preview.style.filter = 'blur(15px)';
+            preview.style.opacity = '0.05';
+            preview.style.pointerEvents = 'none';
+        }
+    });
+
+    window.addEventListener('focus', () => {
+        const preview = document.querySelector('.preview-container');
+        if (preview) {
+            preview.style.filter = 'none';
+            preview.style.opacity = '1';
+            preview.style.pointerEvents = 'auto';
+        }
+    });
+
     // --- Out of Credits Modal Handlers ---
     const closeCreditsModal = document.getElementById('close-credits-modal');
     const btnContinueManual = document.getElementById('btn-continue-manual');

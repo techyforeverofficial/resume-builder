@@ -155,6 +155,31 @@ exports.activatePremium = functions.https.onCall(async (data, context) => {
     }
 });
 
+async function ensureAndGetCredits(userRef, userDoc) {
+    const data = userDoc.data();
+    if (!data) return 0;
+
+    let currentCredits = data.aiCredits;
+
+    if (currentCredits === undefined && data.premium) {
+        let planType = data.planType || 'free';
+        if (planType === 'free') planType = 'pro'; // legacy assumption
+
+        if (planType === 'starter') currentCredits = 5;
+        else if (planType === 'pro') currentCredits = 15;
+        else if (planType === 'premium') currentCredits = 30;
+        else currentCredits = 0;
+
+        if (currentCredits > 0) {
+            await userRef.update({ aiCredits: currentCredits });
+        }
+    } else if (currentCredits === undefined) {
+        currentCredits = 0;
+    }
+
+    return currentCredits;
+}
+
 async function callGemini(prompt) {
     const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
     
@@ -193,7 +218,7 @@ exports.generateExperience = functions.https.onCall(async (data, context) => {
 
     const userRef = admin.firestore().collection('users').doc(context.auth.uid);
     const userDoc = await userRef.get();
-    const currentCredits = userDoc.data()?.aiCredits || 0;
+    const currentCredits = await ensureAndGetCredits(userRef, userDoc);
 
     if (currentCredits <= 0) {
         throw new functions.https.HttpsError('resource-exhausted', 'No credits left');
@@ -236,7 +261,7 @@ exports.generateSkills = functions.https.onCall(async (data, context) => {
 
     const userRef = admin.firestore().collection('users').doc(context.auth.uid);
     const userDoc = await userRef.get();
-    const currentCredits = userDoc.data()?.aiCredits || 0;
+    const currentCredits = await ensureAndGetCredits(userRef, userDoc);
 
     if (currentCredits <= 0) {
         throw new functions.https.HttpsError('resource-exhausted', 'No credits left');
@@ -274,7 +299,7 @@ exports.generateSummary = functions.https.onCall(async (data, context) => {
 
     const userRef = admin.firestore().collection('users').doc(context.auth.uid);
     const userDoc = await userRef.get();
-    const currentCredits = userDoc.data()?.aiCredits || 0;
+    const currentCredits = await ensureAndGetCredits(userRef, userDoc);
 
     if (currentCredits <= 0) {
         throw new functions.https.HttpsError('resource-exhausted', 'No credits left');

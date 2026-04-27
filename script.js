@@ -5984,30 +5984,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (user) {
-            try {
-                const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
-                if (userSnap.exists()) {
-                    const data = userSnap.data();
-                    if (data.aiCredits === undefined && data.premium) {
-                        let defaultCredits = 0;
-                        let planType = data.planType || 'free';
-                        
-                        if (planType === 'free') planType = 'pro'; // legacy
-                        
-                        if (planType === 'starter') defaultCredits = 5;
-                        else if (planType === 'pro') defaultCredits = 15;
-                        else if (planType === 'premium') defaultCredits = 30;
-
-                        if (defaultCredits > 0) {
-                            await updateDoc(userRef, { aiCredits: defaultCredits });
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error("Error setting default aiCredits:", e);
-            }
-
             if (creditsUnsubscribe) creditsUnsubscribe();
             creditsUnsubscribe = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
                 if (docSnap.exists()) {

@@ -11,7 +11,8 @@ service cloud.firestore {
         && request.auth.uid == userId
         && !("premium" in request.resource.data)
         && !("expiresAt" in request.resource.data)
-        && !("planType" in request.resource.data);
+        && !("planType" in request.resource.data)
+        && !("aiCredits" in request.resource.data);
     }
 
     // ✅ RESUMES COLLECTION (NEW FIX)

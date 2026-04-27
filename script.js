@@ -5962,28 +5962,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 creditsUnsubscribe();
                 creditsUnsubscribe = null;
             }
-            const badge = document.getElementById('ai-credits-badge');
-            if (badge) badge.classList.add('hidden');
             window.aiCreditsLeft = 0;
         }
 
         if (user) {
+            try {
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    if (data.aiCredits === undefined && data.premium) {
+                        let defaultCredits = 0;
+                        let planType = data.planType || 'free';
+                        
+                        if (planType === 'free') planType = 'pro'; // legacy
+                        
+                        if (planType === 'starter') defaultCredits = 5;
+                        else if (planType === 'pro') defaultCredits = 15;
+                        else if (planType === 'premium') defaultCredits = 30;
+
+                        if (defaultCredits > 0) {
+                            await updateDoc(userRef, { aiCredits: defaultCredits });
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Error setting default aiCredits:", e);
+            }
+
             if (creditsUnsubscribe) creditsUnsubscribe();
             creditsUnsubscribe = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
-                const badge = document.getElementById('ai-credits-badge');
-                const countSpan = document.getElementById('ai-credits-count');
                 if (docSnap.exists()) {
                     window.aiCreditsLeft = docSnap.data().aiCredits || 0;
-                    if (badge && countSpan) {
-                        countSpan.innerText = window.aiCreditsLeft;
-                        badge.classList.remove('hidden');
-                    }
                 } else {
                     window.aiCreditsLeft = 0;
-                    if (badge && countSpan) {
-                        countSpan.innerText = '0';
-                        badge.classList.remove('hidden');
-                    }
                 }
             });
 
@@ -6497,7 +6509,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 let expiresAt = data.expiresAt || 0;
                 let isExpired = Date.now() > expiresAt;
 
+                let aiCreditsStr = '';
+                
                 if (isPremium) {
+                    let totalCredits = 0;
+                    if (planType === 'starter') totalCredits = 5;
+                    else if (planType === 'pro') totalCredits = 15;
+                    else if (planType === 'premium') totalCredits = 30;
+                    
+                    let remainingCredits = data.aiCredits !== undefined ? data.aiCredits : totalCredits;
+                    let usedCredits = Math.max(0, totalCredits - remainingCredits);
+                    
+                    aiCreditsStr = `
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-weight: 600; color: #f8fafc; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                            <i class="fas fa-robot" style="color: #6366f1;"></i> AI Generations: <span style="color: #fbbf24;">${remainingCredits} remaining</span>
+                        </div>
+                        <div style="font-size: 0.85rem; color: #94a3b8;">
+                            ${usedCredits} / ${totalCredits} used
+                        </div>
+                    </div>`;
+
                     if (isExpired) {
                         statusBadge = '<span class="sub-badge sub-expired">Expired</span>';
                         expiryDateStr = new Date(expiresAt).toLocaleDateString();
@@ -6532,6 +6564,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="plan-info">
                                     <h4 class="plan-title">${planDisplay}</h4>
                                     <div class="plan-price">${priceDisplay}</div>
+                                    ${aiCreditsStr}
                                 </div>
                                 <div class="plan-status">
                                     ${statusBadge}

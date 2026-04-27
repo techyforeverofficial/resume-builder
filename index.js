@@ -182,16 +182,20 @@ exports.generateExperience = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('invalid-argument', 'Role is required');
     }
     try {
-        const prompt = `Generate 5-6 strong resume bullet points for a ${role}.
+        const prompt = `Generate 4-6 strong resume bullet points for a ${role}.
 
 Rules:
-- Each point must be a single line
+- Each point must be ONE LINE only
+- Keep it SHORT (8-14 words max)
+- Use simple, clear language that sounds human-written, NOT AI-generated
 - Start with strong action verbs
-- Be ATS-friendly and professional
+- Avoid over-explaining
+- STRICTLY AVOID filler words like "comprehensive", "robust", "complex"
+- Be clean, ATS-friendly, and easy to scan in 5-10 seconds
 - Do NOT include any explanation, reasoning, or headings
 - Do NOT include words like THOUGHT, Attempt, or Refinement
 - Do NOT use bullet symbols, numbers, or markdown
-- Return only plain text lines
+- Return only plain text lines (one point per line)
 
 If anything other than final bullet points is included, the output is invalid.`;
         const text = await callGemini(prompt);
